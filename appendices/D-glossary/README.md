@@ -76,6 +76,14 @@ Every AI term used in this course, defined in one or two plain sentences. Terms 
 
 **Layer** — a group of neurons that all read the same inputs and compute in parallel; networks stack layers, and the inner ones are called *hidden* layers. → [Chapter 7](../../chapters/07-perceptron-and-neurons/README.md)
 
+**Chain rule** — the calculus rule for functions inside functions: rates multiply along the chain. The single math fact behind backpropagation. → [Chapter 8](../../chapters/08-backpropagation/README.md)
+
+**Computation graph** — a formula drawn as a network of tiny operations, each with a one-line local derivative. → [Chapter 8](../../chapters/08-backpropagation/README.md)
+
+**Backpropagation** — the algorithm that computes every parameter's gradient in one backward sweep over the computation graph, by applying each node's local rule to the gradient flowing in from above. → [Chapter 8](../../chapters/08-backpropagation/README.md)
+
+**Autograd (automatic differentiation)** — an engine that builds the computation graph as a side effect of running the code, so backpropagation needs no hand-derived formulas. PyTorch's core feature. → [Chapter 8](../../chapters/08-backpropagation/README.md)
+
 **Overfitting** — when a model memorizes its training data and fails on new data. → [Chapter 11](../../chapters/11-training-deep-networks/README.md)
 
 **GPU (graphics processing unit)** — hardware that performs thousands of simple math operations in parallel; what makes deep learning fast. → [Appendix E](../E-hardware-guide/README.md)

@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 560" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="940" height="560" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">The computation graph of L = (a&#183;b + c)&#178;, with a=2, b=3, c=&#8722;1</text>
+  <text x="60" y="72" font-size="15" fill="#57606a">Forward pass (black arrows): compute values left to right. Backward pass (red): send gradients right to left.</text>
+
+  <defs>
+    <marker id="fwd" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0, 9 4, 0 8" fill="#57606a"/>
+    </marker>
+    <marker id="bwd" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0, 9 4, 0 8" fill="#dc2626"/>
+    </marker>
+  </defs>
+
+  <!-- Leaf nodes a, b, c -->
+  <g>
+    <rect x="70" y="120" width="150" height="74" rx="10" fill="#ffffff" stroke="#57606a" stroke-width="2"/>
+    <text x="86" y="148" font-size="17" font-weight="700" fill="#24292f">a = 2</text>
+    <text x="86" y="176" font-size="15" fill="#dc2626">gradient: 30</text>
+
+    <rect x="70" y="240" width="150" height="74" rx="10" fill="#ffffff" stroke="#57606a" stroke-width="2"/>
+    <text x="86" y="268" font-size="17" font-weight="700" fill="#24292f">b = 3</text>
+    <text x="86" y="296" font-size="15" fill="#dc2626">gradient: 20</text>
+
+    <rect x="70" y="380" width="150" height="74" rx="10" fill="#ffffff" stroke="#57606a" stroke-width="2"/>
+    <text x="86" y="408" font-size="17" font-weight="700" fill="#24292f">c = &#8722;1</text>
+    <text x="86" y="436" font-size="15" fill="#dc2626">gradient: 10</text>
+  </g>
+
+  <!-- Multiply node -->
+  <rect x="340" y="180" width="170" height="74" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="356" y="208" font-size="17" font-weight="700" fill="#1e3a8a">d = a&#183;b = 6</text>
+  <text x="356" y="236" font-size="15" fill="#dc2626">gradient: 10</text>
+
+  <!-- Add node -->
+  <rect x="590" y="290" width="170" height="74" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="606" y="318" font-size="17" font-weight="700" fill="#14532d">e = d+c = 5</text>
+  <text x="606" y="346" font-size="15" fill="#dc2626">gradient: 10</text>
+
+  <!-- Square node -->
+  <rect x="760" y="150" width="160" height="74" rx="10" fill="#fde68a" stroke="#d97706" stroke-width="2"/>
+  <text x="776" y="178" font-size="17" font-weight="700" fill="#78350f">L = e&#178; = 25</text>
+  <text x="776" y="206" font-size="15" fill="#dc2626">gradient: 1</text>
+
+  <!-- Forward edges -->
+  <g stroke="#57606a" stroke-width="2">
+    <line x1="220" y1="157" x2="332" y2="203" marker-end="url(#fwd)"/>
+    <line x1="220" y1="277" x2="332" y2="235" marker-end="url(#fwd)"/>
+    <line x1="510" y1="217" x2="582" y2="310" marker-end="url(#fwd)"/>
+    <line x1="220" y1="417" x2="582" y2="342" marker-end="url(#fwd)"/>
+    <line x1="760" y1="327" x2="812" y2="232" marker-end="url(#fwd)"/>
+  </g>
+
+  <!-- Backward annotations -->
+  <g font-size="14" fill="#dc2626">
+    <text x="798" y="296">dL/de = 2e = 10</text>
+    <text x="340" y="272">de/dd = 1 &#8594; pass 10 on</text>
+    <text x="280" y="356">de/dc = 1 &#8594; pass 10 on</text>
+    <text x="232" y="140">dd/da = b &#8594; 3 &#183; 10 = 30</text>
+    <text x="240" y="322">dd/db = a &#8594; 2 &#183; 10 = 20</text>
+  </g>
+
+  <text x="60" y="512" font-size="15" fill="#24292f">Each node only knows its LOCAL derivative rule. The chain rule multiplies the local rule by whatever gradient</text>
+  <text x="60" y="534" font-size="15" fill="#24292f">arrives from the right &#8212; and that is the entire backpropagation algorithm.</text>
+</svg>

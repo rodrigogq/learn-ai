@@ -80,7 +80,7 @@ Status: `[ ]` not started · `[~]` drafted, examples untested · `[x]` done (tex
 - [x] 05-linear-regression — loss, gradient descent, learning rate; full from-scratch fit in both languages.
 - [x] 06-logistic-regression — sigmoid, cross-entropy, decision boundary.
 - [x] 07-perceptron-and-neurons — activation functions, XOR limitation.
-- [ ] 08-backpropagation — chain rule; micrograd-style autograd engine in Python and C.
+- [x] 08-backpropagation — chain rule; micrograd-style autograd engine in Python and C.
 - [ ] 09-first-neural-network — MLP on MNIST from scratch (NumPy + full C port). Milestone.
 
 ### Part II — The deep learning toolkit
