@@ -64,6 +64,18 @@ Every AI term used in this course, defined in one or two plain sentences. Terms 
 
 **Hyperparameter** — a knob the *person* chooses rather than the model learning it (learning rate, number of epochs, layer sizes). → [Chapter 3](../../chapters/03-derivatives-and-gradients/README.md)
 
+**Artificial neuron** — a weighted sum of inputs plus a bias, passed through an activation function. The building block of neural networks. → [Chapter 7](../../chapters/07-perceptron-and-neurons/README.md)
+
+**Activation function** — the nonlinear "bend" applied to a neuron's weighted sum (step, sigmoid, tanh, ReLU). Without it, stacked layers collapse into one line. → [Chapter 7](../../chapters/07-perceptron-and-neurons/README.md)
+
+**Perceptron** — the 1957 original: one neuron with a step activation and a simple mistake-driven learning rule. → [Chapter 7](../../chapters/07-perceptron-and-neurons/README.md)
+
+**ReLU** — the activation `max(0, z)`: zero for negative inputs, unchanged for positive ones. The default in modern deep networks. → [Chapter 7](../../chapters/07-perceptron-and-neurons/README.md)
+
+**Linearly separable** — a dataset whose two classes can be split by one straight line (or flat surface). What a single neuron can learn; XOR is the classic counterexample. → [Chapter 7](../../chapters/07-perceptron-and-neurons/README.md)
+
+**Layer** — a group of neurons that all read the same inputs and compute in parallel; networks stack layers, and the inner ones are called *hidden* layers. → [Chapter 7](../../chapters/07-perceptron-and-neurons/README.md)
+
 **Overfitting** — when a model memorizes its training data and fails on new data. → [Chapter 11](../../chapters/11-training-deep-networks/README.md)
 
 **GPU (graphics processing unit)** — hardware that performs thousands of simple math operations in parallel; what makes deep learning fast. → [Appendix E](../E-hardware-guide/README.md)

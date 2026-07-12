@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 440" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="900" height="440" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">The artificial neuron: a weighted sum followed by an activation</text>
+
+  <defs>
+    <marker id="flowArrow" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0, 9 4, 0 8" fill="#57606a"/>
+    </marker>
+  </defs>
+
+  <!-- Inputs -->
+  <g font-size="17" font-family="ui-monospace, 'SF Mono', Menlo, monospace">
+    <circle cx="130" cy="140" r="30" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+    <text x="130" y="146" text-anchor="middle" fill="#1e3a8a">x&#8321;</text>
+    <circle cx="130" cy="230" r="30" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+    <text x="130" y="236" text-anchor="middle" fill="#1e3a8a">x&#8322;</text>
+    <circle cx="130" cy="320" r="30" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+    <text x="130" y="326" text-anchor="middle" fill="#1e3a8a">x&#8323;</text>
+  </g>
+  <text x="98" y="86" font-size="14" fill="#57606a">inputs (the features)</text>
+
+  <!-- Weighted connections -->
+  <g stroke="#57606a" stroke-width="2">
+    <line x1="160" y1="140" x2="378" y2="212" marker-end="url(#flowArrow)"/>
+    <line x1="160" y1="230" x2="378" y2="228" marker-end="url(#flowArrow)"/>
+    <line x1="160" y1="320" x2="378" y2="245" marker-end="url(#flowArrow)"/>
+  </g>
+  <g font-size="15" font-family="ui-monospace, 'SF Mono', Menlo, monospace" fill="#78350f" font-weight="700">
+    <text x="240" y="158">w&#8321;</text>
+    <text x="240" y="216">w&#8322;</text>
+    <text x="240" y="300">w&#8323;</text>
+  </g>
+  <text x="196" y="112" font-size="14" fill="#78350f">one weight per input (learned)</text>
+
+  <!-- Sum node -->
+  <circle cx="420" cy="230" r="42" fill="#fde68a" stroke="#d97706" stroke-width="2.5"/>
+  <text x="420" y="242" text-anchor="middle" font-size="30" fill="#78350f">&#931;</text>
+  <text x="352" y="304" font-size="14" fill="#78350f">weighted sum + bias b</text>
+
+  <!-- Bias arrow -->
+  <line x1="420" y1="120" x2="420" y2="185" stroke="#57606a" stroke-width="2" marker-end="url(#flowArrow)"/>
+  <text x="432" y="132" font-size="15" font-family="ui-monospace, 'SF Mono', Menlo, monospace" fill="#57606a">b</text>
+
+  <!-- Activation node -->
+  <line x1="462" y1="230" x2="558" y2="230" stroke="#57606a" stroke-width="2" marker-end="url(#flowArrow)"/>
+  <text x="478" y="216" font-size="14" font-family="ui-monospace, 'SF Mono', Menlo, monospace" fill="#57606a">z</text>
+  <circle cx="600" cy="230" r="42" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5"/>
+  <!-- little step curve inside -->
+  <polyline points="578,246 600,246 600,214 622,214" fill="none" stroke="#14532d" stroke-width="3"/>
+  <text x="548" y="304" font-size="14" fill="#14532d">activation function f</text>
+
+  <!-- Output -->
+  <line x1="642" y1="230" x2="760" y2="230" stroke="#57606a" stroke-width="2" marker-end="url(#flowArrow)"/>
+  <text x="775" y="236" font-size="17" font-family="ui-monospace, 'SF Mono', Menlo, monospace" fill="#24292f">output</text>
+
+  <!-- Formula -->
+  <text x="60" y="404" font-size="16" font-family="ui-monospace, 'SF Mono', Menlo, monospace" fill="#24292f">output = f( w&#8321;x&#8321; + w&#8322;x&#8322; + w&#8323;x&#8323; + b )</text>
+  <text x="60" y="428" font-size="14" fill="#57606a">Chapter 0's weighted sum, plus one new ingredient: the activation function f.</text>
+</svg>

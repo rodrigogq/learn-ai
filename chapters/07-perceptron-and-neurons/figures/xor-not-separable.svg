@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="900" height="500" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">AND is one straight cut. XOR is not &#8212; no single line works.</text>
+
+  <!-- ============ Left panel: AND ============ -->
+  <g>
+    <rect x="60" y="90" width="360" height="340" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+    <text x="200" y="122" font-size="17" font-weight="700" fill="#24292f">AND</text>
+    <!-- axes ticks: x1 at 0/1 -> px 150/330; x2 -> py 370/190 -->
+    <g font-size="13" fill="#57606a">
+      <text x="146" y="410">0</text>
+      <text x="326" y="410">1</text>
+      <text x="118" y="374">0</text>
+      <text x="118" y="194">1</text>
+    </g>
+    <!-- separating line -->
+    <line x1="200" y1="140" x2="410" y2="350" stroke="#16a34a" stroke-width="2.5" stroke-dasharray="9 6"/>
+    <text x="316" y="304" font-size="13" font-weight="700" fill="#14532d">one line separates</text>
+    <!-- points: 0 as red circles, 1 as green filled -->
+    <circle cx="150" cy="370" r="11" fill="#dc2626"/>
+    <circle cx="330" cy="370" r="11" fill="#dc2626"/>
+    <circle cx="150" cy="190" r="11" fill="#dc2626"/>
+    <circle cx="330" cy="190" r="11" fill="#16a34a"/>
+  </g>
+
+  <!-- ============ Right panel: XOR ============ -->
+  <g>
+    <rect x="480" y="90" width="360" height="340" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+    <text x="616" y="122" font-size="17" font-weight="700" fill="#24292f">XOR</text>
+    <g font-size="13" fill="#57606a">
+      <text x="566" y="410">0</text>
+      <text x="746" y="410">1</text>
+      <text x="538" y="374">0</text>
+      <text x="538" y="194">1</text>
+    </g>
+    <!-- failed line attempts -->
+    <line x1="500" y1="330" x2="830" y2="200" stroke="#9ca3af" stroke-width="2" stroke-dasharray="7 6"/>
+    <line x1="590" y1="130" x2="700" y2="420" stroke="#9ca3af" stroke-width="2" stroke-dasharray="7 6"/>
+    <text x="700" y="150" font-size="13" font-weight="700" fill="#57606a">every line fails</text>
+    <!-- points: diagonal pattern -->
+    <circle cx="570" cy="370" r="11" fill="#dc2626"/>
+    <circle cx="750" cy="370" r="11" fill="#16a34a"/>
+    <circle cx="570" cy="190" r="11" fill="#16a34a"/>
+    <circle cx="750" cy="190" r="11" fill="#dc2626"/>
+  </g>
+
+  <!-- Legend -->
+  <g font-size="14">
+    <circle cx="110" cy="462" r="8" fill="#dc2626"/>
+    <text x="126" y="467" fill="#24292f">output 0</text>
+    <circle cx="220" cy="462" r="8" fill="#16a34a"/>
+    <text x="236" y="467" fill="#24292f">output 1</text>
+    <text x="480" y="467" fill="#24292f">axes: x&#8321; (horizontal) and x&#8322; (vertical), the two inputs</text>
+  </g>
+</svg>

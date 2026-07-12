@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 540" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="900" height="540" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">Four activation functions you will meet in this course</text>
+
+  <!-- ===================== Panel 1: step (top-left), origin (60,80) ===================== -->
+  <g>
+    <rect x="60" y="80" width="380" height="190" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+    <line x1="75" y1="210" x2="425" y2="210" stroke="#d0d7de" stroke-width="1.5"/>
+    <line x1="250" y1="95" x2="250" y2="255" stroke="#d0d7de" stroke-width="1.5"/>
+    <polyline points="85,210 250,210" fill="none" stroke="#dc2626" stroke-width="3.5"/>
+    <line x1="250" y1="210" x2="250" y2="110" stroke="#dc2626" stroke-width="2" stroke-dasharray="4 4"/>
+    <polyline points="250,110 415,110" fill="none" stroke="#dc2626" stroke-width="3.5"/>
+    <text x="80" y="252" font-size="15" font-weight="700" fill="#7f1d1d">step (the perceptron, 1957)</text>
+    <text x="264" y="130" font-size="13" fill="#57606a">outputs only 0 or 1</text>
+  </g>
+
+  <!-- ===================== Panel 2: sigmoid (top-right), origin (470,80) ===================== -->
+  <g>
+    <rect x="470" y="80" width="380" height="190" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+    <line x1="485" y1="210" x2="835" y2="210" stroke="#d0d7de" stroke-width="1.5"/>
+    <line x1="660" y1="95" x2="660" y2="255" stroke="#d0d7de" stroke-width="1.5"/>
+    <polyline fill="none" stroke="#0550ae" stroke-width="3.5" points="
+      495,205.3 522.5,202.4 550,198.1 577.5,191.8 605,183.1 632.5,172.2 660,160
+      687.5,147.8 715,136.9 742.5,128.2 770,121.9 797.5,117.6 825,114.7"/>
+    <text x="490" y="252" font-size="15" font-weight="700" fill="#0550ae">sigmoid (Chapter 6)</text>
+    <text x="500" y="130" font-size="13" fill="#57606a">smooth 0 to 1</text>
+  </g>
+
+  <!-- ===================== Panel 3: tanh (bottom-left), origin (60,300) ===================== -->
+  <g>
+    <rect x="60" y="300" width="380" height="190" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+    <line x1="75" y1="380" x2="425" y2="380" stroke="#d0d7de" stroke-width="1.5"/>
+    <line x1="250" y1="315" x2="250" y2="475" stroke="#d0d7de" stroke-width="1.5"/>
+    <polyline fill="none" stroke="#16a34a" stroke-width="3.5" points="
+      85,429.8 112.5,429.3 140,428.2 167.5,425.3 195,418.1 222.5,403.1 250,380
+      277.5,356.9 305,341.9 332.5,334.7 360,331.8 387.5,330.7 415,330.2"/>
+    <text x="80" y="472" font-size="15" font-weight="700" fill="#14532d">tanh (Chapter 8)</text>
+    <text x="90" y="332" font-size="13" fill="#57606a">smooth -1 to +1, zero-centered</text>
+  </g>
+
+  <!-- ===================== Panel 4: ReLU (bottom-right), origin (470,300) ===================== -->
+  <g>
+    <rect x="470" y="300" width="380" height="190" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+    <line x1="485" y1="430" x2="835" y2="430" stroke="#d0d7de" stroke-width="1.5"/>
+    <line x1="660" y1="315" x2="660" y2="475" stroke="#d0d7de" stroke-width="1.5"/>
+    <polyline fill="none" stroke="#d97706" stroke-width="3.5" points="495,430 660,430 825,331"/>
+    <text x="490" y="472" font-size="15" font-weight="700" fill="#78350f">ReLU (Chapter 9 onward)</text>
+    <text x="500" y="350" font-size="13" fill="#57606a">0 if negative, keeps positives</text>
+  </g>
+
+  <text x="60" y="522" font-size="15" fill="#24292f">All four do the same job: bend the neuron's output so that stacked neurons can build curved shapes.</text>
+</svg>
