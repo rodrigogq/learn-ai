@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 440" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="860" height="440" rx="12" fill="#f6f8fa"/>
+
+  <!-- Left panel: the vector as a list of numbers -->
+  <text x="70" y="60" font-size="20" font-weight="700" fill="#24292f">One vector, two views</text>
+  <text x="70" y="120" font-size="17" fill="#24292f">as a list of numbers:</text>
+  <text x="70" y="160" font-size="26" font-family="ui-monospace, 'SF Mono', Menlo, monospace" fill="#0550ae">x = (3, 2)</text>
+  <text x="70" y="215" font-size="15" fill="#57606a">in code:</text>
+  <text x="70" y="245" font-size="17" font-family="ui-monospace, 'SF Mono', Menlo, monospace" fill="#24292f">x = [3.0, 2.0]</text>
+  <text x="70" y="310" font-size="15" fill="#57606a">Each position has a meaning you chose,</text>
+  <text x="70" y="332" font-size="15" fill="#57606a">e.g. (weight, smoothness) for a fruit or</text>
+  <text x="70" y="354" font-size="15" fill="#57606a">784 pixel brightnesses for a digit image.</text>
+
+  <!-- Right panel: coordinate grid -->
+  <g stroke="#d0d7de" stroke-width="1">
+    <line x1="480" y1="380" x2="820" y2="380"/>
+    <line x1="480" y1="300" x2="820" y2="300"/>
+    <line x1="480" y1="220" x2="820" y2="220"/>
+    <line x1="480" y1="140" x2="820" y2="140"/>
+    <line x1="480" y1="60"  x2="820" y2="60"/>
+    <line x1="480" y1="60"  x2="480" y2="380"/>
+    <line x1="565" y1="60"  x2="565" y2="380"/>
+    <line x1="650" y1="60"  x2="650" y2="380"/>
+    <line x1="735" y1="60"  x2="735" y2="380"/>
+    <line x1="820" y1="60"  x2="820" y2="380"/>
+  </g>
+  <!-- Axes -->
+  <line x1="480" y1="380" x2="830" y2="380" stroke="#57606a" stroke-width="2"/>
+  <line x1="480" y1="380" x2="480" y2="50" stroke="#57606a" stroke-width="2"/>
+  <text x="762" y="404" font-size="14" fill="#57606a">first number</text>
+  <text x="452" y="48" font-size="14" fill="#57606a">second number</text>
+  <!-- Ticks -->
+  <text x="560" y="400" font-size="13" fill="#57606a">1</text>
+  <text x="645" y="400" font-size="13" fill="#57606a">2</text>
+  <text x="730" y="400" font-size="13" fill="#57606a">3</text>
+  <text x="458" y="305" font-size="13" fill="#57606a">1</text>
+  <text x="458" y="225" font-size="13" fill="#57606a">2</text>
+  <text x="458" y="145" font-size="13" fill="#57606a">3</text>
+
+  <!-- The arrow for (3, 2) -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0, 9 4, 0 8" fill="#0550ae"/>
+    </marker>
+  </defs>
+  <line x1="480" y1="380" x2="728" y2="226" stroke="#0550ae" stroke-width="3.5" marker-end="url(#arrowhead)"/>
+  <text x="555" y="245" font-size="18" font-weight="700" fill="#0550ae">x = (3, 2)</text>
+
+  <!-- Dashed projections -->
+  <line x1="735" y1="380" x2="735" y2="220" stroke="#0550ae" stroke-width="1.5" stroke-dasharray="6 5" opacity="0.55"/>
+  <line x1="480" y1="220" x2="735" y2="220" stroke="#0550ae" stroke-width="1.5" stroke-dasharray="6 5" opacity="0.55"/>
+
+  <text x="480" y="428" font-size="15" fill="#24292f">as an arrow: walk 3 to the right, 2 up</text>
+</svg>

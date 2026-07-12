@@ -1,0 +1,7 @@
+# Core dependencies for all chapters.
+# Chapters that need extra packages say so in their README.
+# Versions are minimums known to work; newer versions are usually fine.
+numpy>=2.5
+torch>=2.13
+torchvision>=0.28
+matplotlib>=3.11

@@ -1,0 +1,9 @@
+{
+    // VS Code offers to install these when the folder is opened for the
+    // first time. Only what the course actually uses.
+    "recommendations": [
+        "ms-python.python",
+        "ms-vscode.cpptools",
+        "bierner.markdown-mermaid"
+    ]
+}

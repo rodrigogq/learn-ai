@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 470" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="900" height="470" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="50" font-size="20" font-weight="700" fill="#24292f">Surprise = &#8722;log(p): rare events carry big surprise</text>
+
+  <!-- Axes -->
+  <line x1="120" y1="390" x2="850" y2="390" stroke="#57606a" stroke-width="2"/>
+  <line x1="120" y1="390" x2="120" y2="80" stroke="#57606a" stroke-width="2"/>
+  <text x="580" y="420" font-size="15" fill="#57606a">probability p you gave the event</text>
+  <text x="60" y="72" font-size="15" fill="#57606a">surprise</text>
+
+  <!-- Curve -log(p): p in (0.02 .. 1] mapped x = 120 + 700*p, y = 390 - 75*(-ln p) -->
+  <path d="M 148 96
+           C 160 210, 190 268, 260 305
+           C 340 334, 470 358, 610 375
+           C 700 383, 780 388, 820 390"
+        fill="none" stroke="#0550ae" stroke-width="3.5"/>
+
+  <!-- Marked points -->
+  <circle cx="820" cy="390" r="7" fill="#16a34a"/>
+  <text x="700" y="368" font-size="15" font-weight="700" fill="#14532d">p = 1: no surprise (0)</text>
+
+  <circle cx="470" cy="338" r="7" fill="#d97706"/>
+  <text x="486" y="330" font-size="15" font-weight="700" fill="#78350f">p = 0.5: surprise 0.69</text>
+
+  <circle cx="190" cy="217" r="7" fill="#dc2626"/>
+  <text x="210" y="212" font-size="15" font-weight="700" fill="#7f1d1d">p = 0.1: surprise 2.30</text>
+
+  <text x="152" y="110" font-size="15" font-weight="700" fill="#0550ae">p &#8594; 0: surprise &#8594; infinity</text>
+
+  <text x="60" y="444" font-size="15" fill="#24292f">Cross-entropy (the loss used by every classifier in this course) is simply</text>
+  <text x="60" y="464" font-size="15" fill="#24292f">the model's AVERAGE surprise at the true answers.</text>
+</svg>

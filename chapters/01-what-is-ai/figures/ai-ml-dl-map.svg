@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 520" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <!-- Explicit background so the figure reads well on GitHub light and dark themes -->
+  <rect x="0" y="0" width="860" height="520" rx="12" fill="#f6f8fa"/>
+
+  <!-- Outer ring: Artificial Intelligence -->
+  <rect x="30" y="30" width="800" height="460" rx="16" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="60" y="78" font-size="26" font-weight="700" fill="#1e3a8a">ARTIFICIAL INTELLIGENCE</text>
+  <text x="60" y="106" font-size="16" fill="#1e3a8a">any technique that makes computers act &#8220;smart&#8221;</text>
+  <text x="60" y="140" font-size="14" fill="#3b5ba9">examples outside the inner rings: a 1980s chess program with</text>
+  <text x="60" y="160" font-size="14" fill="#3b5ba9">hand-coded strategy, a GPS route planner &#8212; smart, but nothing is learned</text>
+
+  <!-- Middle ring: Machine Learning -->
+  <rect x="90" y="185" width="680" height="275" rx="14" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="120" y="228" font-size="22" font-weight="700" fill="#14532d">MACHINE LEARNING</text>
+  <text x="120" y="254" font-size="15" fill="#14532d">programs that improve from data instead of following fixed rules</text>
+  <text x="120" y="282" font-size="13" fill="#3f6e4f">examples outside the inner ring: spam filters, the fruit classifier of this chapter</text>
+
+  <!-- Inner ring: Deep Learning -->
+  <rect x="150" y="305" width="560" height="125" rx="12" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+  <text x="180" y="345" font-size="20" font-weight="700" fill="#78350f">DEEP LEARNING</text>
+  <text x="180" y="371" font-size="14" fill="#78350f">machine learning with multi-layer neural networks</text>
+  <text x="180" y="397" font-size="13" fill="#8a6a33">image recognition, speech, LLMs &#8212; chapters 7 to 31 of this course</text>
+</svg>

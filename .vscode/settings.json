@@ -1,0 +1,20 @@
+{
+    // Point VS Code at the course virtual environment so "Run Python File",
+    // the integrated terminal, and IntelliSense all use the same interpreter
+    // that setup.sh / setup.ps1 create.
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+    "python.terminal.activateEnvironment": true,
+
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/build": true
+    },
+
+    // The C examples are C11; telling the C/C++ extension avoids false
+    // squiggles on standard headers.
+    "C_Cpp.default.cStandard": "c11",
+
+    "[python]": {
+        "editor.rulers": []
+    }
+}

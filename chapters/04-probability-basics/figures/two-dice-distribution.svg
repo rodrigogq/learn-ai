@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 470" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="900" height="470" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="50" font-size="20" font-weight="700" fill="#24292f">A probability distribution: the sum of two dice</text>
+  <text x="60" y="76" font-size="15" fill="#57606a">Eleven possible outcomes, one probability each. The 36 bar heights sum to exactly 1.</text>
+
+  <!-- Axes: x from 2..12, baseline y=400. Bar unit height: 1/36 -> 50px, so 6/36 -> 300px -->
+  <line x1="90" y1="400" x2="850" y2="400" stroke="#57606a" stroke-width="2"/>
+
+  <!-- Bars: width 50, gap 16; sum s has count 6-|7-s| -->
+  <g fill="#3b82f6">
+    <rect x="110" y="350" width="50" height="50"/>
+    <rect x="176" y="300" width="50" height="100"/>
+    <rect x="242" y="250" width="50" height="150"/>
+    <rect x="308" y="200" width="50" height="200"/>
+    <rect x="374" y="150" width="50" height="250"/>
+    <rect x="440" y="100" width="50" height="300" fill="#1d4ed8"/>
+    <rect x="506" y="150" width="50" height="250"/>
+    <rect x="572" y="200" width="50" height="200"/>
+    <rect x="638" y="250" width="50" height="150"/>
+    <rect x="704" y="300" width="50" height="100"/>
+    <rect x="770" y="350" width="50" height="50"/>
+  </g>
+
+  <!-- Probability labels above bars -->
+  <g font-size="13" fill="#1e3a8a" text-anchor="middle">
+    <text x="135" y="340">1/36</text>
+    <text x="201" y="290">2/36</text>
+    <text x="267" y="240">3/36</text>
+    <text x="333" y="190">4/36</text>
+    <text x="399" y="140">5/36</text>
+    <text x="465" y="90" font-weight="700">6/36</text>
+    <text x="531" y="140">5/36</text>
+    <text x="597" y="190">4/36</text>
+    <text x="663" y="240">3/36</text>
+    <text x="729" y="290">2/36</text>
+    <text x="795" y="340">1/36</text>
+  </g>
+
+  <!-- Outcome labels below bars -->
+  <g font-size="16" fill="#24292f" text-anchor="middle">
+    <text x="135" y="428">2</text>
+    <text x="201" y="428">3</text>
+    <text x="267" y="428">4</text>
+    <text x="333" y="428">5</text>
+    <text x="399" y="428">6</text>
+    <text x="465" y="428" font-weight="700">7</text>
+    <text x="531" y="428">8</text>
+    <text x="597" y="428">9</text>
+    <text x="663" y="428">10</text>
+    <text x="729" y="428">11</text>
+    <text x="795" y="428">12</text>
+  </g>
+  <text x="60" y="460" font-size="14" fill="#57606a">7 is the most likely sum because six different rolls produce it: 1+6, 2+5, 3+4, 4+3, 5+2, 6+1.</text>
+</svg>

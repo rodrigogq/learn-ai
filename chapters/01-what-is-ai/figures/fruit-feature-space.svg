@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="900" height="520" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">The fruits as points: two features become two coordinates</text>
+
+  <!-- Axes -->
+  <line x1="80" y1="440" x2="850" y2="440" stroke="#57606a" stroke-width="2"/>
+  <line x1="80" y1="440" x2="80" y2="70" stroke="#57606a" stroke-width="2"/>
+  <text x="660" y="472" font-size="15" fill="#57606a">weight (grams)</text>
+  <text x="30" y="64" font-size="15" fill="#57606a">smoothness</text>
+
+  <!-- Ticks -->
+  <g font-size="13" fill="#57606a" text-anchor="middle">
+    <text x="220" y="460">120</text>
+    <text x="360" y="460">140</text>
+    <text x="500" y="460">160</text>
+    <text x="640" y="460">180</text>
+    <text x="780" y="460">200</text>
+  </g>
+  <g font-size="13" fill="#57606a" text-anchor="end">
+    <text x="72" y="120">0.9</text>
+    <text x="72" y="188">0.7</text>
+    <text x="72" y="290">0.4</text>
+  </g>
+
+  <!-- Training apples (red circles): (120,.80) (130,.90) (140,.85) (130,.85) -->
+  <g fill="#dc2626">
+    <circle cx="220" cy="148" r="8"/>
+    <circle cx="290" cy="114" r="8"/>
+    <circle cx="360" cy="131" r="8"/>
+    <circle cx="290" cy="131" r="8"/>
+  </g>
+
+  <!-- Training oranges (orange circles): (160,.40) (170,.45) (180,.40) (190,.43) -->
+  <g fill="#ea8a00">
+    <circle cx="500" cy="284" r="8"/>
+    <circle cx="570" cy="267" r="8"/>
+    <circle cx="640" cy="284" r="8"/>
+    <circle cx="710" cy="274" r="8"/>
+  </g>
+
+  <!-- Centroids (X marks): apple avg (130, .85) -> (290,131); orange avg (175, .42) -> (605,277) -->
+  <g stroke="#7f1d1d" stroke-width="4">
+    <line x1="277" y1="118" x2="303" y2="144"/>
+    <line x1="277" y1="144" x2="303" y2="118"/>
+  </g>
+  <text x="120" y="196" font-size="14" font-weight="700" fill="#7f1d1d">average apple (130, 0.85) is the X</text>
+  <g stroke="#7c3f00" stroke-width="4">
+    <line x1="592" y1="264" x2="618" y2="290"/>
+    <line x1="592" y1="290" x2="618" y2="264"/>
+  </g>
+  <text x="626" y="308" font-size="14" font-weight="700" fill="#7c3f00">average orange (175, 0.42)</text>
+
+  <!-- Test fruit (160, 0.80) -> (500,148), blue square -->
+  <rect x="491" y="139" width="18" height="18" fill="#2563eb"/>
+  <text x="516" y="146" font-size="14" font-weight="700" fill="#1e3a8a">new fruit (160, 0.80)</text>
+
+  <!-- Dashed distance lines -->
+  <line x1="500" y1="148" x2="290" y2="131" stroke="#dc2626" stroke-width="2" stroke-dasharray="7 6"/>
+  <text x="368" y="102" font-size="14" font-weight="700" fill="#7f1d1d">distance 0.30</text>
+  <line x1="500" y1="148" x2="605" y2="277" stroke="#ea8a00" stroke-width="2" stroke-dasharray="7 6"/>
+  <text x="556" y="210" font-size="14" font-weight="700" fill="#7c3f00">distance 0.41</text>
+
+  <!-- Legend -->
+  <g font-size="14">
+    <circle cx="110" cy="356" r="7" fill="#dc2626"/>
+    <text x="126" y="361" fill="#24292f">training apples</text>
+    <circle cx="110" cy="384" r="7" fill="#ea8a00"/>
+    <text x="126" y="389" fill="#24292f">training oranges</text>
+    <rect x="103" y="405" width="14" height="14" fill="#2563eb"/>
+    <text x="126" y="417" fill="#24292f">fruit to classify</text>
+  </g>
+
+  <text x="60" y="500" font-size="15" fill="#24292f">The new fruit is closer to the average apple (0.30) than to the average orange (0.41), so the model says: apple.</text>
+</svg>

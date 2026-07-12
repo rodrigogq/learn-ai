@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 470" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="900" height="470" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="50" font-size="20" font-weight="700" fill="#24292f">The derivative is the slope of the curve at one point</text>
+
+  <!-- Axes -->
+  <line x1="100" y1="400" x2="850" y2="400" stroke="#57606a" stroke-width="2"/>
+  <line x1="100" y1="400" x2="100" y2="80" stroke="#57606a" stroke-width="2"/>
+  <text x="828" y="424" font-size="15" fill="#57606a">x</text>
+  <text x="72" y="88" font-size="15" fill="#57606a">f(x)</text>
+
+  <!-- Curve f(x) = x^2 mapped: x in [0, 3.5] -> px = 100 + 200*x ; y = 400 - 25*x^2 -->
+  <path d="M 100 400
+           C 240 396, 330 373, 420 335
+           C 510 297, 610 220, 700 130
+           " fill="none" stroke="#0550ae" stroke-width="3.5"/>
+  <text x="712" y="120" font-size="17" font-weight="700" fill="#0550ae">f(x) = x&#178;</text>
+
+  <!-- Tangent at x=1 (px=300, py=375): slope f'(1)=2 -> screen slope = -25*2 per 200px/unit => dy/dx_px = -0.25 -->
+  <line x1="140" y1="415" x2="560" y2="310" stroke="#d97706" stroke-width="3"/>
+  <circle cx="300" cy="375" r="7" fill="#d97706"/>
+  <text x="264" y="352" font-size="15" font-weight="700" fill="#78350f">x = 1</text>
+
+  <!-- Secant illustration: from x=1 (300,375) to x=2 (500,300) -->
+  <line x1="220" y1="405" x2="620" y2="255" stroke="#16a34a" stroke-width="2.5" stroke-dasharray="8 6"/>
+  <circle cx="500" cy="300" r="7" fill="#16a34a"/>
+  <text x="405" y="283" font-size="15" font-weight="700" fill="#14532d">x = 1 + h</text>
+
+  <!-- Legend (kept away from the lines so nothing overlaps) -->
+  <g font-size="16">
+    <line x1="130" y1="130" x2="180" y2="130" stroke="#d97706" stroke-width="3"/>
+    <text x="192" y="136" fill="#78350f" font-weight="700">tangent line at x = 1, slope = f'(1) = 2</text>
+    <line x1="130" y1="162" x2="180" y2="162" stroke="#16a34a" stroke-width="2.5" stroke-dasharray="8 6"/>
+    <text x="192" y="168" fill="#14532d" font-weight="700">secant line: slope between x = 1 and x = 1 + h</text>
+  </g>
+
+  <!-- Annotation -->
+  <text x="120" y="450" font-size="15" fill="#24292f">Shrink h and the green secant line rotates into the orange tangent line: that limit is the derivative.</text>
+</svg>

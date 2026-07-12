@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 470" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="900" height="470" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="50" font-size="20" font-weight="700" fill="#24292f">Gradient descent: walk downhill, step by step</text>
+  <text x="60" y="76" font-size="15" fill="#57606a">Bird's-eye view of the bowl f(x, y) = x&#178; + 3y&#178;. Rings are height lines; the dot is the walker.</text>
+
+  <!-- Contour ellipses centered at (450, 280); for f = x^2 + 3y^2, y-radius = x-radius / sqrt(3) -->
+  <g fill="none" stroke-width="2">
+    <ellipse cx="450" cy="280" rx="320" ry="150" stroke="#bfdbfe"/>
+    <ellipse cx="450" cy="280" rx="255" ry="120" stroke="#93c5fd"/>
+    <ellipse cx="450" cy="280" rx="190" ry="90" stroke="#60a5fa"/>
+    <ellipse cx="450" cy="280" rx="128" ry="60" stroke="#3b82f6"/>
+    <ellipse cx="450" cy="280" rx="66" ry="31" stroke="#2563eb"/>
+  </g>
+  <circle cx="450" cy="280" r="6" fill="#1e3a8a"/>
+  <text x="330" y="326" font-size="14" fill="#1e3a8a" font-weight="700">minimum (0, 0)</text>
+
+  <!-- Descent path: starts at (2.5, 1.1) roughly (740, 172), steps shrink toward center;
+       each step is perpendicular to the local contour (steeper in y, so y shrinks faster) -->
+  <defs>
+    <marker id="stepArrow" markerWidth="9" markerHeight="7" refX="7" refY="3.5" orient="auto">
+      <polygon points="0 0, 8 3.5, 0 7" fill="#d97706"/>
+    </marker>
+  </defs>
+  <g stroke="#d97706" stroke-width="3" fill="none">
+    <line x1="740" y1="172" x2="640" y2="216" marker-end="url(#stepArrow)"/>
+    <line x1="640" y1="216" x2="565" y2="248" marker-end="url(#stepArrow)"/>
+    <line x1="565" y1="248" x2="520" y2="266" marker-end="url(#stepArrow)"/>
+    <line x1="520" y1="266" x2="489" y2="274" marker-end="url(#stepArrow)"/>
+    <line x1="489" y1="274" x2="468" y2="278" marker-end="url(#stepArrow)"/>
+  </g>
+  <circle cx="740" cy="172" r="7" fill="#d97706"/>
+  <text x="752" y="162" font-size="15" font-weight="700" fill="#78350f">start</text>
+
+  <text x="60" y="440" font-size="15" fill="#24292f">Each orange arrow is one update: measure the gradient (uphill direction), step the opposite way.</text>
+  <text x="60" y="462" font-size="15" fill="#24292f">Steps shrink near the bottom because the slope itself shrinks &#8212; descent slows down gently.</text>
+</svg>

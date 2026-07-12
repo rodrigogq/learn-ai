@@ -1,0 +1,44 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            // First thing to run after opening the repo: creates .venv,
+            // installs packages, checks the C compiler and GPU.
+            "label": "Setup environment",
+            "type": "shell",
+            "command": "./setup.sh",
+            "windows": {
+                "command": "powershell -ExecutionPolicy Bypass -File setup.ps1"
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            }
+        },
+        {
+            // Builds the C examples of whichever chapter's file is open in
+            // the editor. Each chapter's c/ folder has its own Makefile.
+            "label": "Build C examples of current chapter",
+            "type": "shell",
+            "command": "make -C \"$(dirname \"${file}\")\"",
+            "windows": {
+                "command": "make -C \"${fileDirname}\""
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "Run current Python file in course venv",
+            "type": "shell",
+            "command": "\"${workspaceFolder}/.venv/bin/python\" \"${file}\"",
+            "windows": {
+                "command": "\"${workspaceFolder}\\.venv\\Scripts\\python.exe\" \"${file}\""
+            },
+            "problemMatcher": []
+        }
+    ]
+}

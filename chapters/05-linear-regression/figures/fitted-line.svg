@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="900" height="500" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">Linear regression: find the line that fits the points</text>
+
+  <!-- Axes -->
+  <line x1="100" y1="420" x2="850" y2="420" stroke="#57606a" stroke-width="2"/>
+  <line x1="100" y1="420" x2="100" y2="70" stroke="#57606a" stroke-width="2"/>
+  <text x="640" y="452" font-size="15" fill="#57606a">apartment size (square meters)</text>
+  <text x="46" y="64" font-size="15" fill="#57606a">price ($1000s)</text>
+
+  <!-- Axis ticks -->
+  <g font-size="13" fill="#57606a" text-anchor="middle">
+    <text x="265" y="440">30</text>
+    <text x="430" y="440">60</text>
+    <text x="595" y="440">90</text>
+    <text x="760" y="440">120</text>
+  </g>
+  <g font-size="13" fill="#57606a" text-anchor="end">
+    <text x="92" y="340">100</text>
+    <text x="92" y="255">200</text>
+    <text x="92" y="170">300</text>
+    <text x="92" y="85">400</text>
+  </g>
+
+  <!-- Early line after one step: w=3.99, b=0 -->
+  <line x1="237" y1="335" x2="705" y2="47" stroke="#9ca3af" stroke-width="2.5" stroke-dasharray="9 7"/>
+
+  <!-- Fitted line: price = 3*size + 20 -->
+  <line x1="237" y1="339" x2="788" y2="84" stroke="#d97706" stroke-width="3.5"/>
+
+  <!-- Data points -->
+  <g fill="#2563eb">
+    <circle cx="265" cy="331" r="7"/>
+    <circle cx="320" cy="298" r="7"/>
+    <circle cx="375" cy="277" r="7"/>
+    <circle cx="403" cy="258" r="7"/>
+    <circle cx="430" cy="257" r="7"/>
+    <circle cx="485" cy="222" r="7"/>
+    <circle cx="513" cy="208" r="7"/>
+    <circle cx="568" cy="190" r="7"/>
+    <circle cx="595" cy="168" r="7"/>
+    <circle cx="650" cy="153" r="7"/>
+    <circle cx="705" cy="121" r="7"/>
+    <circle cx="760" cy="100" r="7"/>
+  </g>
+
+  <!-- Legend -->
+  <g font-size="15">
+    <circle cx="130" cy="105" r="7" fill="#2563eb"/>
+    <text x="148" y="111" fill="#24292f">training data (12 apartments)</text>
+    <line x1="122" y1="137" x2="172" y2="137" stroke="#d97706" stroke-width="3.5"/>
+    <text x="184" y="143" fill="#78350f" font-weight="700">after training: price = 3.0 &#183; size + 20</text>
+    <line x1="122" y1="169" x2="172" y2="169" stroke="#9ca3af" stroke-width="2.5" stroke-dasharray="9 7"/>
+    <text x="184" y="175" fill="#57606a">after one step: slope roughly right, intercept still 0</text>
+  </g>
+
+  <text x="60" y="484" font-size="15" fill="#24292f">Training never sees the line &#8212; it only feels the loss shrinking as w and b move downhill along the gradient.</text>
+</svg>
