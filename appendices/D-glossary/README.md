@@ -104,7 +104,23 @@ Every AI term used in this course, defined in one or two plain sentences. Terms 
 
 **Test set** — examples held back from training and used only for evaluation; accuracy on it is the only honest measure of a model. → [Chapter 9](../../chapters/09-first-neural-network/README.md)
 
-**Overfitting** — when a model memorizes its training data and fails on new data. → [Chapter 11](../../chapters/11-training-deep-networks/README.md)
+**Overfitting** — when a model memorizes its training data and fails on new data; visible as a growing gap between training and validation accuracy. → [Chapter 11](../../chapters/11-training-deep-networks/README.md)
+
+**Momentum** — an optimizer upgrade that steps by a running average of recent gradients instead of the current one: consistent directions accelerate, zigzags cancel. → [Chapter 11](../../chapters/11-training-deep-networks/README.md)
+
+**Adam** — the default modern optimizer: momentum plus per-parameter step normalization by the running average of squared gradients. → [Chapter 11](../../chapters/11-training-deep-networks/README.md)
+
+**Validation set** — data held out from training, checked *during* training to detect overfitting and tune knobs; distinct from the test set, which is touched only once at the end. → [Chapter 11](../../chapters/11-training-deep-networks/README.md)
+
+**Early stopping** — stop training when validation accuracy stops improving. The cheapest defense against overfitting. → [Chapter 11](../../chapters/11-training-deep-networks/README.md)
+
+**Weight decay** — a small penalty pulling all weights toward zero during training, taxing the large specific weights memorization needs. → [Chapter 11](../../chapters/11-training-deep-networks/README.md)
+
+**Dropout** — randomly zeroing hidden activations during training so no neuron can depend on specific partners; switched off at evaluation. → [Chapter 11](../../chapters/11-training-deep-networks/README.md)
+
+**Batch normalization** — re-standardizing each layer's activations over the batch (with two learned parameters per neuron), so deep stacks train on stable scales. → [Chapter 11](../../chapters/11-training-deep-networks/README.md)
+
+**He initialization** — starting weights as random noise scaled by √(2/fan-in), keeping signal variance stable through ReLU layers. → [Chapter 11](../../chapters/11-training-deep-networks/README.md)
 
 **GPU (graphics processing unit)** — hardware that performs thousands of simple math operations in parallel; what makes deep learning fast. → [Appendix E](../E-hardware-guide/README.md)
 

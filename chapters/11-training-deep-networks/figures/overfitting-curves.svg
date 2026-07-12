@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 540" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="900" height="540" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">Overfitting, seen live: 256 neurons, only 1,000 training images</text>
+  <text x="60" y="72" font-size="15" fill="#57606a">The exact numbers printed by this chapter's experiment 2.</text>
+
+  <!-- Axes -->
+  <line x1="100" y1="440" x2="850" y2="440" stroke="#57606a" stroke-width="2"/>
+  <line x1="100" y1="440" x2="100" y2="100" stroke="#57606a" stroke-width="2"/>
+  <g font-size="13" fill="#57606a">
+    <text x="66" y="445">70%</text>
+    <text x="66" y="338">80%</text>
+    <text x="66" y="231">90%</text>
+    <text x="58" y="124">100%</text>
+  </g>
+  <g font-size="13" fill="#57606a" text-anchor="middle">
+    <text x="275" y="462">10</text>
+    <text x="450" y="462">20</text>
+    <text x="625" y="462">30</text>
+    <text x="800" y="462">40</text>
+  </g>
+  <text x="700" y="490" font-size="14" fill="#57606a">training epochs</text>
+
+  <!-- Gap shading between curves (rough band from epoch ~10 on) -->
+  <path d="M 275 163 C 360 132, 420 123, 450 122 L 800 120 L 800 247 L 450 249 C 400 250, 330 251, 275 253 Z"
+        fill="#fecaca" opacity="0.35"/>
+  <text x="500" y="200" font-size="15" font-weight="700" fill="#b91c1c">the gap = memorization,</text>
+  <text x="500" y="222" font-size="15" font-weight="700" fill="#b91c1c">not understanding</text>
+
+  <!-- Train curve -->
+  <path d="M 117 345 C 180 220, 230 175, 275 163 C 340 145, 410 125, 450 122 L 800 120"
+        fill="none" stroke="#16a34a" stroke-width="3.5"/>
+  <!-- Test curve -->
+  <path d="M 117 395 C 180 300, 230 265, 275 253 C 340 250, 410 249, 450 249 L 800 247"
+        fill="none" stroke="#dc2626" stroke-width="3.5"/>
+
+  <!-- Data point markers -->
+  <g fill="#16a34a">
+    <circle cx="117" cy="345" r="6"/><circle cx="275" cy="163" r="6"/><circle cx="450" cy="122" r="6"/><circle cx="800" cy="120" r="6"/>
+  </g>
+  <g fill="#dc2626">
+    <circle cx="117" cy="395" r="6"/><circle cx="275" cy="253" r="6"/><circle cx="450" cy="249" r="6"/><circle cx="800" cy="247" r="6"/>
+  </g>
+
+  <!-- Legend (bottom-right empty region, clear of both curves) -->
+  <g font-size="15">
+    <line x1="420" y1="330" x2="470" y2="330" stroke="#16a34a" stroke-width="3.5"/>
+    <text x="482" y="336" fill="#14532d" font-weight="700">on the 1,000 training images &#8594; 100% (memorized)</text>
+    <line x1="420" y1="362" x2="470" y2="362" stroke="#dc2626" stroke-width="3.5"/>
+    <text x="482" y="368" fill="#7f1d1d" font-weight="700">on the 10,000 test images &#8594; stalls near 88%</text>
+  </g>
+
+  <text x="60" y="506" font-size="15" fill="#24292f">After epoch ~10 the network stops learning the task and starts memorizing its little dataset.</text>
+  <text x="60" y="528" font-size="15" fill="#24292f">Watch the red curve: it never improves again.</text>
+</svg>
