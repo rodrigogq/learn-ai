@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 560" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="940" height="560" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">The network: 784 pixels &#8594; 128 hidden neurons &#8594; 10 scores</text>
+
+  <defs>
+    <marker id="netArrow" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0, 9 4, 0 8" fill="#57606a"/>
+    </marker>
+  </defs>
+
+  <!-- Input: stylized digit grid -->
+  <g>
+    <rect x="70" y="120" width="150" height="150" rx="8" fill="#ffffff" stroke="#57606a" stroke-width="2"/>
+    <!-- a stylized "7" from filled cells, 10x10 grid of 15px cells -->
+    <g fill="#24292f">
+      <rect x="95" y="145" width="15" height="15"/><rect x="110" y="145" width="15" height="15"/><rect x="125" y="145" width="15" height="15"/><rect x="140" y="145" width="15" height="15"/><rect x="155" y="145" width="15" height="15"/><rect x="170" y="145" width="15" height="15"/>
+      <rect x="170" y="160" width="15" height="15"/>
+      <rect x="155" y="175" width="15" height="15"/>
+      <rect x="140" y="190" width="15" height="15"/>
+      <rect x="140" y="205" width="15" height="15"/>
+      <rect x="125" y="220" width="15" height="15"/>
+      <rect x="125" y="235" width="15" height="15"/>
+    </g>
+    <text x="76" y="298" font-size="14" fill="#57606a">28 &#215; 28 image =</text>
+    <text x="76" y="318" font-size="14" fill="#57606a">784 brightness numbers</text>
+    <text x="76" y="338" font-size="14" fill="#57606a">(the input vector x)</text>
+  </g>
+
+  <!-- Input layer column -->
+  <g fill="#dbeafe" stroke="#2563eb" stroke-width="1.5">
+    <circle cx="330" cy="140" r="13"/>
+    <circle cx="330" cy="180" r="13"/>
+    <circle cx="330" cy="220" r="13"/>
+    <circle cx="330" cy="300" r="13"/>
+    <circle cx="330" cy="340" r="13"/>
+  </g>
+  <text x="323" y="266" font-size="20" fill="#2563eb" font-weight="700">&#8942;</text>
+  <text x="296" y="380" font-size="14" fill="#1e3a8a">784 inputs</text>
+
+  <!-- Hidden layer column -->
+  <g fill="#dcfce7" stroke="#16a34a" stroke-width="1.5">
+    <circle cx="540" cy="150" r="13"/>
+    <circle cx="540" cy="190" r="13"/>
+    <circle cx="540" cy="230" r="13"/>
+    <circle cx="540" cy="290" r="13"/>
+    <circle cx="540" cy="330" r="13"/>
+  </g>
+  <text x="533" y="266" font-size="20" fill="#16a34a" font-weight="700">&#8942;</text>
+  <text x="490" y="370" font-size="14" fill="#14532d">128 hidden neurons (ReLU)</text>
+  <text x="474" y="392" font-size="13" fill="#57606a">weights W&#8321;: 784&#215;128, bias b&#8321;: 128</text>
+
+  <!-- Output layer column -->
+  <g fill="#fde68a" stroke="#d97706" stroke-width="1.5">
+    <circle cx="750" cy="150" r="13"/>
+    <circle cx="750" cy="190" r="13"/>
+    <circle cx="750" cy="230" r="13"/>
+    <circle cx="750" cy="290" r="13"/>
+    <circle cx="750" cy="330" r="13"/>
+  </g>
+  <text x="743" y="266" font-size="20" fill="#d97706" font-weight="700">&#8942;</text>
+  <text x="700" y="370" font-size="14" fill="#78350f">10 scores, one per digit</text>
+  <text x="700" y="414" font-size="13" fill="#57606a">weights W&#8322;: 128&#215;10, bias b&#8322;: 10</text>
+
+  <!-- Connections (representative) -->
+  <g stroke="#c3cad2" stroke-width="1">
+    <line x1="343" y1="140" x2="527" y2="150"/><line x1="343" y1="140" x2="527" y2="230"/><line x1="343" y1="140" x2="527" y2="330"/>
+    <line x1="343" y1="220" x2="527" y2="150"/><line x1="343" y1="220" x2="527" y2="290"/>
+    <line x1="343" y1="340" x2="527" y2="190"/><line x1="343" y1="340" x2="527" y2="330"/>
+    <line x1="553" y1="150" x2="737" y2="150"/><line x1="553" y1="150" x2="737" y2="290"/>
+    <line x1="553" y1="230" x2="737" y2="190"/><line x1="553" y1="230" x2="737" y2="330"/>
+    <line x1="553" y1="330" x2="737" y2="150"/><line x1="553" y1="330" x2="737" y2="230"/>
+  </g>
+
+  <!-- Flow arrows -->
+  <line x1="222" y1="195" x2="308" y2="195" stroke="#57606a" stroke-width="2" marker-end="url(#netArrow)"/>
+
+  <!-- Softmax box -->
+  <line x1="765" y1="240" x2="830" y2="240" stroke="#57606a" stroke-width="2" marker-end="url(#netArrow)"/>
+  <rect x="836" y="130" width="80" height="220" rx="10" fill="#f3e8ff" stroke="#9333ea" stroke-width="2"/>
+  <text x="850" y="160" font-size="14" font-weight="700" fill="#6b21a8">softmax</text>
+  <g font-size="12" fill="#6b21a8" font-family="ui-monospace, 'SF Mono', Menlo, monospace">
+    <text x="848" y="192">0: 0.00</text>
+    <text x="848" y="214">1: 0.00</text>
+    <text x="848" y="236">2: 0.01</text>
+    <text x="848" y="258">...</text>
+    <text x="848" y="280">7: 0.97</text>
+    <text x="848" y="302">...</text>
+    <text x="848" y="324">9: 0.01</text>
+  </g>
+
+  <text x="60" y="470" font-size="15" fill="#24292f">Two weight matrices do all the work: W&#8321; (100,352 numbers) and W&#8322; (1,280 numbers) &#8212; 101,770 parameters in total,</text>
+  <text x="60" y="492" font-size="15" fill="#24292f">every one of them found by the same recipe as always: forward, loss, gradients (backprop), update.</text>
+  <text x="60" y="530" font-size="14" fill="#57606a">Each column of circles is a layer; every line between columns is one weight. Only a few of the ~101,000 lines are drawn.</text>
+</svg>

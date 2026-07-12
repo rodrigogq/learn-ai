@@ -84,6 +84,20 @@ Every AI term used in this course, defined in one or two plain sentences. Terms 
 
 **Autograd (automatic differentiation)** — an engine that builds the computation graph as a side effect of running the code, so backpropagation needs no hand-derived formulas. PyTorch's core feature. → [Chapter 8](../../chapters/08-backpropagation/README.md)
 
+**MNIST** — the classic dataset of 70,000 handwritten digits (28×28 grayscale), the traditional first dataset for image models. → [Chapter 9](../../chapters/09-first-neural-network/README.md)
+
+**MLP (multi-layer perceptron)** — the basic neural network: layers of neurons where each layer's outputs feed the next layer's inputs. → [Chapter 9](../../chapters/09-first-neural-network/README.md)
+
+**Softmax** — turns a list of raw scores into probabilities that sum to 1 (exponentiate, then divide by the total). The many-class version of the sigmoid. → [Chapter 9](../../chapters/09-first-neural-network/README.md)
+
+**One-hot** — a label written as a vector with a single 1 at the true class and 0 elsewhere (digit 3 → 0,0,0,1,0,0,0,0,0,0). → [Chapter 9](../../chapters/09-first-neural-network/README.md)
+
+**Batch / mini-batch** — the group of examples processed in one training step; gradients are averaged over it. → [Chapter 9](../../chapters/09-first-neural-network/README.md)
+
+**SGD (stochastic gradient descent)** — gradient descent on random mini-batches instead of the full dataset: noisier steps, many more of them per pass. → [Chapter 9](../../chapters/09-first-neural-network/README.md)
+
+**Test set** — examples held back from training and used only for evaluation; accuracy on it is the only honest measure of a model. → [Chapter 9](../../chapters/09-first-neural-network/README.md)
+
 **Overfitting** — when a model memorizes its training data and fails on new data. → [Chapter 11](../../chapters/11-training-deep-networks/README.md)
 
 **GPU (graphics processing unit)** — hardware that performs thousands of simple math operations in parallel; what makes deep learning fast. → [Appendix E](../E-hardware-guide/README.md)
