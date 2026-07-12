@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 560" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="940" height="560" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">Convolution: slide a small window of weights across the image</text>
+
+  <!-- Input image 5x5, cell 52px, origin (80,110) -->
+  <text x="80" y="96" font-size="15" font-weight="700" fill="#1e3a8a">input image (5&#215;5)</text>
+  <g font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="16">
+    <!-- grid -->
+    <g stroke="#94a3b8" fill="#ffffff">
+      <rect x="80"  y="110" width="52" height="52"/><rect x="132" y="110" width="52" height="52"/><rect x="184" y="110" width="52" height="52"/><rect x="236" y="110" width="52" height="52"/><rect x="288" y="110" width="52" height="52"/>
+      <rect x="80"  y="162" width="52" height="52"/><rect x="132" y="162" width="52" height="52"/><rect x="184" y="162" width="52" height="52"/><rect x="236" y="162" width="52" height="52"/><rect x="288" y="162" width="52" height="52"/>
+      <rect x="80"  y="214" width="52" height="52"/><rect x="132" y="214" width="52" height="52"/><rect x="184" y="214" width="52" height="52"/><rect x="236" y="214" width="52" height="52"/><rect x="288" y="214" width="52" height="52"/>
+      <rect x="80"  y="266" width="52" height="52"/><rect x="132" y="266" width="52" height="52"/><rect x="184" y="266" width="52" height="52"/><rect x="236" y="266" width="52" height="52"/><rect x="288" y="266" width="52" height="52"/>
+      <rect x="80"  y="318" width="52" height="52"/><rect x="132" y="318" width="52" height="52"/><rect x="184" y="318" width="52" height="52"/><rect x="236" y="318" width="52" height="52"/><rect x="288" y="318" width="52" height="52"/>
+    </g>
+    <!-- highlighted 3x3 patch (top-left at row1,col1 -> px 132,162) -->
+    <rect x="132" y="162" width="156" height="156" fill="#dbeafe" opacity="0.7" stroke="#2563eb" stroke-width="3"/>
+    <!-- values -->
+    <g fill="#24292f" text-anchor="middle">
+      <text x="106" y="142">0</text><text x="158" y="142">0</text><text x="210" y="142">1</text><text x="262" y="142">1</text><text x="314" y="142">0</text>
+      <text x="106" y="194">0</text><text x="158" y="194">0</text><text x="210" y="194">1</text><text x="262" y="194">1</text><text x="314" y="194">0</text>
+      <text x="106" y="246">0</text><text x="158" y="246">0</text><text x="210" y="246">1</text><text x="262" y="246">1</text><text x="314" y="246">0</text>
+      <text x="106" y="298">0</text><text x="158" y="298">0</text><text x="210" y="298">1</text><text x="262" y="298">1</text><text x="314" y="298">0</text>
+      <text x="106" y="350">0</text><text x="158" y="350">0</text><text x="210" y="350">1</text><text x="262" y="350">1</text><text x="314" y="350">0</text>
+    </g>
+  </g>
+  <text x="80" y="400" font-size="13" fill="#57606a">(a vertical bright stripe: columns 3-4 are 1s)</text>
+
+  <!-- Kernel 3x3 -->
+  <text x="430" y="96" font-size="15" font-weight="700" fill="#78350f">kernel (3&#215;3 weights)</text>
+  <g font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="16">
+    <g stroke="#d97706" fill="#fde68a">
+      <rect x="430" y="110" width="52" height="52"/><rect x="482" y="110" width="52" height="52"/><rect x="534" y="110" width="52" height="52"/>
+      <rect x="430" y="162" width="52" height="52"/><rect x="482" y="162" width="52" height="52"/><rect x="534" y="162" width="52" height="52"/>
+      <rect x="430" y="214" width="52" height="52"/><rect x="482" y="214" width="52" height="52"/><rect x="534" y="214" width="52" height="52"/>
+    </g>
+    <g fill="#78350f" text-anchor="middle">
+      <text x="456" y="142">-1</text><text x="508" y="142">0</text><text x="560" y="142">1</text>
+      <text x="456" y="194">-1</text><text x="508" y="194">0</text><text x="560" y="194">1</text>
+      <text x="456" y="246">-1</text><text x="508" y="246">0</text><text x="560" y="246">1</text>
+    </g>
+  </g>
+  <text x="430" y="292" font-size="13" fill="#57606a">this kernel answers: "is it darker on my</text>
+  <text x="430" y="310" font-size="13" fill="#57606a">left and brighter on my right?"</text>
+  <text x="430" y="328" font-size="13" fill="#57606a">= a vertical-edge detector</text>
+
+  <!-- Output 3x3 -->
+  <text x="680" y="96" font-size="15" font-weight="700" fill="#14532d">output (3&#215;3, no padding)</text>
+  <g font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="16">
+    <g stroke="#16a34a" fill="#dcfce7">
+      <rect x="680" y="110" width="52" height="52"/><rect x="732" y="110" width="52" height="52"/><rect x="784" y="110" width="52" height="52"/>
+      <rect x="680" y="162" width="52" height="52"/><rect x="732" y="162" width="52" height="52"/><rect x="784" y="162" width="52" height="52"/>
+      <rect x="680" y="214" width="52" height="52"/><rect x="732" y="214" width="52" height="52"/><rect x="784" y="214" width="52" height="52"/>
+    </g>
+    <!-- highlight output cell (center = patch center row2,col2 -> output row1 col1 -> px 732,162) -->
+    <rect x="732" y="162" width="52" height="52" fill="#86efac" stroke="#15803d" stroke-width="3"/>
+    <g fill="#14532d" text-anchor="middle">
+      <text x="706" y="142">3</text><text x="758" y="142">3</text><text x="810" y="142">-3</text>
+      <text x="706" y="194">3</text><text x="758" y="194">3</text><text x="810" y="194">-3</text>
+      <text x="706" y="246">3</text><text x="758" y="246">3</text><text x="810" y="246">-3</text>
+    </g>
+  </g>
+
+  <!-- Arrow patch->output -->
+  <defs>
+    <marker id="convArrow" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0, 9 4, 0 8" fill="#57606a"/>
+    </marker>
+  </defs>
+  <line x1="292" y1="240" x2="424" y2="188" stroke="#57606a" stroke-width="2" marker-end="url(#convArrow)" stroke-dasharray="7 5"/>
+  <line x1="590" y1="188" x2="726" y2="188" stroke="#57606a" stroke-width="2" marker-end="url(#convArrow)"/>
+
+  <!-- Worked multiplication -->
+  <text x="80" y="452" font-size="15" font-weight="700" fill="#24292f">the highlighted output cell, computed (blue patch &#183; kernel, element by element, then summed):</text>
+  <text x="80" y="482" font-size="15" font-family="ui-monospace, 'SF Mono', Menlo, monospace" fill="#24292f">(0&#183;-1)+(1&#183;0)+(1&#183;1) + (0&#183;-1)+(1&#183;0)+(1&#183;1) + (0&#183;-1)+(1&#183;0)+(1&#183;1) = 3</text>
+  <text x="80" y="512" font-size="14" fill="#57606a">Positive where brightness rises left&#8594;right (the stripe's left edge), negative where it falls, zero on flat regions.</text>
+  <text x="80" y="534" font-size="14" fill="#57606a">One kernel, 9 weights, reused at every position &#8212; that reuse is the whole trick.</text>
+</svg>
