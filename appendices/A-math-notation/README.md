@@ -45,6 +45,7 @@ This appendix grows as the course grows.
 | $\log(x)$ or $\ln(x)$ | "log of x" | The natural logarithm, the inverse of $e^x$: if $e^a = b$ then $\log(b) = a$. In this course $\log$ always means natural log (`math.log`). |
 | $\|\mathbf{x}\|$ | "the norm of x" | The length of a vector: $\sqrt{x_1^2 + x_2^2 + \dots}$. Distance from the origin. |
 | $\arg\max_x f(x)$ | "the x that maximizes f" | Not the maximum value itself, but *which input* produces it. In code: `max(range(n), key=f)`. |
+| $\sigma(z)$ | "sigma of z" (the sigmoid) | $1/(1+e^{-z})$: squashes any number into (0, 1), turning a weighted sum into a probability. Introduced in Chapter 6. |
 
 ## Derivatives and gradients (Chapter 3)
 

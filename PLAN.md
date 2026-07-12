@@ -78,7 +78,7 @@ Status: `[ ]` not started · `[~]` drafted, examples untested · `[x]` done (tex
 - [x] 03-derivatives-and-gradients — slope → derivative → gradient; numerical gradient checker in both languages.
 - [x] 04-probability-basics — distributions, expectation, likelihood, cross-entropy; sampling simulations.
 - [x] 05-linear-regression — loss, gradient descent, learning rate; full from-scratch fit in both languages.
-- [ ] 06-logistic-regression — sigmoid, cross-entropy, decision boundary.
+- [x] 06-logistic-regression — sigmoid, cross-entropy, decision boundary.
 - [ ] 07-perceptron-and-neurons — activation functions, XOR limitation.
 - [ ] 08-backpropagation — chain rule; micrograd-style autograd engine in Python and C.
 - [ ] 09-first-neural-network — MLP on MNIST from scratch (NumPy + full C port). Milestone.

@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="900" height="520" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">The trained model: probability of passing vs hours studied</text>
+
+  <!-- Probability guides -->
+  <line x1="80" y1="100" x2="850" y2="100" stroke="#d0d7de" stroke-width="1.5" stroke-dasharray="6 6"/>
+  <line x1="80" y1="260" x2="850" y2="260" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3 6"/>
+  <text x="60" y="105" font-size="13" fill="#57606a">1.0</text>
+  <text x="60" y="265" font-size="13" fill="#57606a">0.5</text>
+  <text x="60" y="425" font-size="13" fill="#57606a">0.0</text>
+
+  <!-- Axes -->
+  <line x1="80" y1="420" x2="850" y2="420" stroke="#57606a" stroke-width="2"/>
+  <g font-size="13" fill="#57606a" text-anchor="middle">
+    <text x="195" y="446">1</text>
+    <text x="310" y="446">2</text>
+    <text x="425" y="446">3</text>
+    <text x="540" y="446">4</text>
+    <text x="655" y="446">5</text>
+    <text x="770" y="446">6</text>
+  </g>
+  <text x="660" y="474" font-size="14" fill="#57606a">hours studied</text>
+
+  <!-- Decision boundary -->
+  <line x1="511" y1="90" x2="511" y2="420" stroke="#9333ea" stroke-width="2" stroke-dasharray="8 6"/>
+  <text x="522" y="330" font-size="14" font-weight="700" fill="#6b21a8">decision boundary &#8776; 3.75 h</text>
+  <text x="522" y="350" font-size="13" fill="#6b21a8">(where the curve crosses 0.5)</text>
+
+  <!-- Fitted probability curve -->
+  <polyline fill="none" stroke="#0550ae" stroke-width="3.5" points="
+    137,419.9 195,419.7 310,416.7 367.5,408.2 425,380.3 453.75,351.5 482.5,310.2
+    511.25,260 540,209.7 568.75,168.4 597.5,139.6 655,111.8 712.5,103.3 770,101"/>
+
+  <!-- Data points: failed students at 0, passed at 1 -->
+  <g fill="#dc2626">
+    <circle cx="137.5" cy="420" r="8"/>
+    <circle cx="195" cy="420" r="8"/>
+    <circle cx="252.5" cy="420" r="8"/>
+    <circle cx="310" cy="420" r="8"/>
+    <circle cx="367.5" cy="420" r="8"/>
+    <circle cx="425" cy="420" r="8"/>
+    <circle cx="540" cy="420" r="8"/>
+  </g>
+  <g fill="#16a34a">
+    <circle cx="482.5" cy="100" r="8"/>
+    <circle cx="597.5" cy="100" r="8"/>
+    <circle cx="655" cy="100" r="8"/>
+    <circle cx="712.5" cy="100" r="8"/>
+    <circle cx="770" cy="100" r="8"/>
+  </g>
+
+  <!-- Callout for the noisy points -->
+  <text x="500" y="398" font-size="13" fill="#7f1d1d">studied 4 h, still failed</text>
+  <text x="404" y="128" font-size="13" fill="#14532d">passed with 3.5 h</text>
+
+  <!-- Legend -->
+  <g font-size="14">
+    <circle cx="110" cy="140" r="7" fill="#dc2626"/>
+    <text x="126" y="145" fill="#24292f">failed (label 0)</text>
+    <circle cx="110" cy="168" r="7" fill="#16a34a"/>
+    <text x="126" y="173" fill="#24292f">passed (label 1)</text>
+    <line x1="100" y1="196" x2="122" y2="196" stroke="#0550ae" stroke-width="3.5"/>
+    <text x="126" y="201" fill="#24292f">model: P(pass) = &#963;(2.61&#183;hours &#8722; 9.77)</text>
+  </g>
+
+  <text x="60" y="502" font-size="15" fill="#24292f">The model never outputs "pass" or "fail" &#8212; it outputs a probability. The 0.5 line turns it into a decision.</text>
+</svg>

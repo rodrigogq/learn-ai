@@ -54,6 +54,16 @@ Every AI term used in this course, defined in one or two plain sentences. Terms 
 
 **Cross-entropy** — a loss for classifiers that measures how surprised the model is by the true answers. Low surprise = good model. → [Chapter 4](../../chapters/04-probability-basics/README.md)
 
+**Classifier** — a model whose output is a category (spam/not spam, cat/dog) rather than a number. → [Chapter 6](../../chapters/06-logistic-regression/README.md)
+
+**Sigmoid** — the S-shaped function $1/(1+e^{-z})$ that squashes any number into (0, 1); turns weighted sums into probabilities. → [Chapter 6](../../chapters/06-logistic-regression/README.md)
+
+**Logistic regression** — the simplest trained classifier: a weighted sum passed through a sigmoid, trained with cross-entropy. → [Chapter 6](../../chapters/06-logistic-regression/README.md)
+
+**Decision boundary** — the surface where a classifier switches its answer; where its probability crosses the threshold (usually 0.5). → [Chapter 6](../../chapters/06-logistic-regression/README.md)
+
+**Hyperparameter** — a knob the *person* chooses rather than the model learning it (learning rate, number of epochs, layer sizes). → [Chapter 3](../../chapters/03-derivatives-and-gradients/README.md)
+
 **Overfitting** — when a model memorizes its training data and fails on new data. → [Chapter 11](../../chapters/11-training-deep-networks/README.md)
 
 **GPU (graphics processing unit)** — hardware that performs thousands of simple math operations in parallel; what makes deep learning fast. → [Appendix E](../E-hardware-guide/README.md)

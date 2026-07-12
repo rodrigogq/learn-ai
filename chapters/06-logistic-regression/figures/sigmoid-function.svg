@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="900" height="480" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">The sigmoid: any number in, a value between 0 and 1 out</text>
+
+  <!-- Asymptote guides -->
+  <line x1="80" y1="120" x2="850" y2="120" stroke="#d0d7de" stroke-width="1.5" stroke-dasharray="6 6"/>
+  <line x1="80" y1="400" x2="850" y2="400" stroke="#d0d7de" stroke-width="1.5" stroke-dasharray="6 6"/>
+  <text x="856" y="125" font-size="13" fill="#57606a">1</text>
+  <text x="856" y="405" font-size="13" fill="#57606a">0</text>
+  <line x1="80" y1="260" x2="850" y2="260" stroke="#d0d7de" stroke-width="1" stroke-dasharray="3 6"/>
+  <text x="856" y="265" font-size="13" fill="#57606a">0.5</text>
+
+  <!-- Axes -->
+  <line x1="80" y1="440" x2="850" y2="440" stroke="#57606a" stroke-width="2"/>
+  <line x1="450" y1="440" x2="450" y2="90" stroke="#57606a" stroke-width="1.5"/>
+  <g font-size="13" fill="#57606a" text-anchor="middle">
+    <text x="218" y="460">-4</text>
+    <text x="334" y="460">-2</text>
+    <text x="450" y="460">0</text>
+    <text x="566" y="460">2</text>
+    <text x="682" y="460">4</text>
+  </g>
+  <text x="686" y="430" font-size="14" fill="#57606a">z (the weighted sum)</text>
+
+  <!-- Sigmoid curve -->
+  <polyline fill="none" stroke="#0550ae" stroke-width="3.5" points="
+    102,399.3 131,399.0 160,398.4 189,397.4 218,395.6 247,392.6 276,387.6 305,379.9
+    334,367.7 363,349.6 392,324.7 421,294.3 450,260.0 479,225.7 508,195.3 537,170.4
+    566,152.3 595,140.1 624,132.4 653,127.4 682,124.4 711,122.6 740,121.6 769,121.0 798,120.7"/>
+
+  <!-- Marked points -->
+  <circle cx="450" cy="260" r="7" fill="#d97706"/>
+  <text x="466" y="252" font-size="14" font-weight="700" fill="#78350f">&#963;(0) = 0.5: the tipping point</text>
+  <circle cx="566" cy="152.3" r="7" fill="#16a34a"/>
+  <text x="582" y="146" font-size="14" font-weight="700" fill="#14532d">&#963;(2) &#8776; 0.88</text>
+  <circle cx="334" cy="367.7" r="7" fill="#dc2626"/>
+  <text x="200" y="352" font-size="14" font-weight="700" fill="#7f1d1d">&#963;(-2) &#8776; 0.12</text>
+
+  <text x="60" y="86" font-size="16" fill="#24292f" font-family="ui-monospace, 'SF Mono', Menlo, monospace">&#963;(z) = 1 / (1 + e^(-z))</text>
+</svg>
