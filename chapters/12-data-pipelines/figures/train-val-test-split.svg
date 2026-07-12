@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="900" height="480" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">The three-way split: every honest project starts here</text>
+
+  <!-- The full dataset bar -->
+  <text x="60" y="100" font-size="15" fill="#57606a">all labeled data you have:</text>
+  <rect x="60" y="112" width="640" height="56" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <rect x="700" y="112" width="80" height="56" rx="8" fill="#fde68a" stroke="#d97706" stroke-width="2"/>
+  <rect x="780" y="112" width="80" height="56" rx="8" fill="#fecaca" stroke="#dc2626" stroke-width="2"/>
+  <text x="330" y="147" font-size="16" font-weight="700" fill="#14532d">training set (~80%)</text>
+  <text x="708" y="140" font-size="13" font-weight="700" fill="#78350f">validation</text>
+  <text x="716" y="158" font-size="13" font-weight="700" fill="#78350f">(~10%)</text>
+  <text x="798" y="140" font-size="13" font-weight="700" fill="#7f1d1d">test</text>
+  <text x="792" y="158" font-size="13" font-weight="700" fill="#7f1d1d">(~10%)</text>
+
+  <!-- Roles -->
+  <g font-size="15">
+    <rect x="60" y="216" width="250" height="200" rx="10" fill="#ffffff" stroke="#16a34a" stroke-width="2"/>
+    <text x="80" y="248" font-weight="700" fill="#14532d">training set</text>
+    <text x="80" y="278" fill="#24292f">the model LEARNS from it:</text>
+    <text x="80" y="300" fill="#24292f">gradients are computed on</text>
+    <text x="80" y="322" fill="#24292f">these examples only.</text>
+    <text x="80" y="356" fill="#57606a">seen: every epoch,</text>
+    <text x="80" y="378" fill="#57606a">millions of times</text>
+
+    <rect x="330" y="216" width="250" height="200" rx="10" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+    <text x="350" y="248" font-weight="700" fill="#78350f">validation set</text>
+    <text x="350" y="278" fill="#24292f">YOU learn from it: watch it</text>
+    <text x="350" y="300" fill="#24292f">during training to detect</text>
+    <text x="350" y="322" fill="#24292f">overfitting, pick learning</text>
+    <text x="350" y="344" fill="#24292f">rates, decide when to stop.</text>
+    <text x="350" y="378" fill="#57606a">seen: often, but never trained on</text>
+
+    <rect x="600" y="216" width="250" height="200" rx="10" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+    <text x="620" y="248" font-weight="700" fill="#7f1d1d">test set</text>
+    <text x="620" y="278" fill="#24292f">NOBODY learns from it.</text>
+    <text x="620" y="300" fill="#24292f">One final measurement</text>
+    <text x="620" y="322" fill="#24292f">when all decisions are</text>
+    <text x="620" y="344" fill="#24292f">finished. The number you</text>
+    <text x="620" y="366" fill="#24292f">report is this one.</text>
+    <text x="620" y="398" font-weight="700" fill="#7f1d1d">seen: ONCE</text>
+  </g>
+
+  <text x="60" y="452" font-size="15" fill="#24292f">Why not tune on the test set? Because every peek leaks information: after enough decisions guided by it, the score is a lie.</text>
+</svg>

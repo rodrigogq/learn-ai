@@ -87,7 +87,7 @@ Status: `[ ]` not started · `[~]` drafted, examples untested · `[x]` done (tex
 
 - [x] 10-intro-to-pytorch — tensors, autograd, nn.Module, GPU; Chapter 9 redone in 30 lines. C: minimal tensor library.
 - [x] 11-training-deep-networks — SGD→Adam, init, batchnorm, dropout, regularization. C: Adam from scratch.
-- [ ] 12-data-pipelines — Dataset/DataLoader, augmentation, splits, metrics. C: binary dataset reader.
+- [x] 12-data-pipelines — Dataset/DataLoader, augmentation, splits, metrics. C: binary dataset reader.
 
 ### Part III — Computer vision
 

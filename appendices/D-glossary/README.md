@@ -122,6 +122,14 @@ Every AI term used in this course, defined in one or two plain sentences. Terms 
 
 **He initialization** — starting weights as random noise scaled by √(2/fan-in), keeping signal variance stable through ReLU layers. → [Chapter 11](../../chapters/11-training-deep-networks/README.md)
 
+**Dataset / DataLoader** — PyTorch's two data pieces: a Dataset answers "how many examples, give me example i"; a DataLoader shuffles, batches, and transforms them each epoch. → [Chapter 12](../../chapters/12-data-pipelines/README.md)
+
+**Data augmentation** — label-preserving random distortions (shifts, rotations, crops) applied fresh each epoch, so the training set is effectively infinite. → [Chapter 12](../../chapters/12-data-pipelines/README.md)
+
+**Confusion matrix** — a table counting every (true class, predicted class) pair; the off-diagonal cells show which classes the model mixes up. → [Chapter 12](../../chapters/12-data-pipelines/README.md)
+
+**Precision / recall** — of everything the model called class X, how much really was (precision); of all true X, how much it found (recall). The honest metrics for imbalanced classes. → [Chapter 12](../../chapters/12-data-pipelines/README.md)
+
 **GPU (graphics processing unit)** — hardware that performs thousands of simple math operations in parallel; what makes deep learning fast. → [Appendix E](../E-hardware-guide/README.md)
 
 **Checkpoint** — a file saving a model's parameters (and training state) mid-training, so training can resume after a stop. → [Chapter 24](../../chapters/24-train-your-mini-llm/README.md)
