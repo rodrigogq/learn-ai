@@ -46,7 +46,13 @@ Every AI term used in this course, defined in one or two plain sentences. Terms 
 
 **Dot product** — multiply two vectors element by element and sum: the basic "how aligned are these?" operation. → [Chapter 2](../../chapters/02-vectors-and-matrices/README.md)
 
-**Tensor** — the general word for an n-dimensional array of numbers (vector = 1D, matrix = 2D, an image batch = 4D). → [Chapter 10](../../chapters/10-intro-to-pytorch/README.md)
+**Tensor** — the general word for an n-dimensional array of numbers (vector = 1D, matrix = 2D, an image batch = 4D). Underneath: flat storage + shape + strides. → [Chapter 10](../../chapters/10-intro-to-pytorch/README.md)
+
+**Broadcasting** — the rule that lets tensors of different shapes combine: the smaller shape is stretched automatically (a vector added to a matrix applies to every row). → [Chapter 10](../../chapters/10-intro-to-pytorch/README.md)
+
+**View / stride** — a tensor that reuses another tensor's storage with different shape/strides; reshape, transpose, and slicing are views, so they copy nothing. → [Chapter 10](../../chapters/10-intro-to-pytorch/README.md)
+
+**nn.Module** — PyTorch's base class for models: it collects all parameters inside so optimizers and device moves can reach them. → [Chapter 10](../../chapters/10-intro-to-pytorch/README.md)
 
 **Probability distribution** — an assignment of probabilities to all possible outcomes, summing to 1. → [Chapter 4](../../chapters/04-probability-basics/README.md)
 

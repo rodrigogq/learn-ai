@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 560" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="940" height="560" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">One storage, two tensors: shape and strides decide how the numbers are read</text>
+
+  <!-- Central flat storage -->
+  <text x="60" y="270" font-size="15" font-weight="700" fill="#24292f">flat storage in memory:</text>
+  <g font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="18">
+    <g>
+      <rect x="290" y="240" width="70" height="50" fill="#ffffff" stroke="#57606a" stroke-width="2"/>
+      <rect x="360" y="240" width="70" height="50" fill="#ffffff" stroke="#57606a" stroke-width="2"/>
+      <rect x="430" y="240" width="70" height="50" fill="#ffffff" stroke="#57606a" stroke-width="2"/>
+      <rect x="500" y="240" width="70" height="50" fill="#ffffff" stroke="#57606a" stroke-width="2"/>
+      <rect x="570" y="240" width="70" height="50" fill="#ffffff" stroke="#57606a" stroke-width="2"/>
+      <rect x="640" y="240" width="70" height="50" fill="#ffffff" stroke="#57606a" stroke-width="2"/>
+    </g>
+    <g fill="#24292f" text-anchor="middle">
+      <text x="325" y="272">2</text>
+      <text x="395" y="272">0</text>
+      <text x="465" y="272">1</text>
+      <text x="535" y="272">3</text>
+      <text x="605" y="272">0</text>
+      <text x="675" y="272">1</text>
+    </g>
+    <g fill="#57606a" font-size="12" text-anchor="middle">
+      <text x="325" y="308">index 0</text>
+      <text x="395" y="308">1</text>
+      <text x="465" y="308">2</text>
+      <text x="535" y="308">3</text>
+      <text x="605" y="308">4</text>
+      <text x="675" y="308">5</text>
+    </g>
+  </g>
+
+  <!-- View 1: 3x2 -->
+  <g>
+    <text x="120" y="100" font-size="15" font-weight="700" fill="#1e3a8a">view A: shape 3&#215;2, strides (2, 1)</text>
+    <g font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="16" >
+      <rect x="140" y="112" width="54" height="38" fill="#dbeafe" stroke="#2563eb"/><rect x="194" y="112" width="54" height="38" fill="#dbeafe" stroke="#2563eb"/>
+      <rect x="140" y="150" width="54" height="38" fill="#dbeafe" stroke="#2563eb"/><rect x="194" y="150" width="54" height="38" fill="#dbeafe" stroke="#2563eb"/>
+      <rect x="140" y="188" width="54" height="38" fill="#dbeafe" stroke="#2563eb"/><rect x="194" y="188" width="54" height="38" fill="#dbeafe" stroke="#2563eb"/>
+      <g fill="#1e3a8a" text-anchor="middle">
+        <text x="167" y="137">2</text><text x="221" y="137">0</text>
+        <text x="167" y="175">1</text><text x="221" y="175">3</text>
+        <text x="167" y="213">0</text><text x="221" y="213">1</text>
+      </g>
+    </g>
+    <text x="280" y="140" font-size="14" fill="#1e3a8a">element (row, col) lives at</text>
+    <text x="280" y="160" font-size="14" font-family="ui-monospace, 'SF Mono', Menlo, monospace" fill="#1e3a8a">index = row*2 + col*1</text>
+    <text x="280" y="186" font-size="13" fill="#57606a">(1,1) &#8594; 1*2 + 1*1 = index 3 &#8594; value 3</text>
+  </g>
+
+  <!-- View 2: transpose 2x3 -->
+  <g>
+    <text x="120" y="392" font-size="15" font-weight="700" fill="#78350f">view B (the transpose): shape 2&#215;3, strides (1, 2) &#8212; SAME storage, nothing copied</text>
+    <g font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="16">
+      <rect x="140" y="408" width="54" height="38" fill="#fde68a" stroke="#d97706"/><rect x="194" y="408" width="54" height="38" fill="#fde68a" stroke="#d97706"/><rect x="248" y="408" width="54" height="38" fill="#fde68a" stroke="#d97706"/>
+      <rect x="140" y="446" width="54" height="38" fill="#fde68a" stroke="#d97706"/><rect x="194" y="446" width="54" height="38" fill="#fde68a" stroke="#d97706"/><rect x="248" y="446" width="54" height="38" fill="#fde68a" stroke="#d97706"/>
+      <g fill="#78350f" text-anchor="middle">
+        <text x="167" y="433">2</text><text x="221" y="433">1</text><text x="275" y="433">0</text>
+        <text x="167" y="471">0</text><text x="221" y="471">3</text><text x="275" y="471">1</text>
+      </g>
+    </g>
+    <text x="340" y="432" font-size="14" font-family="ui-monospace, 'SF Mono', Menlo, monospace" fill="#78350f">index = row*1 + col*2</text>
+    <text x="340" y="456" font-size="13" fill="#57606a">(0,1) &#8594; 0*1 + 1*2 = index 2 &#8594; value 1</text>
+    <text x="340" y="478" font-size="13" fill="#57606a">swapping the two strides IS the transpose</text>
+  </g>
+
+  <!-- Connector arrows storage <-> views -->
+  <defs>
+    <marker id="viewArrow" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0, 9 4, 0 8" fill="#9ca3af"/>
+    </marker>
+  </defs>
+  <line x1="240" y1="205" x2="440" y2="238" stroke="#9ca3af" stroke-width="1.8" stroke-dasharray="6 5" marker-end="url(#viewArrow)"/>
+  <line x1="300" y1="420" x2="452" y2="294" stroke="#9ca3af" stroke-width="1.8" stroke-dasharray="6 5" marker-end="url(#viewArrow)"/>
+
+  <text x="60" y="536" font-size="15" fill="#24292f">reshape, transpose, and slicing in PyTorch are all "keep the storage, change shape and strides" &#8212; free operations.</text>
+</svg>

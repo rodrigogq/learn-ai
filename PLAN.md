@@ -85,7 +85,7 @@ Status: `[ ]` not started · `[~]` drafted, examples untested · `[x]` done (tex
 
 ### Part II — The deep learning toolkit
 
-- [ ] 10-intro-to-pytorch — tensors, autograd, nn.Module, GPU; Chapter 9 redone in 30 lines. C: minimal tensor library.
+- [x] 10-intro-to-pytorch — tensors, autograd, nn.Module, GPU; Chapter 9 redone in 30 lines. C: minimal tensor library.
 - [ ] 11-training-deep-networks — SGD→Adam, init, batchnorm, dropout, regularization. C: Adam from scratch.
 - [ ] 12-data-pipelines — Dataset/DataLoader, augmentation, splits, metrics. C: binary dataset reader.
 
