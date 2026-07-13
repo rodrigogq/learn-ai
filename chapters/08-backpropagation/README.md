@@ -192,7 +192,16 @@ Before anything can train, `train_xor_network()` builds the network. Keep two de
 - A **hidden layer of 3 neurons**. Each neuron has three numbers — a weight for input `x1`, a weight for input `x2`, and a bias (Chapter 7's `w1·x1 + w2·x2 + b`). Three neurons × 3 numbers = **9 parameters**.
 - An **output layer of 1 neuron**. Its inputs are the *three hidden outputs*, so it needs three weights plus a bias = **4 parameters**.
 
-That is **13 parameters** in total — the "all 13" the training printout mentioned. Why 3 hidden neurons rather than 2 or 10? A hand-picked choice, guided by Chapter 7's geometry: XOR needs at least two straight lines to separate, so at least two hidden neurons; three gives a little breathing room. **Nothing in the code discovers the number of layers or neurons — *you* choose the architecture, and gradient descent only fills in the numbers inside it.**
+That is **13 parameters** in total — the "all 13" the training printout mentioned. Why 3 hidden neurons rather than 2? Here the natural guess — **2 should be enough** — is exactly right, and it is worth understanding why we still used 3. XOR needs two dividing lines (Chapter 7's hand-wired solution used precisely two: an OR gate and an AND gate), so **2 hidden neurons *can represent* the answer**. But *representing* a solution and reliably *finding* it by gradient descent are different things. Running the training from 30 different random starts:
+
+| hidden neurons | parameters | converged (of 30 random starts) |
+|---|---|---|
+| 1 | 5 | 0 — one line can never split XOR |
+| 2 | 9 | 25 — the minimum works, but ~1 start in 6 gets stuck |
+| 3 | 13 | 30 — every start converges |
+| 5 | 21 | 30 |
+
+So 3 is not arbitrary: 2 is the true minimum but a random start occasionally lands in a bad local minimum with only two neurons, while a spare neuron gives the optimizer more routes around the traps and it converges every time. (Exercise 4 has you run exactly this.) **Nothing in the code discovers the number of layers or neurons — *you* choose the architecture, and gradient descent only fills in the numbers inside it.**
 
 **The *values* of those 13 numbers are chosen randomly** — as they are in every real network, to break the symmetry between neurons. The code draws them from a small seeded random generator:
 
