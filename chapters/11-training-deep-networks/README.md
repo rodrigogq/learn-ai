@@ -93,17 +93,70 @@ Chapter 5 standardized inputs (mean 0, spread 1) and training sped up 200×. **B
 
 ## Code walkthrough
 
-The example is `python/training_toolkit.py`, structured as four experiments you can read independently:
+The example is `python/training_toolkit.py`. Unlike earlier chapters it does not build one algorithm — it runs four controlled experiments, each changing exactly *one* knob so you can see what that knob does. The trick that makes fair comparisons possible is worth reading closely. No prior programming assumed.
+
+### Step 1 — one reusable network builder
+
+```python
+def build_classifier(hidden_size, dropout_probability=0.0):
+    return nn.Sequential(
+        nn.Linear(784, hidden_size),
+        nn.ReLU(),
+        nn.Dropout(dropout_probability),
+        nn.Linear(hidden_size, 10),
+    )
+```
+
+`nn.Sequential` is a shortcut for "run these layers in order" — the same 784 → hidden → 10 network as Chapter 10, written as a list instead of a class. It takes two knobs: `hidden_size` (network capacity) and `dropout_probability` (a defense). Every experiment calls this *one* builder, so any difference in results comes from the knob, not from an accidentally-different network.
+
+### Step 2 — one shared training loop that takes the optimizer as an argument
+
+```python
+def run_training(model, training_loader, test_loader, optimizer, device, number_of_epochs, epochs_to_report):
+    ...
+    for image_batch, label_batch in training_loader:
+        loss = loss_function(model(image_batch), label_batch)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+```
+
+The loop body is Chapter 10's exact `zero_grad → backward → step`. The important design choice: `optimizer` is a **parameter of the function**, passed in from outside. In Python a thing like an optimizer can be handed around like any value, so the same loop trains with plain SGD, with momentum, or with Adam depending only on what you pass. That is what lets the next experiment be a fair race.
+
+### Step 3 — the four experiments, each flipping one knob
+
+```python
+contenders = [
+    ("plain SGD, lr 0.1", lambda parameters: torch.optim.SGD(parameters, lr=0.1)),
+    ("SGD + momentum 0.9, lr 0.1", lambda parameters: torch.optim.SGD(parameters, lr=0.1, momentum=0.9)),
+    ("Adam, lr 0.001", lambda parameters: torch.optim.Adam(parameters, lr=0.001)),
+]
+for optimizer_name, make_optimizer in contenders:
+    torch.manual_seed(42)
+    model = build_classifier(hidden_size=128)
+    run_training(model, ..., make_optimizer(model.parameters()), ...)
+```
+
+- **Experiment 1 (`optimizer_race`)** builds the same network three times and trains it with the three optimizers from Section 1. `torch.manual_seed(42)` before each one forces the *identical* random starting weights, so the only thing that differs is the optimizer. `momentum=0.9` and the switch to `torch.optim.Adam` are the entire code difference between the contenders — the formulas from Section 1 live inside those one-liners.
+- **Experiment 2 (`overfitting_demonstration`, part 1)** builds a big `hidden_size=256` net and trains it on only 1,000 images — capacity far exceeds data, so it memorizes. The printed `gap` column (train minus test accuracy) *is* overfitting, quantified.
+- **Experiment 3** rebuilds the same net with two defenses turned on: `dropout_probability=0.5` (passed to the builder) and `weight_decay=1e-4` (an argument to the optimizer). The gap shrinks — modestly.
+- **Experiment 4 (`more_data_demonstration`)** keeps the defended net but trains on all 60,000 images. The gap nearly vanishes: more data beats every trick.
+
+One detail that makes dropout correct: `measure_accuracy` calls `model.eval()` before measuring and `model.train()` after. Dropout must be *on* during training and *off* during evaluation, and those two calls are how you flip it.
+
+### Step 4 — Adam from scratch (the C file)
+
+`c/adam_from_scratch.c` implements Adam in about 25 lines and races it against plain gradient descent on Chapter 5's exact regression problem — reaching `(w=3, b=20)` in ~1,000 epochs where plain descent needed 200,000. Read it to see there is no magic inside `optimizer.step()`: just two running averages (of the gradient and of the squared gradient) and a division, exactly the formulas in Section 1.
+
+### Quick reference
 
 | Function | What it does | What to notice |
 |----------|--------------|----------------|
-| `build_classifier(hidden_size, dropout)` | A 784 → hidden → 10 net, optionally with a `nn.Dropout` layer. | One builder, reused by every experiment so the comparisons are fair. |
-| `run_training(model, ..., optimizer, ...)` | The shared training loop; reports train and test accuracy at chosen epochs. | Takes the optimizer as an *argument* — that is how the race swaps SGD/momentum/Adam without touching anything else. |
-| `optimizer_race(...)` | Experiment 1: same net and data, three optimizers. | A fresh `torch.manual_seed(42)` before each keeps the start identical — the only variable is the optimizer. |
-| `overfitting_demonstration(...)` | Experiments 2 & 3: overfit a big net on 1,000 images, then add dropout + weight decay. | Watch the train/test *gap* — the printed `gap` column is overfitting, quantified. |
-| `more_data_demonstration(...)` | Experiment 4: the same defended net on all 60,000 images. | The gap nearly vanishes — "more data beats every trick", shown not told. |
-
-The C file `c/adam_from_scratch.c` implements **Adam** in ~25 lines and races it against plain gradient descent on Chapter 5's problem — reaching the answer in ~1,000 epochs where plain descent needed 200,000. Read it to see there is no magic in `optimizer.step()`, just two running averages and a division.
+| `build_classifier(hidden_size, dropout)` | A 784 → hidden → 10 net (`nn.Sequential`), optionally with `nn.Dropout`. | One builder, reused by every experiment so the comparisons are fair. |
+| `run_training(model, ..., optimizer, ...)` | The shared `zero_grad → backward → step` loop. | Takes the optimizer as an *argument* — that is how the race swaps SGD/momentum/Adam without touching anything else. |
+| `optimizer_race(...)` | Experiment 1: same net and data, three optimizers. | A fresh `torch.manual_seed(42)` before each keeps the start identical. |
+| `overfitting_demonstration(...)` | Experiments 2 & 3: overfit a big net on 1,000 images, then add dropout + weight decay. | The printed `gap` column is overfitting, quantified. |
+| `more_data_demonstration(...)` | Experiment 4: the same defended net on all 60,000 images. | The gap nearly vanishes — more data beats every trick. |
 
 ## Run it
 
