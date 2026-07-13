@@ -7,10 +7,16 @@ Four demonstrations:
   4. a 2-3-1 tanh network trained on XOR: the weights Chapter 7 hand-wired
      are now LEARNED.
 
+With --capacity it also runs a fifth experiment: training XOR at 1/2/3/5
+hidden neurons from 30 random starts each, to measure how many neurons XOR
+actually needs (2 is the theoretical minimum but sometimes gets stuck).
+
 Run from the repository root:
     .venv/bin/python chapters/08-backpropagation/python/tiny_autograd.py
+    .venv/bin/python chapters/08-backpropagation/python/tiny_autograd.py --capacity
 """
 
+import argparse
 import math
 
 
@@ -249,10 +255,83 @@ def train_xor_network():
     print("   -> XOR learned: outputs near -1, +1, +1, -1. No hand-wiring this time.")
 
 
+def train_xor_with_hidden_size(hidden_count, seed, learning_rate=0.2, number_of_epochs=2000):
+    """Train the XOR network with a chosen number of hidden neurons and return
+    the final loss. Same engine and loop as train_xor_network, but the hidden
+    layer size and the random seed are parameters - used by the capacity
+    experiment below to ask how many hidden neurons XOR actually needs.
+
+    Arguments:
+        hidden_count: number of neurons in the single hidden layer.
+        seed: seed for the weight generator (a different random start each time).
+        learning_rate, number_of_epochs: the usual training settings.
+    """
+    weight_generator = ReproducibleRandomGenerator(seed)
+
+    def random_weight():
+        return TrackedValue(weight_generator.next_uniform(-INITIAL_WEIGHT_RANGE, INITIAL_WEIGHT_RANGE))
+
+    hidden_neuron_parameters = [[random_weight() for _ in range(3)] for _ in range(hidden_count)]
+    output_neuron_parameters = [random_weight() for _ in range(hidden_count + 1)]
+    all_parameters = [parameter for neuron in hidden_neuron_parameters for parameter in neuron]
+    all_parameters += output_neuron_parameters
+
+    def network_forward(first_input, second_input):
+        hidden_activations = [(weight_x1 * first_input + weight_x2 * second_input + bias).tanh()
+                              for weight_x1, weight_x2, bias in hidden_neuron_parameters]
+        output_weighted_sum = output_neuron_parameters[-1]      # the bias
+        for neuron_index, activation in enumerate(hidden_activations):
+            output_weighted_sum = output_weighted_sum + output_neuron_parameters[neuron_index] * activation
+        return output_weighted_sum.tanh()
+
+    total_loss = TrackedValue(0.0)
+    for _ in range(number_of_epochs):
+        total_loss = TrackedValue(0.0)
+        for (first_input, second_input), target in zip(XOR_INPUTS, XOR_TARGETS):
+            prediction_error = network_forward(first_input, second_input) - target
+            total_loss = total_loss + prediction_error * prediction_error
+        for parameter in all_parameters:
+            parameter.gradient = 0.0
+        total_loss.run_backward_pass()
+        for parameter in all_parameters:
+            parameter.data -= learning_rate * parameter.gradient
+    return total_loss.data
+
+
+def demonstrate_capacity_experiment():
+    """How many hidden neurons does XOR really need? Measured, not asserted.
+
+    Trains the XOR network at several hidden-layer sizes from 30 different
+    random starts each, and reports how often gradient descent reaches a
+    solution. The lesson: 2 hidden neurons is the theoretical minimum, but a
+    random start sometimes gets stuck there; 3+ converges every time. Capacity
+    to REPRESENT a solution is less than capacity to TRAIN one reliably.
+    """
+    print()
+    print("4. How many hidden neurons does XOR need? (30 random starts each, 2000 epochs)")
+    print("   hidden | parameters | converged (final loss < 0.05) | note")
+    notes = {1: "one line can never split XOR",
+             2: "the true minimum - but sometimes stuck",
+             3: "converges every time",
+             5: "more than enough"}
+    for hidden_count in (1, 2, 3, 5):
+        final_losses = [train_xor_with_hidden_size(hidden_count, seed) for seed in range(30)]
+        converged = sum(1 for loss in final_losses if loss < 0.05)
+        parameter_count = hidden_count * 3 + (hidden_count + 1)
+        print(f"     {hidden_count:>2}   |    {parameter_count:>4}    |          {converged:>2} / 30              | {notes[hidden_count]}")
+
+
 def main():
+    argument_parser = argparse.ArgumentParser(description=__doc__)
+    argument_parser.add_argument("--capacity", action="store_true",
+                                 help="also run the how-many-hidden-neurons experiment (~30 s)")
+    parsed_arguments = argument_parser.parse_args()
+
     demonstrate_chain_rule()
     demonstrate_graph_backpropagation()
     train_xor_network()
+    if parsed_arguments.capacity:
+        demonstrate_capacity_experiment()
 
 
 if __name__ == "__main__":

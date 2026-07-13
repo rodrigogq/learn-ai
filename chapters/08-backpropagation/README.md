@@ -116,7 +116,18 @@ With the engine, Chapter 7's embarrassment disappears. We build a tiny network �
 
 **Why is there a separate output neuron — couldn't the network just be the 3?** No, and the reason is worth pinning down. The three hidden neurons each produce *one number* (their tanh activation), so together they hand you **three numbers**. But the task needs **one** answer: the single XOR value. Something has to reduce three numbers to one — and "take a weighted sum and squash it" is precisely a neuron. So the output neuron is not decoration; it is the piece that *combines* the hidden layer's three findings into the final answer. A network of "just the 3" would be three separate detectors with no one deciding the verdict.
 
-**Why does the output neuron look at all three hidden neurons?** Because combining them **is** its job — and looking at all three is exactly what "combine the middle layer" means. Recall Chapter 7's geometry: each hidden neuron draws one straight dividing line, and XOR needs at least two lines working together. The output neuron takes a weighted sum of *all three* hidden outputs (`v₁·h₁ + v₂·h₂ + v₃·h₃ + b`), learning how much each line's verdict should count, and bends the result through tanh into the final decision. If it saw only one hidden neuron, it would have only one line's worth of information — not enough for XOR. So "seeing all three" is not extra; it is the combination itself. (This full connectivity — every neuron in a layer feeding every neuron in the next — is the default, and the shape 2→3→1 is a deliberate hand-picked choice, as the walkthrough explains.)
+**Why does the output neuron look at all three hidden neurons?** Because combining them **is** its job — and looking at all three is exactly what "combine the middle layer" means. Recall Chapter 7's geometry: each hidden neuron draws one straight dividing line, and XOR needs at least two lines working together. The output neuron takes a weighted sum of *all three* hidden outputs (`v₁·h₁ + v₂·h₂ + v₃·h₃ + b`), learning how much each line's verdict should count, and bends the result through tanh into the final decision. If it saw only one hidden neuron, it would have only one line's worth of information — not enough for XOR. So "seeing all three" is not extra; it is the combination itself. (This full connectivity — every neuron in a layer feeding every neuron in the next — is the default.)
+
+**And why three hidden neurons — isn't two the minimum?** It is, and that instinct is exactly right. XOR needs two dividing lines, so **2 hidden neurons can *represent* the answer** — that is precisely Chapter 7's hand-wired OR + AND. But being *able to represent* a solution and being able to *reliably reach it* by gradient descent from a random start are two different things, and the gap between them is one of the quiet lessons of this whole course. Train this network from 30 different random starts at each hidden-layer size, and count how often it actually converges:
+
+| hidden neurons | parameters | converged (of 30 random starts) |
+|---|---|---|
+| 1 | 5 | 0 — one line can never split XOR |
+| 2 | 9 | 25 — the minimum *works*, but ~1 start in 6 gets stuck |
+| 3 | 13 | 30 — every start converges |
+| 5 | 21 | 30 |
+
+With exactly two neurons the loss surface has bad local minima that a random start sometimes falls into and cannot climb out of; a third neuron gives the optimizer extra routes around those traps, so it lands the solution every time. We use 3 not because 2 *cannot* work, but because 3 *always* works — a small, honest safety margin. (The example program prints this exact table if you run it with `--capacity`, and Exercise 4 walks you through it.)
 
 **Why tanh here, and not Chapter 7's step function?** This is not a detail — it is the whole reason backpropagation needs a new activation. The perceptron's **step** has a slope of exactly zero everywhere (it is flat, then it jumps, then flat again). But backprop trains by *multiplying* gradients as they flow backward, so a zero slope multiplies everything to zero: no gradient survives, and the network can never learn. To send gradient back through a layer you need a **smooth** activation — one with a real, nonzero slope. `tanh` is exactly that: the S-shaped squashing function from Chapter 7, smooth and bounded, with the clean derivative $1 - t^2$ already sitting in our Section 2 table. (Chapter 6's sigmoid would work too; tanh is the conventional pick for hidden layers because its output is centered on zero.)
 
@@ -192,16 +203,7 @@ Before anything can train, `train_xor_network()` builds the network. Keep two de
 - A **hidden layer of 3 neurons**. Each neuron has three numbers — a weight for input `x1`, a weight for input `x2`, and a bias (Chapter 7's `w1·x1 + w2·x2 + b`). Three neurons × 3 numbers = **9 parameters**.
 - An **output layer of 1 neuron**. Its inputs are the *three hidden outputs*, so it needs three weights plus a bias = **4 parameters**.
 
-That is **13 parameters** in total — the "all 13" the training printout mentioned. Why 3 hidden neurons rather than 2? Here the natural guess — **2 should be enough** — is exactly right, and it is worth understanding why we still used 3. XOR needs two dividing lines (Chapter 7's hand-wired solution used precisely two: an OR gate and an AND gate), so **2 hidden neurons *can represent* the answer**. But *representing* a solution and reliably *finding* it by gradient descent are different things. Running the training from 30 different random starts:
-
-| hidden neurons | parameters | converged (of 30 random starts) |
-|---|---|---|
-| 1 | 5 | 0 — one line can never split XOR |
-| 2 | 9 | 25 — the minimum works, but ~1 start in 6 gets stuck |
-| 3 | 13 | 30 — every start converges |
-| 5 | 21 | 30 |
-
-So 3 is not arbitrary: 2 is the true minimum but a random start occasionally lands in a bad local minimum with only two neurons, while a spare neuron gives the optimizer more routes around the traps and it converges every time. (Exercise 4 has you run exactly this.) **Nothing in the code discovers the number of layers or neurons — *you* choose the architecture, and gradient descent only fills in the numbers inside it.**
+That is **13 parameters** in total — the "all 13" the training printout mentioned. (Why 3 hidden neurons and not the theoretical minimum of 2? Section 5 measured it: 2 *can* represent XOR but a random start gets stuck about one time in six, while 3 converges every time.) **Nothing in the code discovers the number of layers or neurons — *you* choose the architecture, and gradient descent only fills in the numbers inside it.**
 
 **The *values* of those 13 numbers are chosen randomly** — as they are in every real network, to break the symmetry between neurons. The code draws them from a small seeded random generator:
 
@@ -284,10 +286,11 @@ The C version (`c/tiny_autograd.c`) does the same with an **arena** — one arra
 
 ```bash
 .venv/bin/python chapters/08-backpropagation/python/tiny_autograd.py
+.venv/bin/python chapters/08-backpropagation/python/tiny_autograd.py --capacity   # + the how-many-neurons table (~30 s)
 make -C chapters/08-backpropagation/c && ./chapters/08-backpropagation/c/build/tiny_autograd
 ```
 
-Both programs print: the chain-rule worked example, the Section 3 graph gradients (matching the figure), the numerical verification of the engine, and the XOR training table.
+Both programs print: the chain-rule worked example, the Section 3 graph gradients (matching the figure), the numerical verification of the engine, and the XOR training table. The Python version's optional `--capacity` flag adds the Section 5 experiment — training XOR at 1/2/3/5 hidden neurons from 30 random starts each — reproducing the convergence table live.
 
 ## What the C version covers
 
