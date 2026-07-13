@@ -88,6 +88,20 @@ matrix_product = first_matrix @ second_matrix    # "@" is matrix multiplication
 
 The Python example times your hand-written matmul against NumPy's `@` on 200×200 matrices. Expect NumPy to win by a factor of several hundred. That gap is why all "from scratch" chapters still use NumPy for storage and speed — we implement the *ideas* ourselves, but let NumPy run the arithmetic.
 
+## Code walkthrough
+
+The example is `python/vector_and_matrix_operations.py`. It builds the two operations by hand, checks them against NumPy, then times both. The functions are the section headings of this chapter, in code:
+
+| Function | What it does | What to notice |
+|----------|--------------|----------------|
+| `compute_dot_product(a, b)` | Multiplies two vectors element by element and sums — the loop from Section 2. | Raises if the lengths differ. This single number is the neuron, the layer, the attention score — everything downstream. |
+| `multiply_matrix_by_vector(rows, vector)` | Each matrix row dots the vector. | It is literally `[compute_dot_product(row, vector) for row in rows]` — matrix×vector *is* many dot products. |
+| `multiply_matrices(first, second)` | The classic triple loop (`i`, `j`, `k`) for matrix×matrix. | Checks the shape rule and raises on mismatch — the same "shape mismatch" error PyTorch will throw at you in Chapter 10, here in plain sight. |
+| `run_worked_examples()` | Reproduces the chapter's numbers (dot = 5, `Wx = (8,10,2)`, a 2×2 matmul) and **asserts they match NumPy**. | The `assert numpy.allclose(...)` lines are the real test: if our loops disagree with NumPy, our understanding is wrong. |
+| `compare_speed_against_numpy(size)` | Times the hand-written matmul vs NumPy's `@` on 200×200 matrices. | Expect NumPy ~hundreds of times faster — the reason "from scratch" chapters still let NumPy do the arithmetic. |
+
+The C file `c/vector_and_matrix_operations.c` mirrors these, and shows the one thing NumPy hides: a matrix is a **flat 1-D array**, indexed `values[row * column_count + column]`. That formula returns in every later C example.
+
 ## Run it
 
 ```bash

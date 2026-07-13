@@ -105,6 +105,27 @@ Final test accuracy: 95.81% - Chapter 9's result, a fraction of the code.
 
 Same ~96% as Chapter 9 (the small difference is initialization randomness, as discussed there). If the GPU seems *slower* than Chapter 9's NumPy: correct observation! This network is so small that moving batches to the GPU costs more than the GPU saves. Accelerators pay off when models grow — Chapter 14's ResNet will make the point emphatically.
 
+## Code walkthrough
+
+Two Python files. `pytorch_basics.py` is a tour of the three ideas; `train_mnist_pytorch.py` rebuilds Chapter 9 in 30 lines.
+
+**`pytorch_basics.py`:**
+
+| Function | What it does | What to notice |
+|----------|--------------|----------------|
+| `demonstrate_tensors()` | Redoes Chapter 2's `Wx = (8,10,2)`, reshapes a batch, shows broadcasting. | `reshape` copies nothing — Section 2's storage+strides point, live. |
+| `demonstrate_autograd()` | Runs Chapter 8's `(a·b+c)²` with `requires_grad=True` and `.backward()`. | Same gradients (30, 20, 10) as your hand-built engine. PyTorch's autograd *is* your `TrackedValue`, renamed. |
+| `demonstrate_devices()` | Times a matmul on CPU vs your GPU. | `.to(device)` is the only change needed to move work to hardware. |
+
+**`train_mnist_pytorch.py`:**
+
+| Piece | What it does | What to notice |
+|-------|--------------|----------------|
+| `class DigitClassifier` | Chapter 9's network as `nn.Linear(784,128)` → ReLU → `nn.Linear(128,10)`. | `nn.Linear` **is** the weighted-sum layer you wrote by hand; `nn.Module` collects its parameters automatically. |
+| `.forward()` | Hidden ReLU then output — no softmax. | The loss applies softmax internally (fused for stability), so the model outputs raw scores. |
+| `measure_accuracy()` | Counts correct predictions, wrapped in `torch.no_grad()`. | `no_grad` skips graph-building during evaluation — faster, and standard practice. |
+| `main()` | The eternal loop in PyTorch spelling: `zero_grad` → `backward` → `step`. | The table in Section 5 maps each line to a chapter you already did. `optimizer.zero_grad()` exists because gradients accumulate (Chapter 8's `+=`). |
+
 ## Run it
 
 ```bash

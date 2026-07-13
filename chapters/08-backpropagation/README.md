@@ -101,6 +101,21 @@ epoch   loss       predictions for (0,0) (0,1) (1,0) (1,1)
 
 No truth-table staring. The gradients flowed backward through two layers and found weights that Chapter 7 needed a human for. This exact mechanism — bigger, batched, on a GPU — is how the mini-LLM in Chapter 24 will learn to write.
 
+## Code walkthrough
+
+The example is `python/tiny_autograd.py`, and it is the most important code in the course — a working autograd engine in ~100 lines. The heart is one class:
+
+| Piece | What it does | What to notice |
+|-------|--------------|----------------|
+| `class TrackedValue` | Wraps a number and remembers four things: its **data**, its **gradient**, the **parents** it was made from, and a small function holding the operation's **local derivative rule**. | This is exactly PyTorch's autograd, shrunk to one number per node. Everything else is built on it. |
+| `__add__`, `__mul__`, `tanh` (methods) | Each does *double duty*: computes the result **and** records how to send gradient back to its parents. | Look at how `__mul__` sends each parent `other.data * out.grad` — the multiply rule "each input's slope is the other input". The graph builds itself as a side effect of doing arithmetic. |
+| `run_backward_pass()` (method) | Seeds the final gradient with 1, then visits nodes in reverse order applying each local rule. | The `+=` on gradients (never `=`) is the "a value used twice collects gradient from both paths" rule from Section 3. |
+| `demonstrate_chain_rule()` | Verifies the Section 1 example numerically. | Warms you up before the engine. |
+| `demonstrate_graph_backpropagation()` | Backpropagates `L = (a·b + c)²`, reproduces the figure's gradients (30, 20, 10), **and re-checks them numerically**. | The numeric re-check is the engine grading itself against Chapter 3. |
+| `train_xor_network()` | Builds a 2-3-1 tanh net out of `TrackedValue`s and trains it on XOR. | The training loop is Chapter 5's — but step 3 is now a single `loss.run_backward_pass()`. That line is the payoff of the whole chapter. |
+
+The C version (`c/tiny_autograd.c`) does the same with an **arena** — one array of node structs, each storing its operation and parent indices — because C has no operator overloading. It is closer to how real frameworks actually work than the Python.
+
 ## Run it
 
 ```bash

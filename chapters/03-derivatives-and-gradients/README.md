@@ -90,6 +90,20 @@ Running descent on the bowl from $(2, 1)$ with $\eta = 0.1$:
 
 It slides to the bottom $(0,0)$, fast at first and gently at the end (small slope → small steps). No formula told it where the minimum was — it *found* it by feel. **Replace "bowl" with "how wrong my model is" and this is machine learning.** That replacement is exactly Chapter 5.
 
+## Code walkthrough
+
+The example is `python/numerical_gradients.py`. Everything is built from one idea — the central difference — so the file is short and each function adds one layer:
+
+| Function | What it does | What to notice |
+|----------|--------------|----------------|
+| `estimate_derivative(function, point, step)` | The central difference `(f(x+h) − f(x−h)) / 2h` — Section 1, in three lines. | It takes a *function* as an argument. This numeric trick works on anything, with no formula needed. |
+| `estimate_gradient_of_two_variable_function(f, x, y, step)` | Two partial derivatives, each freezing one input. | A gradient is just "the derivative in each direction, collected" — that is all this does. |
+| `oval_bowl_function(x, y)` | The example landscape `x² + 3y²`, minimum at (0,0). | The "3" is what makes it an *oval* bowl (steeper in y) — the source of the trouble in demo 4 and, later, Chapter 5. |
+| `run_gradient_descent_on_bowl(rate, x0, y0, steps, steps_to_print)` | The walk-downhill loop: measure the gradient, step against it, repeat. | The two lines `current_x -= rate * gradient_x` are *the entire learning algorithm* — the minus sign is "go downhill". |
+| `main()` | Runs four demos: numeric-vs-formula check, the gradient at (2,1), convergence at rate 0.1, and divergence at rate 0.4. | Demo 4 exploding is not a bug — it is the learning rate being too big, the lesson of the chapter. |
+
+**Carry forward:** `run_gradient_descent_on_bowl` is the skeleton every training loop in the course fleshes out. Replace "bowl" with "how wrong the model is" and you have Chapter 5.
+
 ## Run it
 
 ```bash

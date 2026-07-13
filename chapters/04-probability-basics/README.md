@@ -78,6 +78,20 @@ Forecaster A — confident *and right* — scores 0.23. Forecaster B, who shrugs
 
 From Chapter 6 onward, "training a classifier" means: compute cross-entropy, take its gradient (Chapter 3), step downhill. You now hold all three pieces.
 
+## Code walkthrough
+
+The example is `python/dice_and_distributions.py`. Its theme is *verify theory by brute force* — every claim in the chapter is checked by simulating it thousands of times:
+
+| Function | What it does | What to notice |
+|----------|--------------|----------------|
+| `simulate_two_dice_distribution(rolls, rng)` | Rolls two dice `rolls` times, returns the fraction landing on each sum. | Takes an explicit `rng` (a `random.Random`) so runs are reproducible from one seed — a habit kept all course long. |
+| `exact_two_dice_probability(sum)` | The exact answer by counting: `6 − |7 − sum|` pairs out of 36. | Comparing this against the simulation is the whole point — the law of large numbers, made concrete. |
+| `estimate_expected_value_by_sampling(n, rng)` | Averages many rolls to estimate the expected values (3.5 and 7.0). | Watch the estimate tighten as `n` grows from 100 to a million. |
+| `compute_cross_entropy_for_rain_forecasts(probs, rained)` | **The chapter's payoff:** average surprise `−log(p)` at what actually happened. | The `if rained else 1 − p` branch is subtle: on a dry day, the probability of the *actual* outcome is `1 − p_rain`. This exact function reappears as the classifier loss from Chapter 6 on. |
+| `main()` | Runs the three demos and reproduces the weather-forecaster table. | Forecaster A (confident, right) scores 0.23; B ("50/50" always) scores 0.69. Lower is better. |
+
+**Carry forward:** `compute_cross_entropy_for_rain_forecasts` is cross-entropy. Chapters 6, 9, 20–24 all minimize a version of it — you have already written the loss that trains an LLM.
+
 ## Run it
 
 ```bash

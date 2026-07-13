@@ -127,6 +127,19 @@ chapters/NN-name/
 
 If you use VS Code: open the repository root folder, accept the recommended extensions, and use `Terminal → Run Task…` for "Setup environment" and "Build C examples of current chapter".
 
+## Code walkthrough
+
+The Python example is `python/hello_ai.py`. It is a health check, not a model — read it to see how the course reports what your machine can do.
+
+| Function | What it does | What to notice |
+|----------|--------------|----------------|
+| `report_tool_versions()` | Prints the Python, NumPy, and PyTorch versions in use. | Confirms the `.venv` is active and the libraries imported. |
+| `report_available_devices()` | Checks for CUDA, then MPS, then CPU; prints what it found and **returns the fastest**. | This CUDA→MPS→CPU order is the same one `common/device.py` uses in every later chapter — meet it here first. |
+| `time_matrix_multiplication_on_device(device, size)` | Times one big matrix multiply on the given device. | It calls `synchronize()` before and after the timer — GPUs run *asynchronously*, so without that the measurement would be a lie. A detail you can ignore now and appreciate in Chapter 10. |
+| `main()` | Runs the three above, timing CPU and (if present) your GPU. | The whole program is ~90 lines and imports nothing exotic — the point is that it *runs at all*. |
+
+The C example `c/hello_ai.c` has one function worth naming: `compute_weighted_sum(values, weights, offset, count)` — the weighted sum from Section 3, the single operation the rest of the course is built on.
+
 ## Run it
 
 Already covered above — the two commands to remember:

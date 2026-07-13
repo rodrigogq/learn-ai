@@ -130,6 +130,20 @@ Both programs are the two steps above plus bookkeeping, with matching names:
 
 The test uses fruits the programs never trained on because that is the only honest test — any model looks good on questions it has already seen the answers to. (This train/test separation gets a full treatment in Chapter 12.)
 
+## Code walkthrough
+
+The example is `python/rules_vs_learning.py`. It holds the two classifiers side by side, so you can compare hand-written rules against learning in one file. Read it in this order:
+
+| Function | What it does | What to notice |
+|----------|--------------|----------------|
+| `TRAINING_FRUITS`, `TEST_FRUITS` (module top) | The 8 labeled fruits to learn from, and 6 held-back fruits to judge on. | Each fruit is a tuple `(weight, smoothness, label)`. The test fruits are separate on purpose — Section 5 explains why. |
+| `classify_with_hand_written_rules(weight, smoothness)` | Version 1: the guessed rule `weight > 150 → orange`. | It ignores smoothness entirely (`del surface_smoothness`) — that is the point of the comparison, not an oversight. |
+| `learn_class_averages(training_fruits)` | **The learning step.** Computes the average weight and smoothness of each class. | Returns the two centroids `{"apple": (130, 0.85), "orange": (175, 0.42)}` — these are the model's *parameters*, and nobody typed them in. |
+| `classify_with_learned_model(weight, smoothness, class_averages)` | Version 2: picks the class whose average is nearest. | The nested `distance_to_average` divides the weight difference by 100 — the feature-scaling trick from Section 5. Watch for it; it returns throughout the course. |
+| `main()` | Learns the averages, then judges all 6 test fruits with both classifiers and tallies the score. | The printed table is where the learned model wins on the 160 g smooth apple. |
+
+**The takeaway to carry forward:** "learning" here is just `learn_class_averages` computing means. Every later chapter makes that step more powerful, but the shape — data in, parameters out — never changes.
+
 ## Run it
 
 ```bash

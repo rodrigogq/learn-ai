@@ -73,6 +73,20 @@ The gap nearly vanishes. **The strongest regularizer ever discovered is more dat
 
 Chapter 5 standardized inputs (mean 0, spread 1) and training sped up 200×. **Batch norm** applies that idea to the *hidden* activations: each layer's outputs are re-standardized over the current batch, with two small learned parameters per neuron so the network keeps its expressive power. Deep stacks train dramatically better because each layer sees inputs on a stable scale regardless of what the layers below are doing. In code it is one line (`nn.BatchNorm1d(128)` between layer and activation); you will use it inside every convolutional network from Chapter 14 on, and this paragraph is all the theory those chapters need.
 
+## Code walkthrough
+
+The example is `python/training_toolkit.py`, structured as four experiments you can read independently:
+
+| Function | What it does | What to notice |
+|----------|--------------|----------------|
+| `build_classifier(hidden_size, dropout)` | A 784 → hidden → 10 net, optionally with a `nn.Dropout` layer. | One builder, reused by every experiment so the comparisons are fair. |
+| `run_training(model, ..., optimizer, ...)` | The shared training loop; reports train and test accuracy at chosen epochs. | Takes the optimizer as an *argument* — that is how the race swaps SGD/momentum/Adam without touching anything else. |
+| `optimizer_race(...)` | Experiment 1: same net and data, three optimizers. | A fresh `torch.manual_seed(42)` before each keeps the start identical — the only variable is the optimizer. |
+| `overfitting_demonstration(...)` | Experiments 2 & 3: overfit a big net on 1,000 images, then add dropout + weight decay. | Watch the train/test *gap* — the printed `gap` column is overfitting, quantified. |
+| `more_data_demonstration(...)` | Experiment 4: the same defended net on all 60,000 images. | The gap nearly vanishes — "more data beats every trick", shown not told. |
+
+The C file `c/adam_from_scratch.c` implements **Adam** in ~25 lines and races it against plain gradient descent on Chapter 5's problem — reaching the answer in ~1,000 epochs where plain descent needed 200,000. Read it to see there is no magic in `optimizer.step()`, just two running averages and a division.
+
 ## Run it
 
 ```bash

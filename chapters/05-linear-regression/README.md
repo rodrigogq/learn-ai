@@ -91,6 +91,19 @@ Both example programs run *both* versions so you can watch the difference. The h
 
 After training: predict the 80 m² apartment. $\hat{y} = 3.0 \cdot 80 + 20 = 260$ — about $260{,}000. The model never saw an 80 m² apartment; the *pattern* generalizes. That is the entire promise of machine learning, delivered by two numbers and a loop.
 
+## Code walkthrough
+
+The example is `python/train_linear_regression.py`. This is the first *training loop* in the course, and its five functions map exactly onto the recipe — model, loss, gradients, update, plus the scaling fix:
+
+| Function | What it does | What to notice |
+|----------|--------------|----------------|
+| `compute_mean_squared_error(w, b, x, y)` | The loss: average of `(w·x + b − y)²` over the apartments. | This one number is what training drives down. |
+| `compute_loss_gradients(w, b, x, y)` | The hand-derived gradients: average of `error·x`, and average of `error`. | Read them next to the formulas in Section 3 — the code *is* the math, with long names for the symbols. |
+| `verify_gradients_numerically(w, b)` | Checks those gradients against Chapter 3's central difference. | **This runs before training** — never trust a hand-derived gradient until a numeric check agrees. A habit that becomes essential in Chapter 8. |
+| `train_with_gradient_descent(x, y, rate, epochs, epochs_to_print)` | The four-step loop: forward, loss, gradients, update. | Memorize its shape. It never changes again — Chapter 24's LLM trains with this exact skeleton. |
+| `standardize_values(values)` | Shifts and scales the feature to mean 0, spread 1; returns the mean/std to convert back. | This is the 200×-speedup fix. The returned stats are used at the end to report the line in real apartment units. |
+| `main()` | Verifies gradients, trains on raw sizes (slow), trains on standardized sizes (fast), recovers the line, predicts an 80 m² flat. | The two training runs reaching the same answer at wildly different speeds is the chapter's core lesson. |
+
 ## Run it
 
 ```bash

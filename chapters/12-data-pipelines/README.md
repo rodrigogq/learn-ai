@@ -65,6 +65,20 @@ One accuracy number hides everything interesting. The **confusion matrix** count
 
 Demo 3 trains on the full dataset (97.33% accuracy) and prints the full matrix. The mistakes are *not* random noise: 4↔9 and 5↔3 dominate — pairs that genuinely look alike in handwriting. This is how practitioners debug models: the matrix tells you *which* data to collect more of, or which classes need attention. Two named metrics you will meet in the wild generalize this: **precision** (of everything the model called class X, how much really was?) and **recall** (of all true X, how much did it find?). They matter most when classes are imbalanced — a fraud detector that never fires scores 99.9% accuracy and 0% recall.
 
+## Code walkthrough
+
+The example is `python/data_pipelines.py`. The constants at the top define the two `transforms` pipelines — `PLAIN_TRANSFORM` and `AUGMENTED_TRANSFORM` — which is where the whole augmentation idea lives:
+
+| Function | What it does | What to notice |
+|----------|--------------|----------------|
+| `AUGMENTED_TRANSFORM` (module top) | `RandomAffine` (rotate/shift/zoom) + ToTensor + flatten. | This one line *is* the augmentation. Applied fresh each epoch, so the network never sees the same pixels twice. |
+| `train_epochs(model, loader, optimizer, ..., per_epoch_callback)` | The training loop, with a hook called after each epoch. | The callback is how the early-stopping demo peeks at validation without cluttering the loop. |
+| `demonstrate_validation_split(...)` | Splits 1,000 images into 800 train / 200 validation; keeps a copy of the best-validation weights. | The `best_model_state` copy **is** early stopping — train on, but remember the peak. Test is measured *once*, at the very end. |
+| `demonstrate_augmentation(...)` | Replays Chapter 11's overfitting setup with augmentation added. | Beats Chapter 11's defenses (88.8% → 91.0%) — augmentation attacks memorization at its root. |
+| `demonstrate_confusion_matrix(...)` | Trains on the full set, then counts every (true, predicted) pair. | The `off_diagonal.max()` line finds the worst mistake (4↔9) — real models are debugged exactly this way. |
+
+The C file `c/batch_loader.c` rebuilds `DataLoader` — shuffle, batch, normalize — and **audits** it: one epoch touches every example exactly once, and each shuffled batch's label mix tracks the whole dataset. After this, no line of a PyTorch training script is a black box.
+
 ## Run it
 
 ```bash

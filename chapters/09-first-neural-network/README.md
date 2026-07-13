@@ -107,6 +107,23 @@ Read it like a practitioner: the loss falls fast, then slower (the bowl flattens
 
 96% is good, not great: state of the art on MNIST is ~99.8%. The gap has a specific cause — an MLP treats pixels as an unordered list and has no idea which pixels are *neighbors*. Chapter 13 fixes exactly this (convolutions), and the payoff will be visible immediately.
 
+## Code walkthrough
+
+The example is `python/train_mnist_mlp.py` — the first full network, still hand-built in NumPy. The `TwoLayerNetwork` class holds everything; read its methods in order:
+
+| Piece | What it does | What to notice |
+|-------|--------------|----------------|
+| `load_mnist_as_numpy_arrays()` | Downloads MNIST and returns flat 784-pixel arrays scaled to 0–1. | Uses torchvision only as a *downloader* — the learning below is pure NumPy. |
+| `softmax_rows(scores)` | Turns each row of 10 scores into probabilities. | Subtracts each row's max before exponentiating — the overflow guard from Section 3. |
+| `TwoLayerNetwork.__init__` | Creates `W1, b1, W2, b2` with **He initialization** (`× √(2/fan-in)`). | That scaling (Section 2 of Chapter 11) is why training starts healthy instead of exploding. |
+| `.forward(images)` | The two-layer forward pass, returning the pre-activation, the ReLU'd hidden layer, and the probabilities. | It returns the *intermediates* because backprop needs them — you can see the data backprop will reuse. |
+| `.compute_loss_and_gradients(images, labels)` | Cross-entropy loss, then the five matrix-backprop formulas from Section 4. | Each line is a Chapter 8 local rule applied to a whole layer. The output gradient `(probabilities − one_hot)` is the same `prediction − truth` pattern for the third chapter running. |
+| `.apply_gradient_step(grads, rate)` | Subtracts `rate × gradient` from all four arrays. | Chapter 5's update, four times. |
+| `verify_gradients_numerically(...)` | Spot-checks a few weights of each array against the central difference. | Same trust-but-verify habit — on 101,770 parameters you check representatives, not all. |
+| `main()` | Loads data, verifies gradients, runs mini-batch SGD, reports test accuracy, prints five predictions. | 96% on held-out digits, ~0.1 s/epoch — because everything became matrix multiplies. |
+
+`export_mnist_for_c.py` writes the dataset as raw bytes so the C port (`c/train_mnist_mlp.c`) can train the identical network with no dataset-parsing code.
+
 ## Run it
 
 ```bash

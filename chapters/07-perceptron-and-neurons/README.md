@@ -106,6 +106,18 @@ Read what happened geometrically: each hidden neuron draws one straight line; th
 
 One thing should bother you, though. We *hand-picked* those six weights and three biases by staring at a truth table. For real problems — 784 pixels, thousands of neurons — nobody can stare that hard. The perceptron rule cannot help either: it has no idea how to assign blame to a *hidden* neuron two steps away from the output. **How do we compute gradients through layers?** That question has a beautiful answer, and it is the entire subject of [Chapter 8](../08-backpropagation/README.md).
 
+## Code walkthrough
+
+The example is `python/perceptron_and_xor.py`. It has no calculus — the perceptron learns by a simple mistake rule — so the whole file is short and direct:
+
+| Function | What it does | What to notice |
+|----------|--------------|----------------|
+| `step_activation(z)` | Returns 1 if `z > 0`, else 0 — history's first activation. | The hard yes/no is exactly what makes the perceptron unable to express *confidence* (contrast with Chapter 6's sigmoid). |
+| `perceptron_predict(x1, x2, weights_and_bias)` | One neuron: weighted sum, then the step. | `weights_and_bias` is a plain 3-element list `[w1, w2, b]` — no framework, nothing hidden. |
+| `train_perceptron(true_labels, gate_name, max_passes, rate)` | Rosenblatt's 1957 rule: on a wrong prediction, nudge each weight toward the right answer. | Returns whether it *converged*. For AND/OR it does; **for XOR it never can**, and the printed mistake count refuses to reach zero. |
+| `two_layer_network_predict(x1, x2)` | The hand-wired 3-neuron network that solves XOR (an OR gate, an AND gate, combined). | The weights here are **chosen by hand, not learned** — that is the open problem the chapter ends on, and what Chapter 8 solves. |
+| `main()` | Trains the perceptron on AND, OR, XOR, then runs the two-layer network on all four XOR rows. | Watch AND converge in ~6 passes, XOR loop forever, then the layered network get all four right. |
+
 ## Run it
 
 ```bash

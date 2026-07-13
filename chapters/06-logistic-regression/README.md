@@ -90,6 +90,20 @@ Below ~3.75 study hours the model bets "fail", above it "pass" — but unlike Ch
 
 With one feature the boundary is a point on the hours axis. With two features it becomes a line in the plane; with hundreds, an invisible flat surface. What it can never be, for logistic regression, is *curved* — remember this, because it is exactly the wall Chapter 7 runs into.
 
+## Code walkthrough
+
+The example is `python/train_logistic_regression.py`. It is Chapter 5's training loop with two changes — a sigmoid on the output and cross-entropy for the loss. Notice how little else moves:
+
+| Function | What it does | What to notice |
+|----------|--------------|----------------|
+| `sigmoid(z)` | `1 / (1 + e^(−z))` — squashes the weighted sum into a probability. | Three characters of math; the whole reason this is a classifier. |
+| `compute_cross_entropy_loss(w, b, x, y)` | Average surprise at the true labels (Chapter 4's loss, applied here). | The `PROBABILITY_CLAMP` (1e-12) keeps `log(0)` from becoming infinity — a numerical safety rail every real framework has. |
+| `compute_loss_gradients(w, b, x, y)` | The gradients — which cancel down to `(probability − label)`. | Compare with Chapter 5: **same shape**, `error·x` and `error`, but "error" is now `probability − label`. Sigmoid and cross-entropy were made for each other. |
+| `verify_gradients_numerically(w, b)` | Numeric check of those gradients before training. | Same discipline as Chapter 5 — the formula is confirmed, not assumed. |
+| `main()` | Trains 5000 epochs, prints the loss and the **decision boundary** each step, then predicts for 2 h / 3.7 h / 5 h students. | The boundary converges to 3.75 h; the 3.7 h student sits at P = 0.47, a coin flip — exactly what the messy data deserves. |
+
+**Carry forward:** `sigmoid` + `compute_cross_entropy_loss` are the classifier core. Chapter 9 scales the same pair to ten classes (softmax); the pattern is identical.
+
 ## Run it
 
 ```bash
