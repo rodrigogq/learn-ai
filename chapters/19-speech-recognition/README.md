@@ -76,17 +76,60 @@ At inference the model gives per-frame scores; **greedy decoding** takes the arg
 
 ## Code walkthrough
 
-The example is `python/train_ctc_speller.py`. The interesting parts are how the data is made (durations vary, so alignment is unknown) and the collapse rule that recovers text:
+The example is `python/train_ctc_speller.py`. The heart of it is the **alignment problem** — hundreds of audio frames, a few letters, and nobody says which frames go with which letter — and how CTC sidesteps it. No prior programming assumed.
+
+### Step 1 — the alignment problem, built into the data
+
+```python
+for letter in word:
+    duration_samples = int(random_generator.uniform(0.08, 0.2) * SAMPLE_RATE)
+    ...
+    pieces.append(numpy.sin(2 * numpy.pi * LETTER_FREQUENCIES[letter] * time_axis))
+```
+
+`speak_word` plays each letter's tone (Chapter 18) for a **random duration**. That randomness is the whole difficulty: the word "AB" might be 5 frames of A then 12 of B one time, 9 and 6 the next. The model is never told where a letter starts or ends — it must learn to read a variable-length sound into a short letter sequence.
+
+### Step 2 — the model: one symbol per frame (letters + a blank)
+
+```python
+self.per_frame_classifier = nn.Conv1d(64, len(ALPHABET) + 1, kernel_size=1)
+```
+
+`FramewiseSpeller` runs 1-D convolutions over time, then a 1×1 conv classifier that gives every frame a score over **6 symbols: A, B, C, D, E, and a special "blank"**. So the raw output is one symbol per frame — say `--AAA--BB-` — far longer than the answer "AB". The blank is CTC's key invention: a "nothing / boundary" symbol that fills the gaps.
+
+### Step 3 — the collapse rule that recovers text
+
+```python
+for index in best_indices:
+    if index != previous_index and index != BLANK_INDEX:
+        decoded_letters.append(ALPHABET[index])
+    previous_index = index
+```
+
+`greedy_ctc_decode` turns that long per-frame string into text with two rules, **in this order**: first **merge repeats** (`--AAA--BB-` → `-A-B-`), then **drop blanks** (→ `AB`). The order matters and is the clever bit: to spell a genuine double letter, the network learns to place a blank *between* the two — `A-A` — so that "merge repeats" does not collapse them into one. This same function is the deployment decoder.
+
+### Step 4 — training with CTCLoss, and a real backend gap
+
+```python
+log_probabilities = framewise_logits.permute(2, 0, 1).log_softmax(dim=2)
+if device.type == "mps":
+    log_probabilities = log_probabilities.cpu()
+    loss = ctc_loss(log_probabilities, targets, frame_counts, target_lengths)
+```
+
+`nn.CTCLoss` does the magic we do not have to: it trains by summing the probability of **every** per-frame alignment that collapses to the true word, so the network is rewarded for *any* valid alignment and discovers the letter boundaries on its own. It wants shapes `(frames, batch, classes)` as log-probabilities, hence the `permute` + `log_softmax`. The `if device.type == "mps"` branch is an honest real-world lesson: Apple's GPU backend has no CTC kernel, so the log-probabilities hop to the CPU just for the loss — autograd still routes gradients back across the device copy, and the conv encoder stays on the GPU.
+
+The C file `c/greedy_ctc_decoder.c` is `greedy_ctc_decode` in pure C, run over hand-built cases (held notes, true doubles, silence) — the exact decoder shipped in production speech systems.
+
+### Quick reference
 
 | Piece | What it does | What to notice |
 |-------|--------------|----------------|
-| `speak_word(word, rng)` | Plays each letter's tone for a **random** duration. | The randomness is the point — the model is never told where letters start or end. |
-| `build_word_batch(size, rng)` | Random words → spectrograms → padded batch, plus the lengths `nn.CTCLoss` needs. | Returns `frame_counts` and `target_lengths` — CTC needs both to know the real (unpadded) sizes. |
-| `class FramewiseSpeller` | 1-D convs over time, then a per-frame classifier over {A–E, blank}. | It emits a symbol *per frame*; no recurrence needed for tones (real speech puts a sequence model here). |
-| `greedy_ctc_decode(logits)` | The **collapse rule**: argmax per frame, merge repeats, drop blanks. | Order matters — merge repeats *first*, so the blank between two of the same letter survives as a real double letter. This is the deployment code. |
-| `main()` | Trains with `nn.CTCLoss`, prints the raw per-frame symbols and the collapsed text. | Look at the raw frames of a double-letter word — the network learned to place a blank wall between them, unprogrammed. Note the CPU hop for MPS (a real backend-gap lesson). |
-
-The C file `c/greedy_ctc_decoder.c` is `greedy_ctc_decode` in pure C, run over hand-built cases (held notes, true doubles, silence) — the exact decoder shipped in production speech systems.
+| `speak_word(word, rng)` | Plays each letter's tone for a **random** duration. | The randomness is the point — no letter boundaries are given. |
+| `build_word_batch(size, rng)` | Words → spectrograms → padded batch + the lengths CTC needs. | Returns `frame_counts` and `target_lengths` for the real (unpadded) sizes. |
+| `class FramewiseSpeller` | 1-D convs, then a per-frame classifier over {A–E, blank}. | Emits a symbol *per frame*; the blank fills the gaps. |
+| `greedy_ctc_decode(logits)` | The collapse: merge repeats, then drop blanks. | Order matters — a blank between repeats spells a true double letter. |
+| `main()` | Trains with `nn.CTCLoss`; prints raw frames and collapsed text. | The blank "wall" between doubles is learned, not programmed; note the MPS→CPU hop. |
 
 ## Run it
 
