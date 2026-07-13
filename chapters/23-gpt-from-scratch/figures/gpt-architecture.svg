@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 620" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="940" height="620" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">The whole of GPT, bottom to top &#8212; every part is a chapter you finished</text>
+
+  <defs>
+    <marker id="gArrow" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0, 9 4, 0 8" fill="#57606a"/>
+    </marker>
+  </defs>
+
+  <!-- Bottom-up stack, centered at x=350 -->
+  <g font-size="15">
+    <!-- input -->
+    <text x="290" y="580" font-size="16" font-family="ui-monospace, 'SF Mono', Menlo, monospace" fill="#24292f">"To be, or not to b"</text>
+    <line x1="350" y1="560" x2="350" y2="532" stroke="#57606a" stroke-width="2.5" marker-end="url(#gArrow)"/>
+
+    <rect x="200" y="478" width="300" height="52" rx="10" fill="#e0e7ff" stroke="#6366f1" stroke-width="2"/>
+    <text x="220" y="510" fill="#3730a3" font-weight="700">tokenizer</text>
+    <text x="330" y="510" fill="#3730a3" font-size="13">Chapter 20 (chars here, BPE in ch. 24)</text>
+    <line x1="350" y1="470" x2="350" y2="442" stroke="#57606a" stroke-width="2.5" marker-end="url(#gArrow)"/>
+
+    <rect x="200" y="388" width="300" height="52" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+    <text x="220" y="420" fill="#1e3a8a" font-weight="700">token + position embeddings</text>
+    <line x1="350" y1="380" x2="350" y2="352" stroke="#57606a" stroke-width="2.5" marker-end="url(#gArrow)"/>
+
+    <!-- transformer blocks stack -->
+    <rect x="212" y="212" width="288" height="132" rx="10" fill="#f1f5f9" stroke="#94a3b8"/>
+    <rect x="206" y="206" width="288" height="132" rx="10" fill="#f1f5f9" stroke="#94a3b8"/>
+    <rect x="200" y="200" width="288" height="132" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+    <text x="220" y="228" fill="#14532d" font-weight="700">transformer block &#215; N</text>
+    <text x="220" y="256" fill="#14532d" font-size="13" font-family="ui-monospace, 'SF Mono', Menlo, monospace">x = x + attention(norm(x))</text>
+    <text x="220" y="280" fill="#14532d" font-size="13" font-family="ui-monospace, 'SF Mono', Menlo, monospace">x = x + mlp(norm(x))</text>
+    <text x="220" y="308" fill="#14532d" font-size="12">ch. 22 attention &#183; ch. 14 residuals &#183; ch. 9 MLP</text>
+    <line x1="350" y1="192" x2="350" y2="164" stroke="#57606a" stroke-width="2.5" marker-end="url(#gArrow)"/>
+
+    <rect x="200" y="110" width="300" height="52" rx="10" fill="#fde68a" stroke="#d97706" stroke-width="2"/>
+    <text x="220" y="142" fill="#78350f" font-weight="700">linear head &#8594; logits over the vocabulary</text>
+    <line x1="500" y1="136" x2="560" y2="136" stroke="#57606a" stroke-width="2.5" marker-end="url(#gArrow)"/>
+  </g>
+
+  <!-- Output distribution -->
+  <g>
+    <rect x="570" y="86" width="330" height="210" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+    <text x="590" y="114" font-size="14" font-weight="700" fill="#24292f">next-character distribution</text>
+    <g font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="13" fill="#24292f">
+      <text x="590" y="146">'e'</text><rect x="630" y="134" width="180" height="14" fill="#2563eb"/>
+      <text x="590" y="172">'u'</text><rect x="630" y="160" width="60" height="14" fill="#60a5fa"/>
+      <text x="590" y="198">'a'</text><rect x="630" y="186" width="38" height="14" fill="#93c5fd"/>
+      <text x="590" y="224">'y'</text><rect x="630" y="212" width="22" height="14" fill="#bfdbfe"/>
+      <text x="590" y="250">...</text>
+    </g>
+    <text x="590" y="280" font-size="13" fill="#57606a">sample one (temperature, top-k), append,</text>
+  </g>
+  <!-- loop arrow back -->
+  <path d="M 735 296 C 735 400, 560 560, 470 574" fill="none" stroke="#9333ea" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#gArrow)"/>
+  <text x="700" y="420" font-size="14" font-weight="700" fill="#6b21a8">and run again:</text>
+  <text x="700" y="440" font-size="14" fill="#6b21a8">generation is this</text>
+  <text x="700" y="460" font-size="14" fill="#6b21a8">loop, one token</text>
+  <text x="700" y="480" font-size="14" fill="#6b21a8">per lap</text>
+
+  <text x="60" y="608" font-size="14" fill="#57606a">Training never generates: it predicts every next-token in a window at once and takes one cross-entropy gradient step (chs. 4, 9).</text>
+</svg>
