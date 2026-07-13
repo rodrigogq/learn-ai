@@ -77,14 +77,24 @@ This numerical trick matters for two reasons: it is how you **check** any hand-d
 
 ## 2. Many inputs: partial derivatives and the gradient
 
-Real models have many knobs, not one, so we need slopes for functions of several inputs. Take $f(x, y) = x^2 + 3y^2$ — a function with two inputs, shaped like an oval bowl. With more than one input, "the slope" is ambiguous: slope *in which direction*? The answer is to measure one direction at a time.
+Real models have many knobs, not one, so we need slopes for functions of several inputs. Meet the example we will carry through the rest of the chapter: $f(x, y) = x^2 + 3y^2$.
+
+**First, what does a function of two inputs even look like?** A one-input function $f(x)$ is a *curve* — one input in, one output out, drawn on a flat page (that was every picture in Section 1). A *two-input* function is a **surface**. Picture the two inputs $(x, y)$ as a spot on flat ground — think east–west and north–south — and the output $f(x, y)$ as the **height of the land** above that spot. Every spot has a height, and plotting them all gives a 3D landscape. For $x^2 + 3y^2$ that landscape is a **bowl-shaped valley**:
+
+![The function f(x,y)=x²+3y² drawn as a 3D valley, with the minimum at the bottom marked as the goal](figures/bowl-3d-landscape.svg)
+
+**This picture is the goal of the whole chapter — of the whole course, honestly.** That height will soon stand for *how wrong the model is* (Chapter 5 makes the swap concrete): a tall spot is a badly-wrong model, and the valley floor is the best model we can find. So "training a model" will come to mean one very physical thing — **start somewhere on this landscape and walk downhill until you reach the bottom.** Everything in the rest of this chapter (partial derivatives, the gradient, gradient descent) is just the machinery for answering *"from where I am standing, which way is downhill?"*
+
+With more than one input, though, "the slope" is ambiguous: slope *in which direction*? The answer is to measure one direction at a time.
 
 A **partial derivative** does exactly that. The symbol $\frac{\partial f}{\partial x}$ (read "partial f by x"; the rounded $\partial$ is just a "d" that signals "one variable at a time") means: *the slope if you move only along $x$, holding $y$ completely still — as if $y$ were a fixed constant.* Likewise $\frac{\partial f}{\partial y}$ is the slope moving only along $y$, holding $x$ still. That is the only new idea here — a partial derivative is an ordinary derivative where every input except one is frozen.
 
-For our bowl, applying the standard calculus rules (the ones from the box above — we quote them, we do not derive them here):
+For our bowl, here is what those two partial derivatives turn out to be. **For the sake of the demonstration, take these results as given** — calculus has fixed rules that produce them, and you genuinely do not need to know those rules to keep going. (Stay calm: a few lines from now we will *check both numbers with the computer*, using only Section 1's numerical trick.)
 
-- freeze $y$, and $f$ looks like $x^2 + \text{constant}$, whose derivative is $2x$. So $\frac{\partial f}{\partial x} = 2x$.
-- freeze $x$, and $f$ looks like $\text{constant} + 3y^2$, whose derivative is $6y$. So $\frac{\partial f}{\partial y} = 6y$.
+- freeze $y$, and $f$ looks like $x^2 + \text{a constant}$; the calculus rule for $x^2$ gives $2x$. So $\frac{\partial f}{\partial x} = 2x$.
+- freeze $x$, and $f$ looks like $\text{a constant} + 3y^2$; the same kind of rule gives $6y$. So $\frac{\partial f}{\partial y} = 6y$.
+
+If those two lines made you tense up — *good instinct, and don't worry.* You are **not** expected to derive them, and nothing later breaks if you simply trust them for now. That is the entire reason Section 1 built a numerical derivative: the computer will confirm both results in a moment, so no faith in calculus is required.
 
 Here is that idea as a picture. Freeze the inputs at our example point $(2, 1)$: each frozen slice of the bowl becomes an ordinary curve, and its slope at the point is exactly the partial derivative — the very same "slope of a curve" from Section 1, nothing new:
 
@@ -141,15 +151,86 @@ It slides to the bottom $(0,0)$, fast at first and gently at the end (small slop
 
 ## Code walkthrough
 
-The example is `python/numerical_gradients.py`. Everything is built from one idea — the central difference — so the file is short and each function adds one layer:
+The example is `python/numerical_gradients.py`. This is the code that everything which *trains* later in the course grows out of, so we will read it slowly and assume **no prior programming**. If you have written code before, skim to the table at the end; otherwise, walk through with me.
+
+### What "a function" means in code
+
+Throughout this walkthrough you will see the word `def`. In Python, `def name(...):` means *"define a reusable recipe called `name`"*. The words in the parentheses are the recipe's **inputs** (called *arguments*), and a line starting with `return` is the **output** the recipe hands back. That is the whole idea: a function takes some inputs and returns an output — exactly like the math $f(x)$, just typed out. Once defined, you *call* it by writing its name with values, e.g. `oval_bowl_function(2, 1)`.
+
+### Step 1 — the one idea, as one recipe
+
+Here is the heart of the entire chapter, the numerical derivative from Section 1:
+
+```python
+def estimate_derivative(function_of_one_variable, point, small_step=1e-5):
+    rise = function_of_one_variable(point + small_step) - function_of_one_variable(point - small_step)
+    run = 2 * small_step
+    return rise / run
+```
+
+Read it line by line:
+
+- The inputs are a function to measure, the `point` to measure it at, and a tiny `small_step` (the $h$ from Section 1; `1e-5` is code for `0.00001`, and the `=1e-5` just means "if the caller doesn't say, use this default").
+- `rise` is *how much the output changed* — the function a tiny step to the right, minus the function a tiny step to the left. That is exactly the green "up 2" side of the slope triangle from Section 1.
+- `run` is *how far we stepped sideways* to cause that change — the orange "forward 1" side, here `2 * small_step` because we stepped both ways.
+- `return rise / run` hands back rise-over-run: the slope. **This is the whole derivative — three lines, no calculus.**
+
+Notice the first input is *itself a function*. In code you can hand one recipe to another, which is why this single tool can measure the slope of *anything* — $x^2$, $\sin$, or "how wrong the model is" — without ever knowing a formula for it.
+
+### Step 2 — measure two directions instead of one: the gradient
+
+A gradient (Section 2) is just "run Step 1 once per input direction". The recipe freezes one input while it nudges the other:
+
+```python
+partial_derivative_x = (
+    function_of_two_variables(x_value + small_step, y_value)
+    - function_of_two_variables(x_value - small_step, y_value)
+) / (2 * small_step)
+```
+
+This is identical to Step 1, except only `x_value` gets the tiny nudge while `y_value` sits still — that *is* "the slope along x with y frozen", the partial derivative. A second, mirror-image block nudges only `y_value`. The function returns the two slopes as a pair, and that pair is the gradient $\nabla f$. Nothing more mysterious than "do the slope trick twice".
+
+### Step 3 — the landscape itself
+
+The valley from the 3D picture is one short recipe:
+
+```python
+def oval_bowl_function(x_value, y_value):
+    return x_value ** 2 + 3 * y_value ** 2
+```
+
+`**` means "raised to the power", so this is literally $x^2 + 3y^2$: hand it a spot on the ground `(x, y)` and it returns the height there. The `3` is what makes the bowl steeper in the $y$ direction than the $x$ direction — remember that asymmetry, it causes the blow-up in demo 4.
+
+### Step 4 — the walk downhill (this is the learning algorithm)
+
+Now the four-step plan from Section 3, in code. This loop *is* machine learning in miniature:
+
+```python
+current_x, current_y = starting_x, starting_y
+for step_number in range(number_of_steps + 1):
+    gradient_x, gradient_y = estimate_gradient_of_two_variable_function(
+        oval_bowl_function, current_x, current_y
+    )
+    current_x = current_x - learning_rate * gradient_x
+    current_y = current_y - learning_rate * gradient_y
+```
+
+- `current_x, current_y` is **where we are standing** on the landscape; it starts at the given spot.
+- `for step_number in range(...)` means **"repeat the indented lines this many times"** — one repetition per downhill step.
+- Each time around, we first ask the gradient recipe *"which way is uphill from right here?"* and get back `gradient_x, gradient_y`.
+- Then the two crucial lines: `current_x - learning_rate * gradient_x`. We **subtract** a small fraction of the gradient. The gradient points uphill, so subtracting it moves us *downhill*; `learning_rate` controls how big that step is. **That minus sign is the entire idea of learning** — take a small step against the slope, then look again.
+
+Run it and the printed height drops toward zero: the program *found* the bottom of the valley by feel, exactly as the picture promised, without ever being told where the bottom was.
+
+### Quick reference
 
 | Function | What it does | What to notice |
 |----------|--------------|----------------|
-| `estimate_derivative(function, point, step)` | The central difference `(f(x+h) − f(x−h)) / 2h` — Section 1, in three lines. | It takes a *function* as an argument. This numeric trick works on anything, with no formula needed. |
-| `estimate_gradient_of_two_variable_function(f, x, y, step)` | Two partial derivatives, each freezing one input. | A gradient is just "the derivative in each direction, collected" — that is all this does. |
-| `oval_bowl_function(x, y)` | The example landscape `x² + 3y²`, minimum at (0,0). | The "3" is what makes it an *oval* bowl (steeper in y) — the source of the trouble in demo 4 and, later, Chapter 5. |
-| `run_gradient_descent_on_bowl(rate, x0, y0, steps, steps_to_print)` | The walk-downhill loop: measure the gradient, step against it, repeat. | The two lines `current_x -= rate * gradient_x` are *the entire learning algorithm* — the minus sign is "go downhill". |
-| `main()` | Runs four demos: numeric-vs-formula check, the gradient at (2,1), convergence at rate 0.1, and divergence at rate 0.4. | Demo 4 exploding is not a bug — it is the learning rate being too big, the lesson of the chapter. |
+| `estimate_derivative(function, point, step)` | The central difference `(f(x+h) − f(x−h)) / 2h` — Step 1. | It takes a *function* as an argument, so it works on anything with no formula. |
+| `estimate_gradient_of_two_variable_function(f, x, y, step)` | Step 1 run once per direction, freezing the other input. | A gradient is just "the derivative in each direction, collected". |
+| `oval_bowl_function(x, y)` | The example landscape `x² + 3y²`, minimum at (0,0). | The "3" makes it an *oval* bowl (steeper in y) — the source of the trouble in demo 4. |
+| `run_gradient_descent_on_bowl(rate, x0, y0, steps, steps_to_print)` | The walk-downhill loop of Step 4. | The `current_x - rate * gradient_x` line is the whole learning algorithm; the minus sign is "go downhill". |
+| `main()` | Runs four demos: numeric-vs-formula check, the gradient at (2,1), convergence at rate 0.1, divergence at rate 0.4. | Demo 4 exploding is not a bug — it is the learning rate being too big, the lesson of the chapter. |
 
 **Carry forward:** `run_gradient_descent_on_bowl` is the skeleton every training loop in the course fleshes out. Replace "bowl" with "how wrong the model is" and you have Chapter 5.
 
