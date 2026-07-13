@@ -104,6 +104,13 @@ Why is $-\log(p)$ the right shape for surprise? Because it behaves exactly like 
 
 $$\text{cross-entropy} = \frac{1}{n} \sum_{i=1}^{n} -\log\big(p_{\text{model gave to the true answer of example } i}\big)$$
 
+**Don't let the name scare you — you need no physics for this.** "Cross-entropy" sounds like a term from a thermodynamics exam, but here it means something you already understand, and the two words break down plainly:
+
+- **Entropy** in this context is just a fancy word for **average surprise**. That is all. We already built "surprise" as $-\log(p)$ a few lines ago; averaging it over many examples is the "entropy" part. (The word was borrowed from physics decades ago because the math has the same form — but the *idea* you need is only "average surprise", nothing more.)
+- **Cross** means the two things being compared are **different sources**: you measure the surprise of *reality's* answers using *the model's* probabilities. The model proposes the odds; reality reveals what happened; cross-entropy scores how surprised the model's odds leave it when reality speaks. If the model's probabilities matched reality perfectly, this surprise would be as low as possible; the more they disagree, the higher it climbs.
+
+So whenever you read "cross-entropy loss" for the rest of the course, quietly translate it in your head to **"on average, how surprised was the model by the correct answers"** — a lower score means a less-surprised, better-calibrated model. No physics required.
+
 A worked example, done by hand and verified by both programs. Two weather forecasters predict "rain probability" for 5 days; it actually rained on days 1, 2, and 5:
 
 | day | rained? | forecaster A said | A's surprise | forecaster B said | B's surprise |
