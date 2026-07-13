@@ -125,9 +125,9 @@ def demonstrate_graph_backpropagation():
     input_a = TrackedValue(2.0)
     input_b = TrackedValue(3.0)
     input_c = TrackedValue(-1.0)
-    product_d = input_a * input_b
-    sum_e = product_d + input_c
-    loss_l = sum_e * sum_e
+    product_u = input_a * input_b
+    sum_v = product_u + input_c
+    loss_l = sum_v * sum_v
     loss_l.run_backward_pass()
 
     print()

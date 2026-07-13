@@ -58,13 +58,13 @@ Chains longer than two links work the same — multiply all the rates. That is t
 
 ## 2. Every formula is a graph
 
-Take $L = (a \cdot b + c)^2$. A computer never evaluates that "all at once" — it does one tiny operation at a time: first $d = a \cdot b$, then $e = d + c$, then $L = e^2$. Drawing the steps gives a **computation graph**, and each tiny operation has a one-line local derivative:
+Take $L = (a \cdot b + c)^2$. A computer never evaluates that "all at once" — it does one tiny operation at a time. To keep the inputs ($a, b, c$) clearly separate from the intermediate results, we name those results $u$ and $v$: first $u = a \cdot b$, then $v = u + c$, then $L = v^2$. Drawing the steps gives a **computation graph**, and each tiny operation has a one-line local derivative:
 
 | operation | local derivative rule |
 |-----------|----------------------|
-| $e = d + c$ | $\frac{\partial e}{\partial d} = 1$ and $\frac{\partial e}{\partial c} = 1$ — addition passes gradients through unchanged |
-| $d = a \cdot b$ | $\frac{\partial d}{\partial a} = b$ and $\frac{\partial d}{\partial b} = a$ — each input's slope is *the other* input |
-| $L = e^2$ | $\frac{dL}{de} = 2e$ |
+| $v = u + c$ | $\frac{\partial v}{\partial u} = 1$ and $\frac{\partial v}{\partial c} = 1$ — addition passes gradients through unchanged |
+| $u = a \cdot b$ | $\frac{\partial u}{\partial a} = b$ and $\frac{\partial u}{\partial b} = a$ — each input's slope is *the other* input |
+| $L = v^2$ | $\frac{dL}{dv} = 2v$ |
 | $t = \tanh(z)$ | $\frac{dt}{dz} = 1 - t^2$ (a gift: the slope is computable from the *output* $t$) |
 
 ## 3. Backpropagation, by hand
@@ -80,9 +80,9 @@ Here is the whole thing on our example with $a=2, b=3, c=-1$:
 
 Follow the red numbers right to left. Every node does the same tiny job: take the gradient handed to it from the right, multiply by its **own local rule** (from Section 2's table, in this chapter), and pass the result to each parent.
 
-- $L = e^2$: the loss's gradient with respect to itself is 1 (that is where we start). Its local rule is $\frac{dL}{de} = 2e = 2 \times 5 = 10$, so $e$ receives **10**.
-- $e = d + c$: addition's rule is "pass through unchanged" (slope 1 to each parent), so both $d$ and $c$ receive that **10** untouched.
-- $d = a \cdot b$: multiplication's rule is "each input's slope is the *other* input". The incoming gradient is 10, so $a$ receives $b \times 10 = 3 \times 10 = 30$ and $b$ receives $a \times 10 = 2 \times 10 = 20$.
+- $L = v^2$: the loss's gradient with respect to itself is 1 (that is where we start). Its local rule is $\frac{dL}{dv} = 2v = 2 \times 5 = 10$, so $v$ receives **10**.
+- $v = u + c$: addition's rule is "pass through unchanged" (slope 1 to each parent), so both $u$ and $c$ receive that **10** untouched.
+- $u = a \cdot b$: multiplication's rule is "each input's slope is the *other* input". The incoming gradient is 10, so $a$ receives $b \times 10 = 3 \times 10 = 30$ and $b$ receives $a \times 10 = 2 \times 10 = 20$.
 
 Done — the gradient of *every* input, in one right-to-left sweep, using nothing but Section 2's four rules and multiplication.
 

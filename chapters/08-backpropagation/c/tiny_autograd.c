@@ -153,9 +153,9 @@ static void demonstrate_graph_backpropagation(void) {
     int input_a = create_leaf(2.0);
     int input_b = create_leaf(3.0);
     int input_c = create_leaf(-1.0);
-    int product_d = multiply_values(input_a, input_b);
-    int sum_e = add_values(product_d, input_c);
-    int loss_l = multiply_values(sum_e, sum_e);
+    int product_u = multiply_values(input_a, input_b);
+    int sum_v = add_values(product_u, input_c);
+    int loss_l = multiply_values(sum_v, sum_v);
     run_backward_pass(loss_l);
 
     printf("\n2. Backpropagation through L = (a*b + c)^2 with a=2, b=3, c=-1\n");
