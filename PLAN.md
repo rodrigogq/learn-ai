@@ -92,7 +92,7 @@ Status: `[ ]` not started · `[~]` drafted, examples untested · `[x]` done (tex
 ### Part III — Computer vision
 
 - [x] 13-convolutions — conv2d from scratch, padding/stride. C: conv kernel + benchmark vs Python.
-- [ ] 14-image-classification — ResNet on CIFAR-10; training curves, confusion matrix. C: inference from exported weights.
+- [x] 14-image-classification — ResNet on CIFAR-10 with augmentation and cosine schedule. C: inference from exported (BN-folded) weights.
 - [ ] 15-object-detection — IoU, anchors, NMS; simple single-stage detector. C: IoU + NMS.
 - [ ] 16-segmentation — U-Net on a small dataset. C: mask post-processing.
 - [ ] 17-video-understanding — frame models / 3D convs for action recognition. C: temporal pooling.

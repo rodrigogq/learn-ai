@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 500" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="940" height="500" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">The residual block: learn the change, not the whole thing</text>
+
+  <defs>
+    <marker id="resArrow" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0, 9 4, 0 8" fill="#57606a"/>
+    </marker>
+    <marker id="skipArrow" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0, 9 4, 0 8" fill="#16a34a"/>
+    </marker>
+  </defs>
+
+  <!-- Input -->
+  <text x="80" y="256" font-size="20" font-weight="700" fill="#24292f" font-family="ui-monospace, 'SF Mono', Menlo, monospace">x</text>
+  <line x1="110" y1="250" x2="180" y2="250" stroke="#57606a" stroke-width="2.5" marker-end="url(#resArrow)"/>
+
+  <!-- Main path boxes -->
+  <rect x="190" y="212" width="170" height="76" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="212" y="244" font-size="15" font-weight="700" fill="#1e3a8a">conv 3&#215;3</text>
+  <text x="212" y="268" font-size="14" fill="#1e3a8a">batch norm + ReLU</text>
+
+  <line x1="360" y1="250" x2="420" y2="250" stroke="#57606a" stroke-width="2.5" marker-end="url(#resArrow)"/>
+
+  <rect x="430" y="212" width="170" height="76" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="452" y="244" font-size="15" font-weight="700" fill="#1e3a8a">conv 3&#215;3</text>
+  <text x="452" y="268" font-size="14" fill="#1e3a8a">batch norm</text>
+
+  <line x1="600" y1="250" x2="672" y2="250" stroke="#57606a" stroke-width="2.5" marker-end="url(#resArrow)"/>
+  <text x="608" y="238" font-size="14" fill="#57606a">F(x)</text>
+
+  <!-- Add node -->
+  <circle cx="700" cy="250" r="26" fill="#fde68a" stroke="#d97706" stroke-width="2.5"/>
+  <text x="700" y="260" font-size="26" text-anchor="middle" fill="#78350f">+</text>
+
+  <!-- Skip connection -->
+  <path d="M 128 250 C 128 120, 700 120, 700 216" fill="none" stroke="#16a34a" stroke-width="3" marker-end="url(#skipArrow)"/>
+  <text x="330" y="120" font-size="15" font-weight="700" fill="#14532d">the shortcut: x travels untouched</text>
+
+  <!-- Output -->
+  <line x1="726" y1="250" x2="800" y2="250" stroke="#57606a" stroke-width="2.5" marker-end="url(#resArrow)"/>
+  <text x="810" y="256" font-size="16" font-family="ui-monospace, 'SF Mono', Menlo, monospace" fill="#24292f">ReLU</text>
+
+  <text x="580" y="330" font-size="16" font-family="ui-monospace, 'SF Mono', Menlo, monospace" fill="#24292f">output = ReLU( F(x) + x )</text>
+
+  <!-- Why it matters -->
+  <text x="60" y="392" font-size="15" fill="#24292f">Why it works, in two sentences: if the best thing this block can do is nothing, it only has to push F(x) to zero &#8212;</text>
+  <text x="60" y="414" font-size="15" fill="#24292f">trivially easy &#8212; so extra depth never hurts. And in the backward pass, gradients flow through the green shortcut</text>
+  <text x="60" y="436" font-size="15" fill="#24292f">unchanged (addition passes gradients through, Chapter 8), so even the hundredth layer gets a clean training signal.</text>
+  <text x="60" y="472" font-size="14" fill="#57606a">When the block changes resolution or channel count, the shortcut gets a 1&#215;1 convolution so shapes match before the add.</text>
+</svg>
