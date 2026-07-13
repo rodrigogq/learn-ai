@@ -101,23 +101,80 @@ Sixteen batch norms vanish into sixteen convolutions. Every production inference
 
 ## Code walkthrough
 
-Two Python files: `train_cifar10_resnet.py` builds and trains the network, `export_for_c.py` prepares it for the C engine.
+Two Python files: `train_cifar10_resnet.py` builds and trains the network, `export_for_c.py` prepares it for the C engine. Everything is `nn.Module` from Chapter 10, so the reading is about *architecture*, not new syntax. No prior programming assumed.
 
-**`train_cifar10_resnet.py`:**
+### Step 1 — the residual block (the star of the chapter)
+
+```python
+class ResidualBlock(nn.Module):
+    def __init__(self, input_channels, output_channels, stride=1):
+        super().__init__()
+        self.convolution_1 = nn.Conv2d(input_channels, output_channels, kernel_size=3, stride=stride, padding=1, bias=False)
+        self.batch_norm_1 = nn.BatchNorm2d(output_channels)
+        self.convolution_2 = nn.Conv2d(output_channels, output_channels, kernel_size=3, stride=1, padding=1, bias=False)
+        self.batch_norm_2 = nn.BatchNorm2d(output_channels)
+        if stride != 1 or input_channels != output_channels:
+            self.shortcut = nn.Sequential(nn.Conv2d(..., kernel_size=1, stride=stride, bias=False), nn.BatchNorm2d(output_channels))
+        else:
+            self.shortcut = nn.Identity()
+
+    def forward(self, feature_map):
+        block_output = torch.relu(self.batch_norm_1(self.convolution_1(feature_map)))
+        block_output = self.batch_norm_2(self.convolution_2(block_output))
+        return torch.relu(block_output + self.shortcut(feature_map))
+```
+
+`nn.Conv2d` is Chapter 13's convolution as a layer — it owns the kernels and learns them. Each block stacks two of them, each followed by `nn.BatchNorm2d` (Chapter 11's per-channel standardization). The whole ResNet idea is the **last line of `forward`**: `block_output + self.shortcut(feature_map)`. Instead of the two convolutions producing the answer outright, their output is *added* to the block's input — so the block only learns the **correction** to `x`, and (Chapter 8's add rule) gradients flow back through that `+` untouched. The `if` in `__init__` handles the one complication: when the block changes size (stride 2) or channel count, `x` and `F(x)` have different shapes, so a 1×1 convolution (`self.shortcut`) reshapes `x` first; otherwise the shortcut is `nn.Identity()` (pass `x` through unchanged).
+
+### Step 2 — the whole network: stem → stages → pool → head
+
+```python
+def forward(self, image_batch):
+    feature_map = torch.relu(self.stem_batch_norm(self.stem_convolution(image_batch)))
+    feature_map = self.stage_3(self.stage_2(self.stage_1(feature_map)))
+    pooled_features = feature_map.mean(dim=(2, 3))
+    return self.classifier_head(pooled_features)
+```
+
+This is Section 2's diagram in four lines. The **stem** takes a first convolutional look at the 3-channel image. Then the three **stages** run in sequence — `stage_1` then `stage_2` then `stage_3` — each a pair of residual blocks that (via the first block's `stride=2`) halves the map and doubles the channels: 32×32×16 → 16×16×32 → 8×8×64, the "shrink space, grow channels" rhythm. Then `feature_map.mean(dim=(2, 3))` is **global average pooling**: it averages over the height and width dimensions, collapsing each of the 64 channels to a single number — 64 numbers describing the whole image, position-free — so the final `classifier_head` (a tiny `nn.Linear(64, 10)`) has almost nothing to do.
+
+### Step 3 — the data: augmentation tuned for photos
+
+```python
+augmented_transform = transforms.Compose([
+    transforms.RandomCrop(32, padding=4),
+    transforms.RandomHorizontalFlip(),
+    transforms.ToTensor(),
+    transforms.Normalize(CIFAR10_CHANNEL_MEANS, CIFAR10_CHANNEL_STDS),
+])
+```
+
+Chapter 12's augmentation, matched to the domain. `RandomCrop(32, padding=4)` shifts the image a few pixels; `RandomHorizontalFlip` mirrors it left-right — *safe for photos* (a mirrored truck is still a truck), unlike a flipped digit. `Normalize` applies Chapter 5's standardize-your-inputs rule, once per color channel.
+
+### Step 4 — training: the standard CIFAR recipe
+
+```python
+optimizer = torch.optim.SGD(model.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4)
+learning_rate_schedule = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=number_of_epochs)
+...
+    learning_rate_schedule.step()   # after each epoch
+```
+
+The training loop itself is Chapter 10's exact `zero_grad → backward → step`. Two additions from Chapter 11: SGD with `momentum=0.9` and `weight_decay`, and a **cosine schedule** — `learning_rate_schedule.step()` after each epoch glides the learning rate smoothly from 0.1 toward 0, so training takes bold steps early and fine ones late. At the end, `torch.save(model.state_dict(), ...)` writes the trained weights to a checkpoint file for the C engine.
+
+### Step 5 — export: folding batch norm away (`export_for_c.py`)
+
+`fold_batch_norm_into_convolution` performs Section 5's deployment trick: a frozen batch norm is just a per-channel multiply-and-add, and that can be **absorbed into the preceding convolution's weights** (the two formulas in Section 5). The export script does this for all 16 batch norms, so the 16 of them *vanish* into the 16 convolutions and the C inference engine never has to implement batch norm at all — it only needs convolutions, pooling, and the linear head.
+
+### Quick reference
 
 | Piece | What it does | What to notice |
 |-------|--------------|----------------|
-| `class ResidualBlock` | Two 3×3 convs plus the shortcut: `relu(F(x) + x)`. | The `if stride != 1 or channels differ` branch adds a 1×1 conv to the shortcut so shapes match before the add — the two shortcut variants from Section 3. |
-| `class SmallResNet` | Stem + three stages of residual blocks (16→32→64 channels, 32→16→8 spatial) + global average pool + linear head. | Follow the `forward`: maps get smaller but deeper, then `feature_map.mean(dim=(2,3))` collapses each channel to one number — global average pooling. |
-| `build_data_loaders(quick)` | Augmented training loader (random crop + flip), plain test loader. | Flips are safe for photos (a mirrored truck is a truck) — unlike Chapter 12's digits. |
-| `main()` | SGD + momentum + cosine schedule, saves a checkpoint. | The cosine `learning_rate_schedule.step()` glides the rate to zero — bold early, precise late. |
-
-**`export_for_c.py`:**
-
-| Function | What it does | What to notice |
-|----------|--------------|----------------|
-| `fold_batch_norm_into_convolution(conv, bn)` | Merges an inference-mode batch norm into the preceding conv's weights and bias. | This is the deployment trick from Section 5 — 16 batch norms *vanish* into 16 convolutions, so the C engine needs only convs. |
-| `export_weights` / `export_test_images` | Write the folded weights and 1,000 test images as flat binaries. | The fixed layer order documented here is the contract the C file reads back. |
+| `class ResidualBlock` | Two 3×3 convs plus the shortcut: `relu(F(x) + x)`. | The `if stride != 1 or channels differ` branch adds a 1×1 conv so shapes match before the add. |
+| `class SmallResNet` | Stem + three stages (16→32→64 ch, 32→16→8 spatial) + global average pool + linear head. | `feature_map.mean(dim=(2,3))` is global average pooling. |
+| `build_data_loaders(quick)` | Augmented training loader (crop + flip), plain test loader. | Flips are safe for photos — unlike Chapter 12's digits. |
+| `main()` | SGD + momentum + cosine schedule, saves a checkpoint. | `learning_rate_schedule.step()` glides the rate to zero. |
+| `fold_batch_norm_into_convolution(conv, bn)` (export) | Merges an inference-mode batch norm into the preceding conv. | 16 batch norms *vanish* into 16 convolutions — the C engine needs only convs. |
 
 ## Run it
 
