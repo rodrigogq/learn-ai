@@ -298,6 +298,18 @@ Both programs print: the chain-rule worked example, the Section 3 graph gradient
 
 A full port with one structural difference worth studying. Python builds the graph with operator overloading (`a * b` on objects) and closures; C has neither, so the C engine uses an **arena**: one big array of node structs, where each node stores its operation type and the *indices* of its parents. `value_multiply(graph, a, b)` replaces `a * b`, and the backward pass is a plain reverse loop over the array with a `switch` on the operation. It is less pretty and completely transparent — you can inspect every byte of the "autograd tape". Real frameworks are much closer to the C version than to the Python one.
 
+### Optional: the same engine in C++
+
+The C version above is plain C to match the rest of the course — but autograd is the one place where that genuinely hurts, exactly as it may feel reading the arena code: nodes live in a shared global array, referred to by bare integer indices, with nothing *owning* them or closing their scope. That discomfort is well-founded, and it is precisely *why* every production framework's core (PyTorch's included) is written in **C++**, not C.
+
+For a side-by-side, [`cpp/tiny_autograd.cpp`](cpp/tiny_autograd.cpp) is the identical engine in C++. There a `Value` is a real object that owns its node through a `std::shared_ptr` (each node lives exactly as long as something still refers to it — no arena, no indices, no manual cleanup), and **operator overloading** lets you write `a * b + c` and have the graph assemble itself, reading almost line-for-line like the Python. It prints byte-for-byte identical numbers:
+
+```bash
+make -C chapters/08-backpropagation/cpp && ./chapters/08-backpropagation/cpp/build/tiny_autograd
+```
+
+This is the only C++ in the course, kept purely as an optional comparison. The point is not "switch to C++" — it is *seeing why* frameworks reached for it right here, where a dynamic graph needs objects with real ownership. For the loop-heavy math everywhere else (convolutions, matrix multiplies, inference), plain C stays clean and is what real inference engines like `llama2.c` and `ggml` actually use.
+
 ## Exercises
 
 1. By hand: for $L = (a \cdot b + c)^2$ with $a=2, b=3, c=-1$, we found $\partial L/\partial a = 30$. Predict what happens to $L$ if $a$ moves from 2 to 2.01, then verify: compute $L(2.01, 3, -1)$ and compare with $25 + 30 \times 0.01$.
