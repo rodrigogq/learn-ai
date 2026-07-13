@@ -84,13 +84,21 @@ For our bowl, applying the standard calculus rules (the ones from the box above 
 - freeze $y$, and $f$ looks like $x^2 + \text{constant}$, whose derivative is $2x$. So $\frac{\partial f}{\partial x} = 2x$.
 - freeze $x$, and $f$ looks like $\text{constant} + 3y^2$, whose derivative is $6y$. So $\frac{\partial f}{\partial y} = 6y$.
 
+Here is that idea as a picture. Freeze the inputs at our example point $(2, 1)$: each frozen slice of the bowl becomes an ordinary curve, and its slope at the point is exactly the partial derivative — the very same "slope of a curve" from Section 1, nothing new:
+
+![Slicing the bowl along x and along y turns each into a parabola whose tangent slope is the partial derivative](figures/partial-derivatives-slices.svg)
+
+The left slice slopes upward at rate $\frac{\partial f}{\partial x} = 2x = 4$; the right one at $\frac{\partial f}{\partial y} = 6y = 6$.
+
 And — this is the reassuring part — **you do not have to believe those two results.** The `estimate_gradient_of_two_variable_function` in the example computes both by the numerical central difference from Section 1, freezing one input at a time, and confirms they come out $2x$ and $6y$. If the hand rules and the numbers ever disagreed, the numbers would win.
 
 The **gradient** simply collects every partial derivative into one vector (a list of the slopes, one per input), written $\nabla f$ — the upside-down triangle is called "nabla", and you can read $\nabla f$ as "the gradient of $f$":
 
 $$\nabla f(x, y) = \left( \frac{\partial f}{\partial x}, \frac{\partial f}{\partial y} \right) = (2x, 6y)$$
 
-So the gradient is not a new kind of object — it is a *vector of the partial derivatives you just computed*, packed together so we can talk about "all the slopes at once".
+So the gradient is not a new kind of object — it is a *vector of the partial derivatives you just computed*, packed together so we can talk about "all the slopes at once". Draw it as an arrow at the point $(2, 1)$ and its two parts are exactly those partials, 4 across and 6 up:
+
+![The gradient at (2,1) drawn as an arrow, decomposed into its partials, pointing uphill with its negative pointing downhill](figures/gradient-vector.svg)
 
 The gradient has a superpower, and it is the single most important fact in this course:
 

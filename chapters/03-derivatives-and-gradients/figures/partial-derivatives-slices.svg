@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 470" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif"><rect x="0" y="0" width="960" height="470" rx="12" fill="#f6f8fa"/>
+<text x="60" y="46" font-size="20" fill="#24292f" font-weight="700" text-anchor="start" font-style="normal">Partial derivatives: freeze one input, and it is Section 1's slope again</text>
+<text x="60" y="72" font-size="15" fill="#57606a" font-weight="normal" text-anchor="start" font-style="normal">The bowl f(x, y) = x&#178; + 3y&#178;. Slice it along one axis at a time and each slice is a plain curve with a plain slope.</text>
+<rect x="40" y="96" width="430" height="340" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+<text x="60" y="126" font-size="15" fill="#1e3a8a" font-weight="700" text-anchor="start" font-style="normal">slice along x  (hold y = 1)</text>
+<text x="60" y="148" font-size="13" fill="#57606a" font-weight="normal" text-anchor="start" font-style="normal">the slice is the curve g(x) = x&#178; + 3</text>
+<line x1="150.0" y1="360.0" x2="278.8" y2="360.0" stroke="#9ca3af" stroke-width="2"/>
+<line x1="160.0" y1="372.0" x2="160.0" y2="130.0" stroke="#9ca3af" stroke-width="2"/>
+<polyline points="67.6,226.7 76.0,241.0 84.4,253.9 92.8,265.5 101.2,275.7 109.6,284.5 118.0,292.0 126.4,298.1 134.8,302.9 143.2,306.3 151.6,308.3 160.0,309.0 168.4,308.3 176.8,306.3 185.2,302.9 193.6,298.1 202.0,292.0 210.4,284.5 218.8,275.7 227.2,265.5 235.6,253.9 244.0,241.0 252.4,226.7" fill="none" stroke="#2563eb" stroke-width="3.5"/>
+<circle cx="244.0" cy="241.0" r="6" fill="#2563eb"/>
+<line x1="206.2" y1="302.2" x2="281.8" y2="179.8" stroke="#d97706" stroke-width="3"/>
+<text x="256.0" y="235.0" font-size="13" fill="#1e3a8a" font-weight="700" text-anchor="start" font-style="normal">x = 2</text>
+<text x="60" y="410" font-size="15" fill="#78350f" font-weight="700" text-anchor="start" font-style="normal" font-family="ui-monospace, Menlo, monospace">slope of the slice at x=2  =  &#8706;f/&#8706;x  =  4</text>
+<rect x="490" y="96" width="430" height="340" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+<text x="510" y="126" font-size="15" fill="#14532d" font-weight="700" text-anchor="start" font-style="normal">slice along y  (hold x = 2)</text>
+<text x="510" y="148" font-size="13" fill="#57606a" font-weight="normal" text-anchor="start" font-style="normal">the slice is the curve h(y) = 4 + 3y&#178;</text>
+<line x1="630.0" y1="360.0" x2="737.8" y2="360.0" stroke="#9ca3af" stroke-width="2"/>
+<line x1="640.0" y1="372.0" x2="640.0" y2="130.0" stroke="#9ca3af" stroke-width="2"/>
+<polyline points="564.4,195.4 572.8,219.8 581.2,241.4 589.6,260.2 598.0,276.0 606.4,289.0 614.8,299.0 623.2,306.2 631.6,310.6 640.0,312.0 648.4,310.6 656.8,306.2 665.2,299.0 673.6,289.0 682.0,276.0 690.4,260.2 698.8,241.4 707.2,219.8 715.6,195.4" fill="none" stroke="#16a34a" stroke-width="3.5"/>
+<circle cx="682.0" cy="276.0" r="6" fill="#16a34a"/>
+<line x1="644.2" y1="340.8" x2="719.8" y2="211.2" stroke="#d97706" stroke-width="3"/>
+<text x="694.0" y="270.0" font-size="13" fill="#14532d" font-weight="700" text-anchor="start" font-style="normal">y = 1</text>
+<text x="510" y="410" font-size="15" fill="#78350f" font-weight="700" text-anchor="start" font-style="normal" font-family="ui-monospace, Menlo, monospace">slope of the slice at y=1  =  &#8706;f/&#8706;y  =  6</text>
+<text x="60" y="456" font-size="14" fill="#57606a" font-weight="normal" text-anchor="start" font-style="normal">Orange line = the tangent, whose steepness IS the partial derivative. Two slices, two numbers: 4 and 6.</text>
+</svg>
