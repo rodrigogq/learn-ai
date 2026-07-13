@@ -125,24 +125,73 @@ Same ~96% as Chapter 9 (the small difference is initialization randomness, as di
 
 ## Code walkthrough
 
-Two Python files. `pytorch_basics.py` is a tour of the three ideas; `train_mnist_pytorch.py` rebuilds Chapter 9 in 30 lines.
+Two Python files: `pytorch_basics.py` tours the three ideas, and `train_mnist_pytorch.py` rebuilds Chapter 9 in about 30 lines. The good news for reading them — **every line is a chapter you already did**, now with a framework's spelling. No new algorithm, just new names.
 
-**`pytorch_basics.py`:**
+### Step 1 — tensors are Chapter 2's matrices (`pytorch_basics.py`)
 
-| Function | What it does | What to notice |
-|----------|--------------|----------------|
-| `demonstrate_tensors()` | Redoes Chapter 2's `Wx = (8,10,2)`, reshapes a batch, shows broadcasting. | `reshape` copies nothing — Section 2's storage+strides point, live. |
-| `demonstrate_autograd()` | Runs Chapter 8's `(a·b+c)²` with `requires_grad=True` and `.backward()`. | Same gradients (30, 20, 10) as your hand-built engine. PyTorch's autograd *is* your `TrackedValue`, renamed. |
-| `demonstrate_devices()` | Times a matmul on CPU vs your GPU. | `.to(device)` is the only change needed to move work to hardware. |
+```python
+weight_matrix = torch.tensor([[2.0, 0.0], [1.0, 3.0], [0.0, 1.0]])
+input_vector = torch.tensor([4.0, 2.0])
+weight_matrix @ input_vector          # Chapter 2's worked example, = (8, 10, 2)
+image_batch = torch.zeros(100, 28, 28)
+flattened_batch = image_batch.reshape(100, 784)
+```
 
-**`train_mnist_pytorch.py`:**
+`torch.tensor([...])` wraps a list of numbers into a **tensor** — Chapter 2's matrix, now a first-class object. `@` is the same matrix multiply from Chapter 2. `torch.zeros(100, 28, 28)` makes a 3-D tensor: 100 images, each 28×28. `.reshape(100, 784)` re-reads that same data as 100 flat rows of 784 — and, as Section 2 stressed, **copies nothing**; it just changes the shape-and-strides view. The last demo adds a shape-`(4,)` vector to a `(2, 4)` matrix and PyTorch **broadcasts** it onto every row automatically — the implicit loop that replaces most explicit ones.
 
-| Piece | What it does | What to notice |
-|-------|--------------|----------------|
-| `class DigitClassifier` | Chapter 9's network as `nn.Linear(784,128)` → ReLU → `nn.Linear(128,10)`. | `nn.Linear` **is** the weighted-sum layer you wrote by hand; `nn.Module` collects its parameters automatically. |
-| `.forward()` | Hidden ReLU then output — no softmax. | The loss applies softmax internally (fused for stability), so the model outputs raw scores. |
-| `measure_accuracy()` | Counts correct predictions, wrapped in `torch.no_grad()`. | `no_grad` skips graph-building during evaluation — faster, and standard practice. |
-| `main()` | The eternal loop in PyTorch spelling: `zero_grad` → `backward` → `step`. | The table in Section 5 maps each line to a chapter you already did. `optimizer.zero_grad()` exists because gradients accumulate (Chapter 8's `+=`). |
+### Step 2 — autograd is Chapter 8's engine, renamed
+
+```python
+input_a = torch.tensor(2.0, requires_grad=True)
+loss = (input_a * input_b + input_c) ** 2
+loss.backward()
+input_a.grad     # -> 30, exactly Chapter 8's figure
+```
+
+This is your `TrackedValue` from Chapter 8, industrial-strength. `requires_grad=True` marks a leaf as trainable (the thing you want gradients for); building the formula assembles the graph as a side effect (just like your operator overloading did); `loss.backward()` **is** your `run_backward_pass()`; and `input_a.grad` holds the result. It runs Chapter 8's exact `(a·b+c)²` case and prints the exact same gradients 30, 20, 10 — proof that nothing changed but the spelling.
+
+### Step 3 — devices: one word moves the work
+
+```python
+chosen_device = select_best_available_device()   # CUDA, else MPS, else CPU
+first_matrix_on_device = first_matrix.to(chosen_device)
+```
+
+`select_best_available_device()` (from `common/device.py`) picks the best hardware present. `.to(device)` copies a tensor there, and that single call is the *only* change needed to run on a GPU. The demo times a 2048×2048 matmul on CPU versus the accelerator. The one rule: tensors that interact must be on the same device.
+
+### Step 4 — the model as an `nn.Module` (`train_mnist_pytorch.py`)
+
+```python
+class DigitClassifier(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.hidden_layer = nn.Linear(784, 128)
+        self.output_layer = nn.Linear(128, 10)
+
+    def forward(self, image_batch):
+        hidden_activation = torch.relu(self.hidden_layer(image_batch))
+        return self.output_layer(hidden_activation)
+```
+
+`nn.Linear(784, 128)` **is** the weighted-sum layer you built by hand in Chapter 9 — it owns a weight matrix and a bias and computes `x @ W.T + b`. `nn.Module` is the base class that quietly collects every parameter inside the model, so one call to `.to(device)` moves them all and `model.parameters()` can hand them all to the optimizer. `forward` is Chapter 9's two-layer pass: hidden layer → ReLU → output layer. Note there is **no softmax** — the loss function will apply it internally.
+
+### Step 5 — the eternal loop, in PyTorch spelling
+
+```python
+class_scores = model(image_batch)                  # forward
+loss = loss_function(class_scores, label_batch)    # loss
+optimizer.zero_grad()                              # clear old gradients (they accumulate - Chapter 8's +=)
+loss.backward()                                    # backward: every gradient, automatically
+optimizer.step()                                   # update all parameters
+```
+
+This is the same *forward, loss, gradients, update* loop from Chapter 5, now five framework calls. `model(image_batch)` runs the forward pass; `nn.CrossEntropyLoss` computes the loss (and applies softmax + log together, the fused-for-stability version of your Chapter 9 max-subtraction trick); `optimizer.zero_grad()` clears last step's gradients — **this line exists only because gradients accumulate with `+=`, exactly as you saw in Chapter 8**; `loss.backward()` fills in every gradient; `optimizer.step()` takes the downhill step on all parameters at once. Evaluation is wrapped in `with torch.no_grad():` so autograd does not bother building a graph it will not use — faster, and standard practice. Five epochs, same ~96% as Chapter 9, a fraction of the code.
+
+### Quick reference
+
+**`pytorch_basics.py`** — `demonstrate_tensors()` (Chapter 2's matmul, reshape, broadcasting), `demonstrate_autograd()` (Chapter 8's `(a·b+c)²`, same 30/20/10), `demonstrate_devices()` (CPU vs GPU matmul; `.to(device)` is the only change).
+
+**`train_mnist_pytorch.py`** — `class DigitClassifier` (Chapter 9's net as two `nn.Linear` layers), `.forward()` (hidden ReLU → output, no softmax), `measure_accuracy()` (correct-count under `torch.no_grad()`), `main()` (the `zero_grad → backward → step` loop; Section 5's table maps each line to a chapter you already did).
 
 ## Run it
 
