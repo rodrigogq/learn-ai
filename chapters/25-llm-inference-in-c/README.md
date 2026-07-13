@@ -94,20 +94,52 @@ Run the C engine on the same prompt and it samples from exactly this ranking. Th
 
 ## Code walkthrough
 
-This chapter's real code is the C file; the Python is glue. Here is the map of both.
+This chapter's real code is the C file; the Python just exports the weights and checks the answer. The model itself is Chapters 20/22/23, now in loops. No prior programming assumed.
 
-**`python/export_llm_for_c.py`** — turns the checkpoint into a flat `.bin`:
-- `write_tensor(file, tensor, quantize)` — writes a tensor as float32, or (for 2-D weight matrices, if `--quantize`) as **int8 + a scale**. Small/sensitive tensors stay float32.
-- `main()` — writes the header (magic + dimensions), the tokenizer merges, then every weight in the exact order the C engine reads them.
+### Step 1 — exporting the weights (and shrinking them to int8)
 
-**`c/llm_inference.c`** — the whole model, ~400 lines. The functions worth finding:
-- `load_model` / `read_matrix` — walk the `.bin` in the documented order, handling float32 or int8.
-- `matvec(weight, bias, input, output)` — matrix×vector plus bias, **dequantizing int8 on the fly**. ~99% of the runtime lives here; it is Chapter 2, finally running an LLM.
-- `forward(model, tokens, length, logits_out)` — the full pass: embeddings, then per block the multi-head causal attention (Chapter 22, by hand) and the MLP, with `layer_norm`, `gelu`, and residual adds.
-- `encode_prompt` / `print_token` — the BPE tokenizer (Chapter 20) built in.
-- `sample(logits, ..., temperature, top_k)` — Chapter 23's sampling.
+```python
+scale = numpy.abs(array).max() / 127.0
+quantized = numpy.round(array / scale).astype(numpy.int8)
+output_file.write(struct.pack("f", scale))
+output_file.write(quantized.tobytes())
+```
 
-**`python/verify_against_c.py`** prints PyTorch's top-5 next tokens so you can confirm the C engine's ranking matches — the honest correctness check (generation is random, so text can't be the test).
+`export_llm_for_c.py` writes each trained tensor to a flat `.bin` file. With `--quantize`, the big weight matrices are stored as **int8 instead of float32** — one quarter the size. The idea (int8 **quantization**) is simple: find the largest magnitude in the matrix, define a single `scale` so that value maps to 127, then store every weight as the nearest integer in −127…127 plus that one float `scale`. Four bytes become one, and you only lose a little precision. Small, sensitive tensors stay float32.
+
+### Step 2 — the hot loop: `matvec`, dequantizing on the fly
+
+```c
+if (weight->is_quantized) {
+    for (int col = 0; col < weight->column_count; col++) {
+        sum += weight->scale * weight->int8_values[base + col] * input[col];
+    }
+} else {
+    for (int col = 0; col < weight->column_count; col++) {
+        sum += weight->float_values[base + col] * input[col];
+    }
+}
+```
+
+`matvec` is matrix×vector plus bias — Chapter 2's dot product, one per output row — and **about 99% of an LLM's runtime is right here**. The only cleverness: when the weights are int8, it turns each one back into a real number *as it multiplies* — `scale * int8_value` reconstructs the float, no separate unpacking step. So the quantized model uses a quarter of the memory yet runs the same arithmetic. Everything else in the file exists to call this function a few billion times.
+
+### Step 3 — the forward pass, in C
+
+`forward` is Chapters 22 and 23 written as plain loops: look up the token and position embeddings, then for each block run multi-head causal attention (the same scores → mask → softmax → blend, by hand) and the MLP, each wrapped in `layer_norm`, `gelu`, and a residual add, and finally the next-token scores. `encode_prompt`/`print_token` are Chapter 20's BPE tokenizer built in, and `sample` is Chapter 23's temperature/top-k sampling. No framework, no magic — a few hundred lines of arithmetic reading a file of numbers.
+
+### Step 4 — checking it is correct (rank, not text)
+
+Because generation is random, you cannot test it by comparing text. `verify_against_c.py` instead prints PyTorch's **top-5 most likely next tokens** for a fixed prompt, so you can confirm the C engine ranks the same tokens in the same order. Matching *rankings* is the honest correctness check for a sampler.
+
+### Quick reference
+
+| File | Key piece | What to notice |
+|------|-----------|----------------|
+| `export_llm_for_c.py` | `write_tensor(file, tensor, quantize)` | float32, or **int8 + one scale** for big matrices (¼ the size). |
+| `llm_inference.c` | `matvec(...)` | Matrix×vector, **dequantizing int8 on the fly**; ~99% of runtime. |
+| `llm_inference.c` | `forward(...)` | Chapters 22/23 as loops: embeddings, attention, MLP, norm, residual. |
+| `llm_inference.c` | `encode_prompt` / `sample` | Chapter 20's tokenizer and Chapter 23's sampling, in C. |
+| `verify_against_c.py` | prints PyTorch's top-5 | Confirms the C engine's ranking matches — the honest check. |
 
 ## Run it
 
