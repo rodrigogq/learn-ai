@@ -128,7 +128,77 @@ Read it like a practitioner: the loss falls fast, then slower (the bowl flattens
 
 ## Code walkthrough
 
-The example is `python/train_mnist_mlp.py` — the first full network, still hand-built in NumPy. The `TwoLayerNetwork` class holds everything; read its methods in order:
+The example is `python/train_mnist_mlp.py` — the first full network, still hand-built. It brings in one new tool, so we start there. No prior programming assumed.
+
+### Step 0 — the new tool: NumPy, arithmetic on whole grids at once
+
+Until now our loops touched one number at a time. That was fine for 2 parameters; this network has 101,770 and processes 100 images per step, so number-by-number would crawl. **NumPy** is a library that stores a whole grid of numbers as one `array` and does arithmetic on all of them at once (internally in fast compiled code). Two pieces of notation carry the whole chapter:
+
+- `A @ B` is **matrix multiplication** — exactly Chapter 2's operation, now one symbol. This single operation is where essentially all the network's work happens.
+- Plain operators act **element-wise** on entire arrays: `array - 5` subtracts 5 from every entry, `array > 0` returns a grid of True/False, and functions like `numpy.exp(array)` or `numpy.maximum(0.0, array)` apply to every element. So a line with no visible loop is quietly doing thousands of operations.
+
+### Step 1 — softmax on a whole batch
+
+```python
+def softmax_rows(score_matrix):
+    shifted_scores = score_matrix - score_matrix.max(axis=1, keepdims=True)
+    exponentiated = numpy.exp(shifted_scores)
+    return exponentiated / exponentiated.sum(axis=1, keepdims=True)
+```
+
+`score_matrix` holds one row of 10 scores per image. `axis=1` means "work along each row" (`keepdims=True` keeps the shape so the subtraction lines up). So this subtracts each row's own maximum (the overflow guard from Section 3 — it cancels in the division), exponentiates every score, and divides each row by its total. Section 3's formula, applied to a whole batch in three lines with no loop.
+
+### Step 2 — the network: four parameter arrays
+
+```python
+self.hidden_weights = random_generator.normal(0.0, numpy.sqrt(2.0 / input_size), (input_size, hidden_size))
+self.hidden_biases  = numpy.zeros(hidden_size)
+self.output_weights = random_generator.normal(0.0, numpy.sqrt(2.0 / hidden_size), (hidden_size, output_size))
+self.output_biases  = numpy.zeros(output_size)
+```
+
+The whole model is these four arrays (Chapter 8 taught the object/`self` idea). The weights start as small random numbers scaled by `sqrt(2 / fan-in)` — **He initialization**, the reason training starts healthy instead of exploding (Chapter 11 returns to it); the biases start at zero. `(input_size, hidden_size)` is the array's shape, `784 × 128`.
+
+### Step 3 — the forward pass: two matrix multiplies
+
+```python
+hidden_pre_activation = image_batch @ self.hidden_weights + self.hidden_biases
+hidden_activation = numpy.maximum(0.0, hidden_pre_activation)  # ReLU
+output_scores = hidden_activation @ self.output_weights + self.output_biases
+class_probabilities = softmax_rows(output_scores)
+```
+
+This is the entire model, and it is Section 2's two formulas typed out. `image_batch @ self.hidden_weights` computes all 128 hidden weighted sums for all 100 images in one matrix multiply; `numpy.maximum(0.0, ...)` is ReLU (keep positives, zero the rest); a second `@` produces the 10 output scores; softmax turns them into probabilities. The method returns the intermediate values too, because — as Chapter 8 showed — the backward pass needs them.
+
+### Step 4 — loss and the five-line matrix backprop
+
+```python
+output_score_gradient = (class_probabilities - one_hot_labels) / batch_size
+gradients["output_weights"] = hidden_activation.T @ output_score_gradient
+gradients["output_biases"]  = output_score_gradient.sum(axis=0)
+hidden_activation_gradient = output_score_gradient @ self.output_weights.T
+hidden_pre_activation_gradient = hidden_activation_gradient * (hidden_pre_activation > 0.0)
+gradients["hidden_weights"] = image_batch.T @ hidden_pre_activation_gradient
+gradients["hidden_biases"]  = hidden_pre_activation_gradient.sum(axis=0)
+```
+
+These are the exact five lines from Section 4's table — each one a Chapter 8 local rule applied to a **whole layer at once** instead of one node. The first line is the star: softmax + cross-entropy cancel to `class_probabilities - one_hot_labels`, the same `prediction − truth` error for the third chapter running. From there, `.T` is matrix transpose and every `@` is the multiply rule; `* (hidden_pre_activation > 0.0)` is ReLU's rule (let gradient through only where the input was positive); `.sum(axis=0)` is the add rule summed over the batch. `verify_gradients_numerically` spot-checks these against Chapter 3's central difference before training trusts them.
+
+### Step 5 — mini-batch SGD
+
+```python
+shuffled_order = shuffle_generator.permutation(len(training_images))
+for batch_start in range(0, len(training_images) - batch_size + 1, batch_size):
+    batch_indices = shuffled_order[batch_start:batch_start + batch_size]
+    loss, gradients = network.compute_loss_and_gradients(
+        training_images[batch_indices], training_labels[batch_indices]
+    )
+    network.apply_gradient_step(gradients, learning_rate)
+```
+
+Each epoch shuffles the 60,000 images, then walks them 100 at a time. For each batch it is the eternal loop — compute loss and gradients on those 100 images, then step every parameter against its gradient (`apply_gradient_step` is Chapter 5's update, done four times). 600 small, slightly-noisy steps per epoch instead of one exact step, which is both faster and, happily, generalizes a touch better (Section 5). Five epochs and the network reads unseen digits at ~96%.
+
+### Quick reference
 
 | Piece | What it does | What to notice |
 |-------|--------------|----------------|
