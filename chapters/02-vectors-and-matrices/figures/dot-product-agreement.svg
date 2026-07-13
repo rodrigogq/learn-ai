@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="960" height="460" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">The dot product measures agreement between two vectors</text>
+  <text x="60" y="72" font-size="15" fill="#57606a">Same vector a = (1, 2) in every panel; only b changes. Watch the sign of a &#183; b track the angle.</text>
+
+  <defs>
+    <marker id="avec" markerWidth="9" markerHeight="7" refX="7" refY="3.5" orient="auto"><polygon points="0 0, 8 3.5, 0 7" fill="#2563eb"/></marker>
+    <marker id="bvecP" markerWidth="9" markerHeight="7" refX="7" refY="3.5" orient="auto"><polygon points="0 0, 8 3.5, 0 7" fill="#16a34a"/></marker>
+    <marker id="bvecZ" markerWidth="9" markerHeight="7" refX="7" refY="3.5" orient="auto"><polygon points="0 0, 8 3.5, 0 7" fill="#6b7280"/></marker>
+    <marker id="bvecN" markerWidth="9" markerHeight="7" refX="7" refY="3.5" orient="auto"><polygon points="0 0, 8 3.5, 0 7" fill="#dc2626"/></marker>
+  </defs>
+
+  <!-- ===== PANEL 1: same-ish direction, positive (the book's example b=(3,1)) =====
+       origin at (170, 300); scale 30 px per unit. a=(1,2)->(200,240). b=(3,1)->(260,270) -->
+  <g>
+    <rect x="40" y="96" width="280" height="330" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+    <!-- light grid axes -->
+    <line x1="70" y1="300" x2="300" y2="300" stroke="#e5e7eb" stroke-width="1.5"/>
+    <line x1="170" y1="380" x2="170" y2="120" stroke="#e5e7eb" stroke-width="1.5"/>
+    <!-- a -->
+    <line x1="170" y1="300" x2="200" y2="240" stroke="#2563eb" stroke-width="3.5" marker-end="url(#avec)"/>
+    <text x="204" y="236" font-size="14" font-weight="700" fill="#1e3a8a">a=(1,2)</text>
+    <!-- b=(3,1) -->
+    <line x1="170" y1="300" x2="260" y2="270" stroke="#16a34a" stroke-width="3.5" marker-end="url(#bvecP)"/>
+    <text x="240" y="292" font-size="14" font-weight="700" fill="#14532d">b=(3,1)</text>
+    <!-- angle hint -->
+    <path d="M 196 288 A 26 26 0 0 0 189 275" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+    <text x="80" y="128" font-size="14" font-weight="700" fill="#14532d">pointing a similar way</text>
+    <text x="80" y="410" font-size="16" font-family="ui-monospace, Menlo, monospace" fill="#14532d">a&#183;b = 1&#183;3 + 2&#183;1 = +5</text>
+    <text x="80" y="372" font-size="13" fill="#57606a">positive: they agree</text>
+  </g>
+
+  <!-- ===== PANEL 2: perpendicular, zero. b=(2,-1). origin (490,300). b->(550,330) -->
+  <g>
+    <rect x="360" y="96" width="280" height="330" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+    <line x1="390" y1="300" x2="620" y2="300" stroke="#e5e7eb" stroke-width="1.5"/>
+    <line x1="490" y1="380" x2="490" y2="120" stroke="#e5e7eb" stroke-width="1.5"/>
+    <!-- a=(1,2)->(520,240) -->
+    <line x1="490" y1="300" x2="520" y2="240" stroke="#2563eb" stroke-width="3.5" marker-end="url(#avec)"/>
+    <text x="524" y="236" font-size="14" font-weight="700" fill="#1e3a8a">a=(1,2)</text>
+    <!-- b=(2,-1)->(550,330) -->
+    <line x1="490" y1="300" x2="550" y2="330" stroke="#6b7280" stroke-width="3.5" marker-end="url(#bvecZ)"/>
+    <text x="552" y="346" font-size="14" font-weight="700" fill="#374151">b=(2,-1)</text>
+    <!-- right-angle mark -->
+    <path d="M 508 294 L 514 308 L 500 314" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+    <text x="400" y="128" font-size="14" font-weight="700" fill="#374151">at a right angle (90&#176;)</text>
+    <text x="400" y="410" font-size="16" font-family="ui-monospace, Menlo, monospace" fill="#374151">a&#183;b = 1&#183;2 + 2&#183;(&#8722;1) = 0</text>
+    <text x="400" y="372" font-size="13" fill="#57606a">zero: no agreement</text>
+  </g>
+
+  <!-- ===== PANEL 3: opposite, negative. b=(-3,-1). origin (810,300). b->(720,330) -->
+  <g>
+    <rect x="680" y="96" width="240" height="330" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+    <line x1="700" y1="300" x2="900" y2="300" stroke="#e5e7eb" stroke-width="1.5"/>
+    <line x1="810" y1="380" x2="810" y2="120" stroke="#e5e7eb" stroke-width="1.5"/>
+    <!-- a=(1,2)->(840,240) -->
+    <line x1="810" y1="300" x2="840" y2="240" stroke="#2563eb" stroke-width="3.5" marker-end="url(#avec)"/>
+    <text x="844" y="236" font-size="14" font-weight="700" fill="#1e3a8a">a=(1,2)</text>
+    <!-- b=(-3,-1)->(720,330) -->
+    <line x1="810" y1="300" x2="720" y2="330" stroke="#dc2626" stroke-width="3.5" marker-end="url(#bvecN)"/>
+    <text x="700" y="352" font-size="14" font-weight="700" fill="#7f1d1d">b=(&#8722;3,&#8722;1)</text>
+    <text x="700" y="128" font-size="14" font-weight="700" fill="#7f1d1d">pointing the other way</text>
+    <text x="700" y="410" font-size="15" font-family="ui-monospace, Menlo, monospace" fill="#7f1d1d">a&#183;b = &#8722;3 + &#8722;2 = &#8722;5</text>
+    <text x="700" y="372" font-size="13" fill="#57606a">negative: they disagree</text>
+  </g>
+</svg>
