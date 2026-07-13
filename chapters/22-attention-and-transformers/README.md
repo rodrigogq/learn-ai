@@ -93,17 +93,62 @@ One last necessity: attention treats input as a *set* (shuffle the tokens and ou
 
 ## Code walkthrough
 
-The example is `python/attention_from_scratch.py`. The mechanism is one four-line function; the rest verifies it and watches it learn:
+The example is `python/attention_from_scratch.py`. The entire mechanism behind every transformer — and every LLM — is one four-line function. No prior programming assumed.
+
+### Step 1 — the whole mechanism, in four lines
+
+```python
+def scaled_dot_product_attention(queries, keys, values, causal_mask=False):
+    key_size = queries.shape[-1]
+    match_scores = queries @ keys.T / math.sqrt(key_size)
+    if causal_mask:
+        future_positions = torch.triu(torch.ones_like(match_scores, dtype=torch.bool), diagonal=1)
+        match_scores = match_scores.masked_fill(future_positions, float("-inf"))
+    attention_weights = torch.softmax(match_scores, dim=-1)
+    return attention_weights @ values, attention_weights
+```
+
+Three inputs, each one vector per token: a **query** ("what am I looking for?"), a **key** ("what do I offer to be found by?"), and a **value** ("what do I hand over if chosen?"). Read the four lines:
+
+- `queries @ keys.T` dots **every** query with **every** key — Chapter 2's "how aligned are these?" run for all pairs at once, giving a score for how well each position matches each other position. Dividing by `math.sqrt(key_size)` keeps those dot products from growing with dimension and saturating the softmax.
+- `torch.softmax(match_scores, dim=-1)` turns each row of scores into weights that sum to 1 — how much each position should attend to every other.
+- `attention_weights @ values` produces each output as a **weighted average of all the value vectors**, weighted by those attention weights.
+
+That is attention: every position looks at every other, decides how relevant each is by matching queries to keys, and pulls in a blend of their values. `demonstrate_worked_example` runs the figure's 3-token case with these exact lines, and `verify_against_pytorch` confirms it matches PyTorch's fused kernel to 0.00.
+
+### Step 2 — the causal mask (hiding the future)
+
+The `if causal_mask` branch is what makes a *language* model. `torch.triu(..., diagonal=1)` marks every position *above* the diagonal — i.e. every future position — and `masked_fill(..., float("-inf"))` sets those scores to negative infinity **before** the softmax, so they come out as exactly zero weight. The effect: position *i* can attend only to positions ≤ *i*, never to words it has not generated yet. Without this a model could cheat by peeking ahead; with it, "predict the next token" stays honest.
+
+### Step 3 — a model that *learns* what to ask, offer, and hand over
+
+```python
+self.query_projection = nn.Linear(embedding_size, embedding_size, bias=False)
+self.key_projection = nn.Linear(embedding_size, embedding_size, bias=False)
+self.value_projection = nn.Linear(embedding_size, embedding_size, bias=False)
+...
+queries = self.query_projection(embedded)
+keys = self.key_projection(embedded)
+values = self.value_projection(embedded)
+```
+
+Where do the queries, keys, and values come from? From the tokens themselves, through three **learned** matrices `W_q`, `W_k`, `W_v` (the three `nn.Linear` projections). Each token's embedding is projected three ways, so the model *learns* what each token should ask for, what it advertises, and what it contributes. Those three matrices are the only real parameters of an attention layer.
+
+### Step 4 — watching it learn to look
+
+`build_lookup_batch` makes a tiny task: a shuffled list of "key:value cards" followed by a query key, and the model must output the value of the *matching* card — whose position is different every time, so it cannot memorize a location and must match by **content**. `train_lookup_model` trains one attention layer on this and then prints the attention weights: ~99.5% of the weight lands on the correct card. That is content-based addressing, learned from nothing — the atomic skill an LLM uses to find the relevant clause in a long prompt.
+
+The C file `c/attention_head.c` is one attention head in ~60 lines producing the same numbers — proof that the mechanism behind every LLM is dot products and a softmax.
+
+### Quick reference
 
 | Piece | What it does | What to notice |
 |-------|--------------|----------------|
-| `scaled_dot_product_attention(Q, K, V, causal_mask)` | **The whole mechanism:** `softmax(Q·Kᵀ / √d) · V`, with the optional causal mask. | Four lines. `Q @ K.T` is every query dotted with every key (Chapter 2); the mask sets future scores to `−inf` before softmax. This *is* attention. |
-| `demonstrate_worked_example()` | Runs the 3-token, 2-dim example from the figure, masked and unmasked. | Reproduces the exact numbers you can check by hand. |
-| `verify_against_pytorch()` | Compares against `torch.nn.functional.scaled_dot_product_attention`. | Difference 0.00 — the fused kernel does the same math. |
-| `class OneAttentionLayerModel` | Embedding → one attention layer → classifier, for the lookup task. | The `query/key/value_projection` are the three learned matrices `W_q, W_k, W_v` — the model *learns* what to ask, offer, and hand over. |
-| `train_lookup_model(device)` | Trains on "find the card matching the query" and **prints the attention weights**. | The printout shows 99.5% of attention landing on the correct card — content-based addressing, learned. This is the atomic skill of an LLM finding a relevant clause. |
-
-The C file `c/attention_head.c` is one attention head in ~60 lines producing the same numbers — proof that the mechanism behind every LLM is dot products and a softmax.
+| `scaled_dot_product_attention(Q, K, V, causal_mask)` | **The whole mechanism:** `softmax(Q·Kᵀ / √d) · V`. | `Q @ K.T` is every query dotted with every key; the mask sets future scores to `−inf`. |
+| `demonstrate_worked_example()` | The 3-token, 2-dim example, masked and unmasked. | The exact numbers you can check by hand. |
+| `verify_against_pytorch()` | Compares against PyTorch's fused kernel. | Difference 0.00 — same math. |
+| `class OneAttentionLayerModel` | Embedding → one attention layer → classifier. | `query/key/value_projection` are the learned `W_q, W_k, W_v`. |
+| `train_lookup_model(device)` | Trains "find the matching card" and **prints attention weights**. | ~99.5% of attention lands on the right card — content-based addressing, learned. |
 
 ## Run it
 
