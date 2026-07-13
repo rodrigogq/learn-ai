@@ -112,6 +112,12 @@ The Python version (`python/tiny_autograd.py`) spells this out in ~100 heavily d
 
 With the engine, Chapter 7's embarrassment disappears. We build a tiny network — 2 inputs → 3 tanh neurons → 1 tanh output — as ordinary arithmetic on `TrackedValue`s, and train it on XOR.
 
+![The XOR network: two inputs feeding three hidden tanh neurons, feeding one output neuron](figures/xor-network-architecture.svg)
+
+**Why is there a separate output neuron — couldn't the network just be the 3?** No, and the reason is worth pinning down. The three hidden neurons each produce *one number* (their tanh activation), so together they hand you **three numbers**. But the task needs **one** answer: the single XOR value. Something has to reduce three numbers to one — and "take a weighted sum and squash it" is precisely a neuron. So the output neuron is not decoration; it is the piece that *combines* the hidden layer's three findings into the final answer. A network of "just the 3" would be three separate detectors with no one deciding the verdict.
+
+**Why does the output neuron look at all three hidden neurons?** Because combining them **is** its job — and looking at all three is exactly what "combine the middle layer" means. Recall Chapter 7's geometry: each hidden neuron draws one straight dividing line, and XOR needs at least two lines working together. The output neuron takes a weighted sum of *all three* hidden outputs (`v₁·h₁ + v₂·h₂ + v₃·h₃ + b`), learning how much each line's verdict should count, and bends the result through tanh into the final decision. If it saw only one hidden neuron, it would have only one line's worth of information — not enough for XOR. So "seeing all three" is not extra; it is the combination itself. (This full connectivity — every neuron in a layer feeding every neuron in the next — is the default, and the shape 2→3→1 is a deliberate hand-picked choice, as the walkthrough explains.)
+
 **Why tanh here, and not Chapter 7's step function?** This is not a detail — it is the whole reason backpropagation needs a new activation. The perceptron's **step** has a slope of exactly zero everywhere (it is flat, then it jumps, then flat again). But backprop trains by *multiplying* gradients as they flow backward, so a zero slope multiplies everything to zero: no gradient survives, and the network can never learn. To send gradient back through a layer you need a **smooth** activation — one with a real, nonzero slope. `tanh` is exactly that: the S-shaped squashing function from Chapter 7, smooth and bounded, with the clean derivative $1 - t^2$ already sitting in our Section 2 table. (Chapter 6's sigmoid would work too; tanh is the conventional pick for hidden layers because its output is centered on zero.)
 
 That choice also fixes how we phrase the problem. Because tanh only ever outputs values between $-1$ and $+1$, we encode XOR's two answers at those ends — $-1$ meaning "false", $+1$ meaning "true" — and the squared-error loss (`sum of (out − target)²`) pushes each prediction toward its target:
@@ -177,29 +183,7 @@ def __mul__(self, other_value):
 
 Notice the `+=` (not `=`) on every gradient. That is Section 3's "a value used in several places collects gradient from all of them" rule, and forgetting it is the single most common autograd bug.
 
-### Step 3 — the backward pass
-
-```python
-def run_backward_pass(self):
-    nodes_in_construction_order = []
-    already_visited = set()
-
-    def visit_parents_first(value):
-        if id(value) not in already_visited:
-            already_visited.add(id(value))
-            for parent in value._parent_values:
-                visit_parents_first(parent)
-            nodes_in_construction_order.append(value)
-
-    visit_parents_first(self)
-    self.gradient = 1.0
-    for value in reversed(nodes_in_construction_order):
-        value._propagate_gradient_to_parents()
-```
-
-This is Section 3, mechanized. `visit_parents_first` walks the graph and lists every node so that parents always appear before children (a *topological sort*). Then the two lines that matter: seed the final node's gradient with `self.gradient = 1.0` (that is $dL/dL = 1$, the starting point), and walk the list **backward**, calling each node's stored rule. Because we go in reverse, a node's gradient is fully collected before it hands anything to its parents. One pass, and every `TrackedValue` in the graph now holds its gradient.
-
-### Step 4 — building the network (how the layers are assembled, and where the randomness goes)
+### Step 3 — building the network (how the layers are assembled, and where the randomness goes)
 
 Before anything can train, `train_xor_network()` builds the network. Keep two decisions separate here, because they are genuinely different:
 
@@ -241,6 +225,28 @@ def network_forward(first_input, second_input):
 
 This is Chapter 7's two-layer picture, in code. The loop runs each hidden neuron — weighted sum of the two inputs, plus bias, through `tanh` — and collects the three results in `hidden_activations`. Then the output neuron takes *those three* as its inputs, forms its own weighted sum plus bias, and passes it through `tanh` to give the single prediction. The key point: every `*`, `+`, and `.tanh()` here is a `TrackedValue` operation, so merely *computing the prediction* wires up the whole computation graph — ready for one `run_backward_pass()` to reach all 13 parameters.
 
+### Step 4 — the backward pass
+
+```python
+def run_backward_pass(self):
+    nodes_in_construction_order = []
+    already_visited = set()
+
+    def visit_parents_first(value):
+        if id(value) not in already_visited:
+            already_visited.add(id(value))
+            for parent in value._parent_values:
+                visit_parents_first(parent)
+            nodes_in_construction_order.append(value)
+
+    visit_parents_first(self)
+    self.gradient = 1.0
+    for value in reversed(nodes_in_construction_order):
+        value._propagate_gradient_to_parents()
+```
+
+This is Section 3, mechanized — and now we have a real network graph (Step 3) for it to run on. `visit_parents_first` walks the graph and lists every node so that parents always appear before children (a *topological sort*). Then the two lines that matter: seed the final node's gradient with `self.gradient = 1.0` (that is $dL/dL = 1$, the starting point), and walk the list **backward**, calling each node's stored rule. Because we go in reverse, a node's gradient is fully collected before it hands anything to its parents. One pass, and every `TrackedValue` in the graph now holds its gradient.
+
 ### Step 5 — the payoff: XOR, learned
 
 ```python
@@ -261,7 +267,7 @@ Here is Chapter 5's training loop with step 3 fully automated. Each epoch: build
 | `__add__`, `__mul__`, `tanh` (methods) | Each does *double duty*: computes the result **and** records how to send gradient back to its parents (a closure). | The graph builds itself as a side effect of doing arithmetic. |
 | `run_backward_pass()` (method) | Seeds the final gradient with 1, then visits nodes in reverse order applying each local rule. | The `+=` on gradients is the "used twice → gradient from both paths" rule. |
 | `demonstrate_graph_backpropagation()` | Backpropagates `L = (a·b + c)²`, reproduces the figure's gradients (30, 20, 10), **and re-checks them numerically**. | The engine grading itself against Chapter 3. |
-| `train_xor_network()` | Builds a 2-3-1 tanh net out of `TrackedValue`s and trains it on XOR. | Step 3 is now a single `loss.run_backward_pass()` — the payoff of the whole chapter. |
+| `train_xor_network()` | Builds a 2-3-1 tanh net out of `TrackedValue`s and trains it on XOR. | The gradient step of the training loop is now a single `loss.run_backward_pass()` — the payoff of the whole chapter. |
 
 The C version (`c/tiny_autograd.c`) does the same with an **arena** — one array of node structs, each storing its operation and parent indices — because C has no operator overloading. It is closer to how real frameworks actually work than the Python.
 
