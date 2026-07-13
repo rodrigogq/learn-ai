@@ -113,7 +113,7 @@ Status: `[ ]` not started · `[~]` drafted, examples untested · `[x]` done (tex
 
 ### Part VI — Generative AI
 
-- [ ] 26-autoencoders-and-vaes — latent spaces; VAE on MNIST. C: decoder inference.
+- [x] 26-autoencoders-and-vaes — autoencoder + VAE on MNIST, 2-D latent space, generated digits. C: generative decoder MLP.
 - [ ] 27-gans — DCGAN on small images. C: generator inference.
 - [ ] 28-diffusion-models — DDPM from scratch; classifier-free guidance. C: sampling loop for a tiny exported model.
 - [ ] 29-text-to-image-and-video — text conditioning, latent diffusion; toy video generation. C: tiny sampler.
