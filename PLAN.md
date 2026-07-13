@@ -106,7 +106,7 @@ Status: `[ ]` not started · `[~]` drafted, examples untested · `[x]` done (tex
 
 - [x] 20-text-and-tokenization — byte-level BPE trained on Shakespeare; shared merges file. C: encoder/decoder with identical ids.
 - [x] 21-recurrent-networks — handmade RNN cell, char-level Shakespeare LM, sampling. C: recurrence + hand-wired bracket-checker memory demo.
-- [ ] 22-attention-and-transformers — attention with tiny matrices; transformer block. C: one attention head.
+- [x] 22-attention-and-transformers — QKV worked by hand, causal mask, lookup experiment with visible attention weights. C: one attention head, same numbers.
 - [ ] 23-gpt-from-scratch — nanoGPT-style model trained on a small text corpus in minutes.
 - [ ] 24-train-your-mini-llm — **capstone**: data → tokenizer → multi-day training with checkpoint/resume → sampling. Sized for a 16 GB VRAM GPU or a 64 GB unified-memory Mac.
 - [ ] 25-llm-inference-in-c — export ch. 24 weights; single-file pure-C inference engine; int8 quantization.
