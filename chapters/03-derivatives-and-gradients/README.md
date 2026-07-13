@@ -46,36 +46,59 @@ Read it: "how much did $f$ rise, divided by how far we stepped." Now shrink $h$ 
 
 $$f'(x) = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h}$$
 
-The $\lim_{h \to 0}$ (read: "the limit as h goes to zero") is just the "shrink $h$" instruction in symbols.
+Let us decode that symbol by symbol, because it is the densest one in the chapter:
 
-### You can always compute it numerically
+- $f'(x)$ (read "f prime of x") is the name for the answer: the slope of $f$ at the point $x$. The other spelling, $\frac{df}{dx}$ (read "d f d x"), means the same thing — "how $f$ changes as $x$ changes".
+- $\lim_{h \to 0}$ (read "the limit as h goes to zero") is not a new operation — it is just the "shrink $h$" instruction from the paragraph above, written in symbols. It says: *do the fraction for smaller and smaller $h$, and report the number it settles on.*
+- The fraction itself is the secant slope you already understand.
 
-Formulas like "the derivative of $x^2$ is $2x$" exist (calculus classes spend months on them), but you never *need* them: just plug in a small $h$:
+So the whole line reads: "the derivative is the secant slope as the second point slides infinitely close to the first." Nothing more.
+
+### You never need the formulas — you can always compute it numerically
+
+Here is the honest situation, and it is good news. Calculus has a toolbox of **rules** that turn a function into an *exact formula* for its derivative — for instance, those rules say the derivative of $x^2$ is exactly $2x$, and the derivative of $\sin(x)$ is $\cos(x)$. Learning and practicing those rules is what a calculus course spends months on, and **this course deliberately does not teach them.** You will see me write a few results like "the derivative of $x^2$ is $2x$" — each time, know that I am quoting one of those rules, not deriving it here.
+
+Why can we skip them? Because the definition above is already a recipe you can *run*. Just plug in a small $h$:
 
 ```python
 derivative_estimate = (f(x + small_step) - f(x - small_step)) / (2 * small_step)
 ```
 
-Stepping both ways (the **central difference**) is more accurate than stepping only forward. With `small_step = 1e-5`, the estimate for $f(x)=x^2$ at $x=3$ comes out 6.000000000 — matching the formula $2x = 6$. The example programs verify this and more.
+Stepping both ways (the **central difference**) is more accurate than stepping only forward. With `small_step = 1e-5`, the estimate for $f(x)=x^2$ at $x=3$ comes out 6.000000000 — and the calculus rule says $2x = 2 \times 3 = 6$, so they agree. **That is the pattern for the whole course: you never have to trust a formula on faith — you can always check it numerically, and the example programs do exactly that.**
 
-This numerical trick matters for two reasons: it is how you **check** any hand-derived gradient (we will use it as a safety net in Chapter 8), and it proves derivatives are nothing mystical — just $(f(x+h)-f(x-h))/2h$ with a small $h$.
+This numerical trick matters for two reasons: it is how you **check** any hand-derived gradient (we will lean on it as a safety net in Chapter 8), and it proves derivatives are nothing mystical — just $(f(x+h)-f(x-h))/2h$ with a small $h$.
+
+> **Curious where the exact rules come from?** You can read the entire rest of this course without them — but if you *want* to understand why "the derivative of $x^2$ is $2x$", these are the friendliest free resources, in order of gentleness:
+> - [3Blue1Brown — *Essence of Calculus*](https://www.youtube.com/playlist?list=PLZHQObOWTQDMsr9K-rj53DwVRMYO3t5Yr) (a beautiful visual series; the first three videos cover everything this course touches)
+> - [Khan Academy — Derivative rules](https://www.khanacademy.org/math/differential-calculus/dc-diff-intro) (free, step by step, with practice)
+> - [Wikipedia — Derivative](https://en.wikipedia.org/wiki/Derivative) (for reference, denser)
 
 ## 2. Many inputs: partial derivatives and the gradient
 
-Real models have many knobs, not one. Take $f(x, y) = x^2 + 3y^2$ — a function with two inputs, shaped like an oval bowl. Now "the slope" needs a direction:
+Real models have many knobs, not one, so we need slopes for functions of several inputs. Take $f(x, y) = x^2 + 3y^2$ — a function with two inputs, shaped like an oval bowl. With more than one input, "the slope" is ambiguous: slope *in which direction*? The answer is to measure one direction at a time.
 
-- The **partial derivative** $\frac{\partial f}{\partial x}$ (read: "partial f by x") is the slope if you move only along $x$, holding $y$ frozen. For our bowl: $2x$.
-- $\frac{\partial f}{\partial y}$ is the slope moving only along $y$: $6y$.
+A **partial derivative** does exactly that. The symbol $\frac{\partial f}{\partial x}$ (read "partial f by x"; the rounded $\partial$ is just a "d" that signals "one variable at a time") means: *the slope if you move only along $x$, holding $y$ completely still — as if $y$ were a fixed constant.* Likewise $\frac{\partial f}{\partial y}$ is the slope moving only along $y$, holding $x$ still. That is the only new idea here — a partial derivative is an ordinary derivative where every input except one is frozen.
 
-The **gradient** collects every partial derivative into one vector, written $\nabla f$ (the triangle is called "nabla"):
+For our bowl, applying the standard calculus rules (the ones from the box above — we quote them, we do not derive them here):
+
+- freeze $y$, and $f$ looks like $x^2 + \text{constant}$, whose derivative is $2x$. So $\frac{\partial f}{\partial x} = 2x$.
+- freeze $x$, and $f$ looks like $\text{constant} + 3y^2$, whose derivative is $6y$. So $\frac{\partial f}{\partial y} = 6y$.
+
+And — this is the reassuring part — **you do not have to believe those two results.** The `estimate_gradient_of_two_variable_function` in the example computes both by the numerical central difference from Section 1, freezing one input at a time, and confirms they come out $2x$ and $6y$. If the hand rules and the numbers ever disagreed, the numbers would win.
+
+The **gradient** simply collects every partial derivative into one vector (a list of the slopes, one per input), written $\nabla f$ — the upside-down triangle is called "nabla", and you can read $\nabla f$ as "the gradient of $f$":
 
 $$\nabla f(x, y) = \left( \frac{\partial f}{\partial x}, \; \frac{\partial f}{\partial y} \right) = (2x, \; 6y)$$
+
+So the gradient is not a new kind of object — it is a *vector of the partial derivatives you just computed*, packed together so we can talk about "all the slopes at once".
 
 The gradient has a superpower, and it is the single most important fact in this course:
 
 > **The gradient points in the direction of steepest ascent. So its opposite, $-\nabla f$, points steepest downhill.**
 
-At the point $(2, 1)$: $\nabla f = (4, 6)$. The bowl climbs fastest in the direction $(4,6)$; to descend fastest, step toward $(-4, -6)$.
+(Why it points uphill is itself a lovely piece of calculus we will not prove — the [Wikipedia article on the gradient](https://en.wikipedia.org/wiki/Gradient) has the full derivation for the curious — but you can simply take it as the one fact to memorize, and the descent experiments in the next section will make you *believe* it by watching it work.)
+
+Plug in the point $(2, 1)$: $\nabla f = (2\times 2,\; 6\times 1) = (4, 6)$. The bowl climbs fastest in the direction $(4,6)$; to descend fastest, step toward $(-4, -6)$. That single sentence — *step against the gradient* — is the seed of every training algorithm in the course.
 
 ## 3. Gradient descent: learning is walking downhill
 

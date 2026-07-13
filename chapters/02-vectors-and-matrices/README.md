@@ -40,7 +40,7 @@ A **vector** is simply an ordered list of numbers. That is all. We write vectors
 
 The fruit from Chapter 1 was already a vector: `(150.0, 0.45)` — weight and smoothness. A 28×28 pixel image of a digit is a vector of 784 brightness values. **Turning a real-world thing into a vector of features is always step one of machine learning.**
 
-The number of elements is the vector's **dimension**. The notation $\mathbf{x} \in \mathbb{R}^n$ (read: "x is a vector of $n$ real numbers") just says the list has $n$ entries.
+The number of elements is the vector's **dimension**. You will sometimes see the notation $\mathbf{x} \in \mathbb{R}^n$, which looks scarier than it is — let us take it apart: $\mathbb{R}$ is the mathematician's symbol for "all real numbers" (any decimal you like), the little $\in$ means "belongs to", and the raised $n$ means "a list of $n$ of them". So $\mathbf{x} \in \mathbb{R}^n$ reads simply "**x is a list of $n$ real numbers**" — exactly the plain-English sentence you started with. (Every symbol in this course is collected in [Appendix A](../../appendices/A-math-notation/README.md) if one ever throws you.)
 
 ### Operations you can do with vectors
 
@@ -56,7 +56,7 @@ Say $\mathbf{a} = (1, 2)$ and $\mathbf{b} = (3, 1)$.
 
 $$\mathbf{a} \cdot \mathbf{b} = \sum_{i=1}^{n} a_i \, b_i$$
 
-Read it aloud: "multiply the first elements together, the second elements together, and so on, then add everything up." The result is **one single number**. In code:
+That $\sum$ symbol (a Greek capital "sigma") is the mathematician's shorthand for "add all of these up". The $i=1$ underneath and the $n$ on top say "let the counter $i$ run from 1 up to $n$", and the term being added, $a_i\,b_i$, means "the $i$-th element of $\mathbf{a}$ times the $i$-th element of $\mathbf{b}$" (so $a_i$ is just `a[i]` in code). Put together, the whole line reads aloud as: "multiply the first elements together, the second elements together, and so on, then add everything up." The result is **one single number**. In code it is a plain loop:
 
 ```python
 dot_product = 0.0
@@ -70,6 +70,8 @@ Why does AI care so much? Two reasons:
 2. **It measures agreement.** When the vectors point the same way the dot product is large and positive; perpendicular gives zero; opposite gives negative. So `features · weights` asks: *how much does this input look like the pattern stored in the weights?* That single idea scales from spam filters up to the attention mechanism inside LLMs (Chapter 22 is one big dot product festival).
 
 A vector's **length** (norm) is $\|\mathbf{x}\| = \sqrt{\mathbf{x} \cdot \mathbf{x}}$ — the dot product of a vector with itself, square-rooted. For $(3,2)$: $\sqrt{9+4} = \sqrt{13} \approx 3.61$. The distance you computed in Chapter 1's fruit classifier was the length of the difference between two vectors.
+
+> **Want a deeper, visual feel for vectors and matrices?** Everything this course needs is on this page — but if the geometry clicks better in motion, [3Blue1Brown — *Essence of Linear Algebra*](https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab) is the gold standard (short, beautiful, intuitive), and [Khan Academy — Vectors and spaces](https://www.khanacademy.org/math/linear-algebra/vectors-and-spaces) covers the same ground with practice problems.
 
 ## 3. Matrices: many dot products at once
 
