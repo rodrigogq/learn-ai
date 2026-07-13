@@ -74,17 +74,53 @@ The field will keep moving fast. But the fundamentals you now own — the weight
 
 ## Code walkthrough
 
-The example is `python/deployment_toolkit.py`. Each function produces one row or column of the decision table:
+The example is `python/deployment_toolkit.py`. Each function fills one cell of the deploy-or-not decision table. No prior programming assumed.
+
+### Step 1 — the specimen, on CPU
+
+The thing being deployed is `DigitClassifier`, Chapter 10's ordinary 784→128→10 network. The whole script runs on **CPU on purpose**: deployment is almost always a CPU story (phones, servers, embedded chips), and the questions that matter there are size, speed, and accuracy — not GPU throughput.
+
+### Step 2 — shrink it: int8 quantization
+
+```python
+scale = module.weight.abs().max() / 127.0
+quantized = torch.round(module.weight / scale).clamp(-127, 127)
+module.weight.copy_(quantized * scale)   # store the dequantized values
+```
+
+`quantize_linears_to_int8` is Chapter 25's trick applied to a live PyTorch model: for each Linear layer, find the largest weight, set one `scale` so it maps to 127, and round every weight to the nearest int8. Storing `quantized * scale` puts the (slightly rounded) values back so the model still runs normally, while remembering the scale lets us report the ~4× smaller size. Biases stay float32 — they are tiny and sensitive. This is transparent and portable, unlike a backend-specific framework quantizer.
+
+### Step 3 — measure what actually matters
+
+```python
+start = time.perf_counter()
+...
+return 1000.0 * (time.perf_counter() - start) / repeats
+```
+
+`measure_latency` reports the average **milliseconds per inference** (after a warm-up run so the first-call costs do not skew it) — latency is what a user actually feels. Alongside it, `file_size_kilobytes` reports size on disk and the script re-checks accuracy. Those three numbers — size, latency, accuracy — are the real deployment trade-off, and `main` prints them in a table so the decision is evidence, not vibes.
+
+### Step 4 — ship it: a Python-free file
+
+```python
+scripted = torch.jit.script(model)
+...
+reloaded = torch.jit.load(str(scripted_path))
+```
+
+`torch.jit.script` compiles the model into **TorchScript** — a self-contained file that `torch.jit.load` reloads and runs **with no model code present**. That is what actually ships to production: a frozen artifact that does not need your Python classes, only the runtime. (ONNX is the cross-framework alternative, mentioned for when the serving stack is not PyTorch.)
+
+The C file `c/embedded_classifier.c` bakes trained weights straight into a program — the Chapter 1 fruit classifier, come full circle — a five-line forward pass with no dependencies. The deployed *core* of every model in this course has exactly this shape: a file of numbers and a little arithmetic.
+
+### Quick reference
 
 | Function | What it does | What to notice |
 |----------|--------------|----------------|
-| `class DigitClassifier` | Chapter 10's 784→128→10 network — the specimen to deploy. | Deployment is a CPU story; the whole script runs on CPU on purpose. |
-| `quantize_linears_to_int8(fresh, trained)` | Rounds each Linear layer's weights to int8 with a per-tensor scale (Chapter 25's scheme). | Biases stay float32 — tiny and sensitive. This is transparent and portable, unlike backend-dependent framework quantizers. |
-| `measure_latency(model, batch)` | Average milliseconds per inference, with a warm-up. | Latency is what a user feels; the table reports it next to size and accuracy. |
+| `class DigitClassifier` | Chapter 10's 784→128→10 network — the specimen. | Runs on CPU on purpose; deployment is a CPU story. |
+| `quantize_linears_to_int8(fresh, trained)` | Rounds each Linear's weights to int8 + a scale. | Biases stay float32; ~4× smaller, transparent and portable. |
+| `measure_latency(model, batch)` | Avg ms per inference, with warm-up. | Latency is what a user feels. |
 | `file_size_kilobytes(path)` | Size on disk. | int8 comes out ~4× smaller — the headline trade. |
-| `main()` | Baseline float32 → int8 → **TorchScript export** → the trade-off table. | The `torch.jit.script(model)` step saves a model that reloads with **no model code present** — a Python-free file, what actually ships. ONNX is mentioned as the cross-framework alternative. |
-
-The C file `c/embedded_classifier.c` bakes trained weights into a program — the Chapter 1 fruit classifier, come full circle — a five-line forward pass, no dependencies. The deployed *core* of every model in this course has exactly this shape.
+| `main()` | float32 → int8 → **TorchScript** → the trade-off table. | `torch.jit.script` saves a Python-free file — what ships. |
 
 ## Run it
 
