@@ -78,17 +78,46 @@ RL is the smallest slice of this course but powers some of its most famous resul
 
 ## Code walkthrough
 
-The example is `python/q_learning_and_dqn.py`. It shows the same idea twice — a table for the small world, a network for the big one:
+The example is `python/q_learning_and_dqn.py`. It shows one idea twice — a table for a small world, a network for a big one. No prior programming assumed.
+
+### Step 1 — the environment (the only thing the agent cannot see inside)
+
+`gridworld_step(state, action)` is the whole world in one function: give it where the agent is and which way it moves, and it returns `(next_state, reward, done)`. Reaching the goal pays +1, falling in the pit pays −1, and every ordinary step costs `−0.02` — that small tax is what makes the agent *hurry* to the goal instead of wandering. The agent is never told the rules; it only ever sees rewards coming back, and must figure the rest out.
+
+### Step 2 — tabular Q-learning: one line, learned from experience
+
+```python
+if random.random() < exploration_rate:
+    action_index = random.randrange(4)
+else:
+    action_index = max(range(4), key=lambda a: q_table[state][a])
+...
+best_next = max(q_table[next_state]) if not done else 0.0
+temporal_difference = reward + discount * best_next - q_table[state][action_index]
+q_table[state][action_index] += learning_rate * temporal_difference
+```
+
+`Q[state][action]` is the agent's estimate of "how good is this move from here." Two ideas drive learning. First, **ε-greedy** exploration: with probability `exploration_rate` the agent acts *randomly* (to discover the world), otherwise it takes its current best guess — and `exploration_rate` shrinks over time, so it is curious early and decisive late. Second, the **one-line update**: `reward + discount * best_next` is a better estimate of this move's value (the reward you just got, plus the discounted value of the best move available next), and `temporal_difference` is how wrong the old estimate was. Nudging `Q` a little toward the better estimate, over thousands of steps, is the entire algorithm.
+
+### Step 3 — reading the learned policy
+
+`print_learned_policy` prints, for each cell, the arrow of the greedy action (`max(range(4), key=...)` — the move with the highest Q). Every arrow ends up pointing along the shortest safe route to the goal, around the pit — a plan the agent was never shown, assembled purely from rewards.
+
+### Step 4 — scaling up: the table becomes a network (DQN)
+
+`QNetwork` is a tiny MLP mapping a 4-number state to action-values — the Q-*table* replaced by a Q-*function*, so the same idea handles CartPole's continuous state where a table is impossible. `train_dqn` runs the same TD update through gradient descent, plus two standard tricks that keep it from diverging: a **replay buffer** (learn from a random minibatch of past experiences, not just the latest) and a **target network** (a slowly-updated copy used for the `best_next` estimate, so the target does not chase itself). Even so, watch the balance time peak (~245 steps) then wobble — DQN is famously unstable, and seeing that is part of the lesson. (Needs `gymnasium`.)
+
+The C file `c/q_learning_gridworld.c` is the complete tabular algorithm — environment, ε-greedy, the one-line update, the policy printout — in pure C with no dependencies. RL's core, small enough to hold in your head.
+
+### Quick reference
 
 | Piece | What it does | What to notice |
 |-------|--------------|----------------|
-| `gridworld_step(state, action)` | The environment: move, return `(next_state, reward, done)`. | The `-0.02` step cost makes the agent *hurry*; goal is +1, pit is −1. |
-| `train_q_learning(episodes, ...)` | Fills a Q-table with the one-line update `Q[s][a] += rate·(reward + γ·max Q[s'] − Q[s][a])`. | Uses **ε-greedy** exploration (act randomly sometimes), with ε shrinking over time — curious early, decisive late. |
-| `print_learned_policy(q_table)` | Prints the greedy action per cell as arrows. | Every arrow points along the shortest safe route — learned, never shown. |
-| `class QNetwork` | A tiny MLP: 4-number state → 2 action-values. | The table became a network — so the *same* Q-learning idea handles CartPole's continuous state. |
-| `train_dqn(episodes, device)` | Deep Q-learning with a **replay buffer** and a **target network**. | Those two tricks keep it stable; even so, watch the balance time peak (~245 steps) then wobble — DQN is famously unstable, and seeing it is part of the lesson. Needs `gymnasium`. |
-
-The C file `c/q_learning_gridworld.c` is the complete tabular algorithm — environment, ε-greedy, the one-line update, the policy printout — in pure C with no dependencies. RL's core, small enough to hold in your head.
+| `gridworld_step(state, action)` | The environment: move → `(next_state, reward, done)`. | The `−0.02` step cost makes the agent hurry; goal +1, pit −1. |
+| `train_q_learning(episodes, ...)` | Fills a Q-table with the one-line TD update. | **ε-greedy** exploration, ε shrinking — curious early, decisive late. |
+| `print_learned_policy(q_table)` | Greedy action per cell, as arrows. | Every arrow follows the shortest safe route — learned, never shown. |
+| `class QNetwork` | MLP: 4-number state → 2 action-values. | The table became a network — same idea, continuous state. |
+| `train_dqn(episodes, device)` | Deep Q-learning with **replay buffer** + **target network**. | Those two tricks tame instability; it still wobbles. Needs `gymnasium`. |
 
 ## Run it
 
