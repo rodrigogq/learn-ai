@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 500" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="940" height="500" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">BPE in one picture: greedily fuse the most frequent pair, repeat</text>
+  <text x="60" y="72" font-size="15" fill="#57606a">Real merges learned from Shakespeare by this chapter's trainer (the counts are from the actual run).</text>
+
+  <defs>
+    <marker id="bArrow" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0, 9 4, 0 8" fill="#57606a"/>
+    </marker>
+  </defs>
+
+  <!-- Level 0: bytes -->
+  <text x="60" y="130" font-size="14" font-weight="700" fill="#24292f">start: raw bytes (any text is representable)</text>
+  <g font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="20" text-anchor="middle">
+    <rect x="130" y="150" width="60" height="52" fill="#ffffff" stroke="#57606a" stroke-width="2"/>
+    <rect x="220" y="150" width="60" height="52" fill="#ffffff" stroke="#57606a" stroke-width="2"/>
+    <rect x="310" y="150" width="60" height="52" fill="#ffffff" stroke="#57606a" stroke-width="2"/>
+    <rect x="400" y="150" width="60" height="52" fill="#ffffff" stroke="#57606a" stroke-width="2"/>
+    <text x="160" y="184" fill="#24292f">t</text>
+    <text x="250" y="184" fill="#24292f">h</text>
+    <text x="340" y="184" fill="#24292f">e</text>
+    <text x="430" y="184" fill="#24292f">&#9251;</text>
+  </g>
+
+  <!-- Merge 1: t+h -->
+  <g stroke="#57606a" stroke-width="2" fill="none">
+    <line x1="160" y1="206" x2="200" y2="266" marker-end="url(#bArrow)"/>
+    <line x1="250" y1="206" x2="216" y2="266" marker-end="url(#bArrow)"/>
+  </g>
+  <rect x="150" y="274" width="120" height="52" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="210" y="308" font-size="20" font-family="ui-monospace, 'SF Mono', Menlo, monospace" text-anchor="middle" fill="#1e3a8a">th</text>
+  <text x="286" y="304" font-size="13" fill="#1e3a8a">merge 2: seen 4,065 times</text>
+
+  <!-- Merge: e+space -->
+  <g stroke="#57606a" stroke-width="2" fill="none">
+    <line x1="340" y1="206" x2="480 " y2="266" marker-end="url(#bArrow)"/>
+    <line x1="430" y1="206" x2="496" y2="266" marker-end="url(#bArrow)"/>
+  </g>
+  <rect x="430" y="274" width="120" height="52" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="490" y="308" font-size="20" font-family="ui-monospace, 'SF Mono', Menlo, monospace" text-anchor="middle" fill="#14532d">e&#9251;</text>
+  <text x="566" y="304" font-size="13" fill="#14532d">merge 1: seen 5,249 times</text>
+
+  <!-- Final merge th + e_ -->
+  <g stroke="#57606a" stroke-width="2" fill="none">
+    <line x1="230" y1="330" x2="320" y2="390" marker-end="url(#bArrow)"/>
+    <line x1="470" y1="330" x2="360" y2="390" marker-end="url(#bArrow)"/>
+  </g>
+  <rect x="270" y="398" width="150" height="56" fill="#fde68a" stroke="#d97706" stroke-width="2.5"/>
+  <text x="345" y="434" font-size="22" font-family="ui-monospace, 'SF Mono', Menlo, monospace" text-anchor="middle" font-weight="700" fill="#78350f">the&#9251;</text>
+  <text x="436" y="430" font-size="13" fill="#78350f">a later merge: the most common English word is now ONE token</text>
+
+  <!-- Side notes -->
+  <g font-size="14" fill="#24292f">
+    <text x="620" y="150" font-weight="700">why models tokenize:</text>
+    <text x="620" y="176">&#8226; shorter sequences: ~2 bytes/token here,</text>
+    <text x="620" y="198">   ~4 in production tokenizers</text>
+    <text x="620" y="226">&#8226; frequent words become single symbols</text>
+    <text x="620" y="248">   with their own learned meaning</text>
+    <text x="620" y="276">&#8226; rare words still work: they fall back</text>
+    <text x="620" y="298">   to pieces, ultimately bytes</text>
+  </g>
+  <text x="60" y="486" font-size="15" fill="#24292f">"&#9251;" marks a space character. Nobody told the algorithm about words &#8212; frequency alone rediscovered them.</text>
+</svg>

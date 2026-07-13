@@ -50,6 +50,23 @@ def load_mnist_datasets(flatten_images_to_vectors: bool = False):
     return training_dataset, test_dataset
 
 
+def load_tiny_shakespeare():
+    """Download (once) and return the tiny-Shakespeare corpus as a string.
+
+    One megabyte of concatenated Shakespeare plays - the traditional first
+    corpus for language models (Chapters 20-23): real English, tiny download,
+    and results you can judge by reading them.
+    """
+    from urllib.request import urlopen
+
+    corpus_path = get_datasets_directory() / "tinyshakespeare.txt"
+    if not corpus_path.exists():
+        corpus_url = "https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt"
+        print(f"Downloading tiny Shakespeare (~1 MB) from {corpus_url} ...")
+        corpus_path.write_bytes(urlopen(corpus_url).read())
+    return corpus_path.read_text(encoding="utf-8")
+
+
 def load_cifar10_datasets():
     """Download (once) and return the CIFAR-10 train and test datasets.
 

@@ -104,7 +104,7 @@ Status: `[ ]` not started · `[~]` drafted, examples untested · `[x]` done (tex
 
 ### Part V — Sequences and language
 
-- [ ] 20-text-and-tokenization — BPE tokenizer from scratch in both languages (C version reused in ch. 25).
+- [x] 20-text-and-tokenization — byte-level BPE trained on Shakespeare; shared merges file. C: encoder/decoder with identical ids.
 - [ ] 21-recurrent-networks — char-level RNN/LSTM language model. C: RNN forward pass.
 - [ ] 22-attention-and-transformers — attention with tiny matrices; transformer block. C: one attention head.
 - [ ] 23-gpt-from-scratch — nanoGPT-style model trained on a small text corpus in minutes.
