@@ -39,7 +39,7 @@ We have data on 12 apartments — size in square meters, price in thousands of d
 
 | size (m²) | 30 | 40 | 50 | 55 | 60 | 70 | 75 | 85 | 90 | 100 | 110 | 120 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| price ($1000s) | 105 | 144 | 168 | 191 | 192 | 233 | 250 | 271 | 297 | 314 | 352 | 377 |
+| price (1000s of dollars) | 105 | 144 | 168 | 191 | 192 | 233 | 250 | 271 | 297 | 314 | 352 | 377 |
 
 Task: predict the price of an apartment we have never seen, say 80 m². The data looks roughly like a line, so we choose the simplest possible model:
 
@@ -104,30 +104,125 @@ With that settled, look at the *path* the parameters took: the slope $w$ was nea
 
 ## 5. Feature scaling: the same algorithm, 200× faster
 
-The gradient of $w$ contains a factor $x_i$ (sizes: 30–120); the gradient of $b$ contains a factor 1. So $w$ receives updates ~75× larger than $b$. One learning rate cannot fit both: small enough to keep $w$ stable is far too small for $b$. This is Chapter 3's oval bowl, stretched extremely.
+### Why the raw run was so lopsided
 
-The fix is to **standardize** the feature — replace $x$ with $z = (x - \text{mean}) / \text{standard deviation}$, so the input has mean 0 and spread 1. Both gradients now live at the same scale, the learning rate can jump to 0.1, and the same loop converges in about 300 epochs instead of 200,000.
+The gradient of $w$ contains a factor $x_i$ (sizes: 30–120); the gradient of $b$ contains a factor 1. So $w$ receives updates roughly 75× larger than $b$. One learning rate cannot fit both: small enough to keep $w$ stable is far too small for $b$, which is why the bias crawled. This is Chapter 3's oval bowl, stretched extremely.
 
-This creates one more moment of confusion worth heading off. The standardized run reports its answer as $w \approx 80.7$, $b \approx 241.2$ — numbers that look nothing like the 3 and 20 we expected. That is correct and expected: those parameters are measured in the *standardized* coordinate, where an input of 0 means "the average-sized apartment" and 1 means "one standard deviation bigger", not one square meter. They describe the **same line**, just in shifted-and-scaled units. Converting back to real square meters — with $w_{\text{raw}} = w / \text{std}$ and $b_{\text{raw}} = b - w \cdot \text{mean} / \text{std}$ — recovers the familiar `3.0·size + 20`. The program prints the raw-unit line from *both* runs side by side so you can see they land on the same answer.
+### Step 1 — standardize the sizes (shift and scale)
 
-Both example programs run *both* versions so you can watch the difference. The habit — **always put your inputs on a similar scale** — carries through the entire course (for images we divide pixels by 255; Chapter 11's batch norm automates the idea inside deep networks).
+The fix is to **standardize** the feature: put it on a ruler centered at 0 and about one unit wide, so the two gradients share a scale. Compute two numbers from the 12 sizes — their **mean** (the average) and their **standard deviation** (a measure of spread):
+
+$$\text{mean} = \frac{30 + 40 + \dots + 120}{12} = 73.75 \text{ m}^2, \qquad \text{std} \approx 26.94 \text{ m}^2$$
+
+Then replace each size $x$ with its **standardized** value $z$:
+
+$$z = \frac{x - \text{mean}}{\text{std}} = \frac{x - 73.75}{26.94}$$
+
+Subtracting the mean slides the average apartment to $z = 0$; dividing by the spread makes one standard deviation one unit. The smallest apartment, 30 m², becomes $z = (30 - 73.75)/26.94 \approx -1.62$; the average one becomes exactly 0; the largest, 120 m², becomes $\approx +1.72$. Same apartments, new ruler:
+
+![The 12 apartment sizes on a raw axis (30–120) and on a standardized axis centered at zero](figures/standardizing-a-feature.svg)
+
+Now both gradients live at the same scale, the learning rate can jump all the way to 0.1, and the **same loop** converges in about 300 epochs instead of 200,000.
+
+### Step 2 — read the learned line back in real square meters
+
+Training on $z$ produces a line in the *standardized* world, and that is the source of the scary-looking numbers in the output: the program reports $w_z \approx 80.7$ and $b_z \approx 241.2$, nothing like the 3 and 20 we expected. They are not wrong — they are simply measured on the standardized ruler (where "1" means one standard deviation, not one square meter). To use the line on a real size, undo the standardization: take the standardized line $\text{price} = w_z \cdot z + b_z$, substitute $z = (x - \text{mean})/\text{std}$, and expand:
+
+$$\text{price} = w_z \cdot \frac{x - \text{mean}}{\text{std}} + b_z = \underbrace{\frac{w_z}{\text{std}}}_{\text{raw slope } w} \cdot x + \underbrace{\left(b_z - \frac{w_z \cdot \text{mean}}{\text{std}}\right)}_{\text{raw bias } b}$$
+
+Reading the two underbraced pieces straight off:
+
+$$w = \frac{w_z}{\text{std}} = \frac{80.7}{26.94} \approx 3.0, \qquad b = b_z - \frac{w_z \cdot \text{mean}}{\text{std}} = 241.2 - \frac{80.7 \times 73.75}{26.94} \approx 20.2$$
+
+There it is — the very same `price ≈ 3.0·size + 20` that the slow raw run crawled to over 200,000 epochs, recovered from the fast run with one line of algebra. The program prints the raw-unit line from *both* runs side by side so you can confirm they match.
+
+The habit — **always put your inputs on a similar scale** — carries through the entire course (for images we divide pixels by 255; Chapter 11's batch norm automates the idea inside deep networks).
 
 ## 6. Inference
 
-After training: predict the 80 m² apartment. $\hat{y} = 3.0 \cdot 80 + 20 = 260$ — about $260{,}000. The model never saw an 80 m² apartment; the *pattern* generalizes. That is the entire promise of machine learning, delivered by two numbers and a loop.
+After training: predict the 80 m² apartment. $\hat{y} = 3.0 \cdot 80 + 20 = 260$ — about 260,000 dollars. The model never saw an 80 m² apartment; the *pattern* generalizes. That is the entire promise of machine learning, delivered by two numbers and a loop.
 
 ## Code walkthrough
 
-The example is `python/train_linear_regression.py`. This is the first *training loop* in the course, and its five functions map exactly onto the recipe — model, loss, gradients, update, plus the scaling fix:
+The example is `python/train_linear_regression.py` — the first real *training loop* in the course. We will read it slowly, assuming **no prior programming** (Chapter 3's walkthrough introduced `def`, `return`, and `for`; the same primer applies).
+
+### Step 1 — the loss: one number for "how wrong is this line"
+
+```python
+def compute_mean_squared_error(weight, bias, input_values, true_values):
+    total_squared_error = 0.0
+    for input_value, true_value in zip(input_values, true_values):
+        prediction_error = weight * input_value + bias - true_value
+        total_squared_error += prediction_error ** 2
+    return total_squared_error / len(input_values)
+```
+
+`zip(input_values, true_values)` walks the sizes and prices together, one apartment per turn. For each, `weight * input_value + bias` is the model's prediction, minus the true price is the `prediction_error`, and `** 2` squares it (Section 2's reason: errors must not cancel, and big misses should hurt more). We sum all the squares and divide by the count — the mean squared error. **This single number is what training drives down.**
+
+### Step 2 — the gradients: which way is downhill
+
+```python
+for input_value, true_value in zip(input_values, true_values):
+    prediction_error = weight * input_value + bias - true_value
+    gradient_weight += prediction_error * input_value
+    gradient_bias += prediction_error
+return 2.0 * gradient_weight / number_of_examples, 2.0 * gradient_bias / number_of_examples
+```
+
+This is Section 3's two formulas, line for line: the weight's gradient accumulates `error * input`, the bias's gradient accumulates just `error`, and both get averaged and doubled. The code *is* the math, with long names standing in for the symbols.
+
+### Step 3 — never trust a hand-derived gradient: check it
+
+`verify_gradients_numerically` computes the same two slopes a second way — Chapter 3's central difference, nudging each parameter a hair and measuring how the loss moves — and prints both side by side. They match to four decimals. **This runs before any training.** Re-deriving a gradient by hand and confirming it numerically is a habit that becomes essential once the models are too big to check by eye (Chapter 8).
+
+### Step 4 — the training loop (memorize this shape)
+
+```python
+weight = 0.0
+bias = 0.0
+for epoch_number in range(number_of_epochs + 1):
+    gradient_weight, gradient_bias = compute_loss_gradients(weight, bias, input_values, true_values)
+    weight = weight - learning_rate * gradient_weight
+    bias = bias - learning_rate * gradient_bias
+return weight, bias
+```
+
+Start both parameters at 0. Each pass (`epoch`) over the data: measure the gradient, then step each parameter a little *against* it (the minus sign = downhill, exactly Chapter 3). Repeat. **Memorize this shape — forward, loss, gradient, update — because it never changes again in this course.** Chapter 24's LLM trains with this exact skeleton; only the model in the middle grows.
+
+### Step 5 — standardizing, and converting the answer back
+
+This is the part that produced the confusing output, so here is the code behind Section 5's math. First, standardizing the sizes:
+
+```python
+def standardize_values(values):
+    mean_value = sum(values) / len(values)
+    variance = sum((value - mean_value) ** 2 for value in values) / len(values)
+    standard_deviation = variance ** 0.5
+    standardized = [(value - mean_value) / standard_deviation for value in values]
+    return standardized, mean_value, standard_deviation
+```
+
+It computes the `mean_value` (73.75) and the `standard_deviation` (≈26.94), builds the new list where every size becomes `(value - mean) / std`, and — crucially — **returns the mean and std alongside**, because we cannot convert the answer back without them.
+
+Then, after training on the standardized sizes gives `weight_standardized` (≈80.7) and `bias_standardized` (≈241.2), `main()` converts them to real square meters with the exact two formulas derived in Section 5:
+
+```python
+weight_raw_units = weight_standardized / size_standard_deviation
+bias_raw_units = bias_standardized - weight_standardized * size_mean / size_standard_deviation
+```
+
+The first line is $w = w_z / \text{std}$; the second is $b = b_z - w_z \cdot \text{mean} / \text{std}$ — the two underbraced pieces from Section 5, typed out. Run it and both training runs report the same `price ≈ 3.0·size + 20`.
+
+### Quick reference
 
 | Function | What it does | What to notice |
 |----------|--------------|----------------|
 | `compute_mean_squared_error(w, b, x, y)` | The loss: average of `(w·x + b − y)²` over the apartments. | This one number is what training drives down. |
-| `compute_loss_gradients(w, b, x, y)` | The hand-derived gradients: average of `error·x`, and average of `error`. | Read them next to the formulas in Section 3 — the code *is* the math, with long names for the symbols. |
-| `verify_gradients_numerically(w, b)` | Checks those gradients against Chapter 3's central difference. | **This runs before training** — never trust a hand-derived gradient until a numeric check agrees. A habit that becomes essential in Chapter 8. |
-| `train_with_gradient_descent(x, y, rate, epochs, epochs_to_print)` | The four-step loop: forward, loss, gradients, update. | Memorize its shape. It never changes again — Chapter 24's LLM trains with this exact skeleton. |
-| `standardize_values(values)` | Shifts and scales the feature to mean 0, spread 1; returns the mean/std to convert back. | This is the 200×-speedup fix. The returned stats are used at the end to report the line in real apartment units. |
-| `main()` | Verifies gradients, trains on raw sizes (slow), trains on standardized sizes (fast), recovers the line, predicts an 80 m² flat. | The two training runs reaching the same answer at wildly different speeds is the chapter's core lesson. |
+| `compute_loss_gradients(w, b, x, y)` | The hand-derived gradients: average of `error·x`, and average of `error`. | Read them next to the formulas in Section 3 — the code *is* the math. |
+| `verify_gradients_numerically(w, b)` | Checks those gradients against Chapter 3's central difference. | **Runs before training** — never trust a hand-derived gradient until a numeric check agrees. |
+| `train_with_gradient_descent(x, y, rate, epochs, epochs_to_print)` | The four-step loop: forward, loss, gradients, update. | Memorize its shape. Chapter 24's LLM trains with this exact skeleton. |
+| `standardize_values(values)` | Shifts and scales the feature to mean 0, spread 1; returns the mean/std to convert back. | The 200×-speedup fix. The returned stats are what convert the line to real units. |
+| `main()` | Verifies gradients, trains raw (slow), trains standardized (fast), converts back, predicts an 80 m² flat. | The two runs reaching the same line at wildly different speeds is the chapter's core lesson. |
 
 ## Run it
 
