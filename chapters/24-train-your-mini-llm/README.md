@@ -107,23 +107,54 @@ Two techniques from the code deserve names because they are what make bigger run
 
 ## Code walkthrough
 
-Four Python files, one per pipeline stage. The key functions:
+Four files, one per pipeline stage. The *model* is Chapter 23's GPT, so the new material is the engineering around it — the things that turn a demo into a real training run. No prior programming assumed.
 
-**`model.py`** — the architecture, shared by everything:
-- `MODEL_SIZES` (dict at top) — the menu of runs (tiny/small/medium/large): dimensions and training defaults. Change a number here, not the code.
-- `class MiniLanguageModel` — Chapter 23's GPT with configurable dimensions, plus **weight tying** (`next_token_head.weight = token_embedding.weight` — the input and output share one matrix).
+### Step 1 — the model: Chapter 23's GPT, plus one trick
 
-**`prepare_data.py`** — data + tokenizer:
-- `download_and_clean_corpus()` — fetches ten Gutenberg novels, strips the license boilerplate.
-- `train_tokenizer(text)` — BPE, but the *fast* way: count unique **words** with frequencies and merge within those (Chapter 20's loop would take hours on megabytes; this is ~100 s).
-- `encode_corpus(text, merges)` — encodes everything with a **word cache**, then writes `tokens.bin` as uint16.
+```python
+self.next_token_head.weight = self.token_embedding.weight
+```
 
-**`train_mini_llm.py`** — the training loop with checkpoint/resume:
-- `get_batch(data, ...)` — samples windows from a memory-mapped token file (so gigabyte corpora need no RAM).
-- `save_checkpoint(path, model, optimizer, step, ...)` — saves weights **and optimizer state and step number**, then atomically renames. This is what makes `--resume` seamless (Section 2).
-- `main()` — the loop, with a cosine+warmup schedule and a checkpoint every few minutes; `--resume` reloads the last checkpoint and continues.
+`model.py` is the Chapter 23 transformer with its sizes read from a `MODEL_SIZES` menu (change a number there, not the code). The one new idea is **weight tying**, the line above: the matrix that turns token ids *into* vectors (the input embedding) and the matrix that turns vectors *back into* token scores (the output head) are made **the same matrix**. It saves a big chunk of parameters and usually helps quality — "the code that reads a word and the code that writes one should agree." Every production LLM does this.
 
-**`sample.py`** — `load_tokenizer` / `encode` / `decode` / `generate` to hear the model at any checkpoint, even mid-training.
+### Step 2 — preparing the data: a fast tokenizer and a token file
+
+`prepare_data.py` downloads ten Gutenberg novels, strips the license text, and trains a BPE tokenizer (Chapter 20). The twist is speed: Chapter 20's exact loop would take *hours* on megabytes, so `train_tokenizer` counts unique **words** with their frequencies and merges within those — the same result, ~100 seconds. It then encodes the whole corpus (using a per-word cache) and writes it to `tokens.bin` as `uint16` numbers. From here on the text is just a long array of token ids on disk.
+
+### Step 3 — feeding a corpus too big for RAM
+
+```python
+return numpy.memmap(tokens_path, dtype=numpy.uint16, mode="r")
+...
+starts = torch.randint(0, len(token_data) - context_length - 1, (batch_size,), generator=generator)
+inputs = torch.stack([torch.from_numpy(token_data[s:s + context_length].astype(numpy.int64)) for s in starts])
+targets = torch.stack([torch.from_numpy(token_data[s + 1:s + context_length + 1].astype(numpy.int64)) for s in starts])
+```
+
+`numpy.memmap` opens `tokens.bin` as if it were a normal array **without loading it into memory** — the operating system pages in only the bytes you actually touch, so a corpus larger than your RAM trains fine. Each step, `get_batch` picks random start positions and slices out windows: the `inputs` are the token windows, the `targets` are the same windows **shifted by one** (predict the next token, Chapter 21). That is the entire data feed.
+
+### Step 4 — checkpoint and resume (surviving reboots)
+
+```python
+torch.save({
+    "model_state": model.state_dict(),
+    "optimizer_state": optimizer.state_dict(),
+    "step_number": step_number,
+    "config_name": config_name,
+}, temporary_path)
+temporary_path.replace(path)
+```
+
+This is what makes a multi-day run safe to interrupt. A checkpoint saves not just the **weights** but also the **optimizer state** (Adam's momentum buffers, Chapter 11) and the **step number** — because resuming with a fresh optimizer or a reset schedule would jolt the training. And it writes to a `.tmp` file first, then does `temporary_path.replace(path)`: a **rename is atomic** on every OS, so if the machine dies mid-save, the previous good checkpoint is never corrupted. `--resume` just reloads all three and continues as if nothing happened. `sample.py` can generate from any checkpoint, even mid-training, so you can hear the model improve.
+
+### Quick reference
+
+| File | Key piece | What to notice |
+|------|-----------|----------------|
+| `model.py` | `class MiniLanguageModel`, `MODEL_SIZES` | Chapter 23's GPT with sizes in a menu, plus **weight tying** (input and output share one matrix). |
+| `prepare_data.py` | `train_tokenizer`, `encode_corpus` | Word-frequency BPE (~100 s vs hours); writes `tokens.bin` as uint16. |
+| `train_mini_llm.py` | `get_batch`, `save_checkpoint`, `main` | Memory-mapped batches (corpus > RAM); checkpoint saves weights + optimizer + step, atomically. |
+| `sample.py` | `generate` | Hear any checkpoint, even mid-training. |
 
 ## Run it
 
