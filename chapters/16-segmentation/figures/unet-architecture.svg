@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 540" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="940" height="540" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">The U-Net: squeeze for context, grow back for detail, bridge with skips</text>
+
+  <defs>
+    <marker id="uArrow" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0, 9 4, 0 8" fill="#57606a"/>
+    </marker>
+    <marker id="uSkip" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0, 9 4, 0 8" fill="#16a34a"/>
+    </marker>
+  </defs>
+
+  <!-- Level 1 (64x64): encoder left, decoder right -->
+  <rect x="80" y="100" width="170" height="70" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="100" y="130" font-size="15" font-weight="700" fill="#1e3a8a">encoder 1</text>
+  <text x="100" y="152" font-size="13" fill="#1e3a8a">64&#215;64, 16 channels</text>
+
+  <rect x="690" y="100" width="170" height="70" rx="10" fill="#fde68a" stroke="#d97706" stroke-width="2"/>
+  <text x="710" y="130" font-size="15" font-weight="700" fill="#78350f">decoder 1</text>
+  <text x="710" y="152" font-size="13" fill="#78350f">64&#215;64, 16 channels</text>
+
+  <!-- Level 2 (32x32) -->
+  <rect x="200" y="230" width="170" height="70" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="220" y="260" font-size="15" font-weight="700" fill="#1e3a8a">encoder 2</text>
+  <text x="220" y="282" font-size="13" fill="#1e3a8a">32&#215;32, 32 channels</text>
+
+  <rect x="570" y="230" width="170" height="70" rx="10" fill="#fde68a" stroke="#d97706" stroke-width="2"/>
+  <text x="590" y="260" font-size="15" font-weight="700" fill="#78350f">decoder 2</text>
+  <text x="590" y="282" font-size="13" fill="#78350f">32&#215;32, 32 channels</text>
+
+  <!-- Bottleneck (16x16) -->
+  <rect x="385" y="360" width="170" height="70" rx="10" fill="#e9d5ff" stroke="#9333ea" stroke-width="2"/>
+  <text x="405" y="390" font-size="15" font-weight="700" fill="#6b21a8">bottleneck</text>
+  <text x="405" y="412" font-size="13" fill="#6b21a8">16&#215;16, 64 channels</text>
+
+  <!-- Path arrows -->
+  <g stroke="#57606a" stroke-width="2.5" fill="none">
+    <line x1="30" y1="135" x2="72" y2="135" marker-end="url(#uArrow)"/>
+    <path d="M 210 172 L 250 226" marker-end="url(#uArrow)"/>
+    <path d="M 330 302 L 420 356" marker-end="url(#uArrow)"/>
+    <path d="M 520 356 L 610 302" marker-end="url(#uArrow)"/>
+    <path d="M 690 226 L 730 172" marker-end="url(#uArrow)"/>
+    <line x1="862" y1="135" x2="905" y2="135" marker-end="url(#uArrow)"/>
+  </g>
+  <text x="8" y="122" font-size="13" fill="#57606a">image</text>
+  <text x="868" y="118" font-size="13" fill="#57606a">per-pixel</text>
+  <text x="868" y="164" font-size="13" fill="#57606a">classes</text>
+  <text x="205" y="212" font-size="13" fill="#57606a">pool &#189;</text>
+  <text x="330" y="344" font-size="13" fill="#57606a">pool &#189;</text>
+  <text x="548" y="344" font-size="13" fill="#57606a">upsample &#215;2</text>
+  <text x="700" y="212" font-size="13" fill="#57606a">upsample &#215;2</text>
+
+  <!-- Skip connections -->
+  <g stroke="#16a34a" stroke-width="3" fill="none">
+    <line x1="250" y1="135" x2="682" y2="135" marker-end="url(#uSkip)" stroke-dasharray="10 6"/>
+    <line x1="370" y1="265" x2="562" y2="265" marker-end="url(#uSkip)" stroke-dasharray="10 6"/>
+  </g>
+  <text x="380" y="122" font-size="14" font-weight="700" fill="#14532d">skip: copy fine detail across, concatenate</text>
+  <text x="410" y="252" font-size="14" font-weight="700" fill="#14532d">skip</text>
+
+  <text x="60" y="480" font-size="15" fill="#24292f">Going down buys CONTEXT (each bottleneck value sees a big patch of image); coming up restores RESOLUTION;</text>
+  <text x="60" y="502" font-size="15" fill="#24292f">the skips hand the decoder the crisp edges the pooling destroyed. All three are needed for sharp masks.</text>
+</svg>

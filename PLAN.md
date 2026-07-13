@@ -94,7 +94,7 @@ Status: `[ ]` not started · `[~]` drafted, examples untested · `[x]` done (tex
 - [x] 13-convolutions — conv2d from scratch, padding/stride. C: conv kernel + benchmark vs Python.
 - [x] 14-image-classification — ResNet on CIFAR-10 with augmentation and cosine schedule. C: inference from exported (BN-folded) weights.
 - [x] 15-object-detection — IoU, grid cells, NMS; single-stage detector on synthetic digit scenes. C: IoU + NMS.
-- [ ] 16-segmentation — U-Net on a small dataset. C: mask post-processing.
+- [x] 16-segmentation — U-Net on synthetic shape scenes, per-class IoU. C: connected-component mask post-processing.
 - [ ] 17-video-understanding — frame models / 3D convs for action recognition. C: temporal pooling.
 
 ### Part IV — Audio
