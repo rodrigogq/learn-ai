@@ -71,17 +71,62 @@ Applications rarely want a mask; they want *"two circles, here and here, this bi
 
 ## Code walkthrough
 
-The example is `python/train_unet_shapes.py`. The `MiniUNet` class is the whole architecture; its `forward` is where the skip connections happen:
+The example is `python/train_unet_shapes.py`. The whole chapter is the `MiniUNet` class, and its `forward` is where the famous skip connections happen. No prior programming assumed.
+
+### Step 1 — the data: shapes with pixel-perfect masks
+
+`build_shape_batch` paints 1–3 circles and rectangles at random spots on a noisy 64×64 canvas — and, because *we* drew each shape, it records the exact class of **every pixel** in a `masks` tensor (0 = background, 1 = circle, 2 = rectangle). That is Chapter 15's synthetic-data trick again: the ground truth is exact and the supply is infinite. The pixel noise added at the end matters — it means no single pixel's brightness can decide its class, so the network must use *context*.
+
+### Step 2 — the U-Net: encoder down, decoder up, skips across
+
+```python
+def forward(self, image_batch):
+    encoder_1_features = self.encoder_stage_1(image_batch)                              # 64x64, fine detail
+    encoder_2_features = self.encoder_stage_2(self.downsample(encoder_1_features))      # 32x32
+    bottleneck_features = self.bottleneck(self.downsample(encoder_2_features))          # 16x16, most context
+    decoder_2_features = self.decoder_stage_2(
+        torch.cat([self.upsample_2(bottleneck_features), encoder_2_features], dim=1))
+    decoder_1_features = self.decoder_stage_1(
+        torch.cat([self.upsample_1(decoder_2_features), encoder_1_features], dim=1))
+    return self.per_pixel_classifier(decoder_1_features)
+```
+
+Read it as a U. Going **down** the left side, the encoder convolves and `downsample` (max-pool) halves the resolution twice — 64→32→16 — so the bottleneck sees the whole scene at once but has lost fine position. Going **up** the right side, `upsample_2`/`upsample_1` (`nn.ConvTranspose2d`, a learnable "un-pooling") double the resolution back — 16→32→64.
+
+The U-Net's whole idea is the **`torch.cat([upsampled, encoder_features], dim=1)`** lines: at each up-step, the decoder's coarse-but-context-rich features are *concatenated* (stacked along the channel dimension) with the encoder's features from the same resolution, carried straight across by a **skip connection**. So the decoder gets *what* the object is (from below) and *exactly where its edges are* (from the skip) at the same time — which is why segmentation masks come out sharp instead of blurry. The final `per_pixel_classifier` is a 1×1 conv that turns each pixel's features into 3 class scores.
+
+### Step 3 — the loss: segmentation is classification, per pixel
+
+```python
+loss_function = nn.CrossEntropyLoss()
+loss = loss_function(model(images.to(device)), masks.to(device))
+```
+
+No new loss. `nn.CrossEntropyLoss` is Chapter 4's cross-entropy — here PyTorch applies it to *every one of the 4,096 pixels* and averages. Segmentation is just classification run once per pixel, so the model outputs a class score map and the loss compares it to the true mask.
+
+### Step 4 — scoring: per-class IoU
+
+```python
+predicted_set = predicted_masks == class_id
+true_set = true_masks == class_id
+intersection = (predicted_set & true_set).sum().item()
+union = (predicted_set | true_set).sum().item()
+iou_per_class.append(intersection / union if union > 0 else 1.0)
+```
+
+`compute_per_class_iou` is Chapter 15's IoU, now on **pixel sets** instead of boxes. For each class, `predicted_masks == class_id` is a grid of True/False marking that class's pixels; `&` is the intersection, `|` the union, and their ratio is the IoU. Same ruler ("overlap over union"), different shape of thing being measured.
+
+The C file `c/mask_postprocessing.c` turns a mask into *objects* via flood-fill connected-component labeling — the glue between a segmentation model and whatever consumes it (counting cells, driving a robot arm).
+
+### Quick reference
 
 | Piece | What it does | What to notice |
 |-------|--------------|----------------|
-| `build_shape_batch(size, rng)` | Generates scenes of noisy circles/rectangles with **exact** per-pixel masks. | The masks are exact because we drew the shapes — Chapter 15's synthetic-data trick again. |
-| `class MiniUNet` | Encoder (64→32→16), bottleneck, decoder (16→32→64), per-pixel classifier. | In `forward`, the `torch.cat([upsampled, encoder_features], dim=1)` lines **are** the skip connections — the decoder gets context from below and crisp edges from the skip, at once. |
-| `compute_per_class_iou(predicted, true)` | IoU per class, treating each class's pixels as a set. | Chapter 15's box IoU, now applied to pixel sets — same formula, different shapes. |
-| `render_mask_as_text(mask)` | Prints a mask as a character grid (`.` `o` `#`). | How you see the result in a terminal; at IoU 0.98 you must hunt for wrong pixels, and they sit on boundaries. |
-| `main()` | Per-pixel cross-entropy, Adam, prints IoU and a truth-vs-prediction comparison. | The loss is `nn.CrossEntropyLoss()` — segmentation is classification, run 4,096 times per image. |
-
-The C file `c/mask_postprocessing.c` turns a mask into *objects* via flood-fill connected-component labeling — the glue between a segmentation model and whatever consumes it (counting cells, driving a robot arm).
+| `build_shape_batch(size, rng)` | Noisy circles/rectangles with **exact** per-pixel masks. | Masks are exact because we drew the shapes — Chapter 15's trick. |
+| `class MiniUNet` | Encoder (64→32→16), bottleneck, decoder (16→32→64), per-pixel classifier. | The `torch.cat([upsampled, encoder_features], dim=1)` lines **are** the skip connections. |
+| `compute_per_class_iou(predicted, true)` | IoU per class over pixel sets. | Chapter 15's box IoU, applied to pixels — same formula. |
+| `render_mask_as_text(mask)` | Prints a mask as a `.`/`o`/`#` grid. | Wrong pixels sit on boundaries. |
+| `main()` | Per-pixel cross-entropy, Adam, prints IoU + a truth-vs-prediction view. | `nn.CrossEntropyLoss()` — classification run 4,096 times per image. |
 
 ## Run it
 
