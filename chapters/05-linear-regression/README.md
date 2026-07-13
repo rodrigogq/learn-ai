@@ -94,15 +94,21 @@ Memorize the shape of this loop — *forward, loss, gradients, update* — becau
 | 10 | 72.1 | 3.237 | 0.044 |
 | 10,000 | 54.2 | 3.187 | 4.263 |
 | 100,000 | 24.8 | 3.019 | 18.267 |
-| 200,000 | 24.4 | 2.999 | 20.000 |
+| 200,000 | 24.4 | 2.999 | 19.999 |
 
-(An **epoch** is one pass over the whole dataset.) It works — the model lands on `price = 3.0·size + 20` — but look closer: the slope $w$ was nearly right after 10 epochs, while the bias $b$ crawled for 200,000. Why?
+(An **epoch** is one pass over the whole dataset.) It works — the model lands on `price = 3.0·size + 20`.
+
+One thing surprises people here: the loss settles at about **24.4, not 0**. That is not a failure to converge — it is the *right* answer. The 12 real apartments do not sit exactly on any straight line (real prices wobble), so no line can drive every error to zero; 24.4 is simply the smallest average squared error a straight line can achieve on this data. "Converged" means **the loss stopped improving**, not that it reached zero. (Exercise 1 has you confirm this by hand.)
+
+With that settled, look at the *path* the parameters took: the slope $w$ was nearly right after just 10 epochs, while the bias $b$ crawled for 200,000. Why the lopsided speed?
 
 ## 5. Feature scaling: the same algorithm, 200× faster
 
 The gradient of $w$ contains a factor $x_i$ (sizes: 30–120); the gradient of $b$ contains a factor 1. So $w$ receives updates ~75× larger than $b$. One learning rate cannot fit both: small enough to keep $w$ stable is far too small for $b$. This is Chapter 3's oval bowl, stretched extremely.
 
-The fix is to **standardize** the feature — replace $x$ with $z = (x - \text{mean}) / \text{standard deviation}$, so the input has mean 0 and spread 1. Both gradients now live at the same scale, the learning rate can jump to 0.1, and the same loop converges in about 300 epochs instead of 200,000. Afterward the learned line converts back to raw units, giving the same `3.0·size + 20`.
+The fix is to **standardize** the feature — replace $x$ with $z = (x - \text{mean}) / \text{standard deviation}$, so the input has mean 0 and spread 1. Both gradients now live at the same scale, the learning rate can jump to 0.1, and the same loop converges in about 300 epochs instead of 200,000.
+
+This creates one more moment of confusion worth heading off. The standardized run reports its answer as $w \approx 80.7$, $b \approx 241.2$ — numbers that look nothing like the 3 and 20 we expected. That is correct and expected: those parameters are measured in the *standardized* coordinate, where an input of 0 means "the average-sized apartment" and 1 means "one standard deviation bigger", not one square meter. They describe the **same line**, just in shifted-and-scaled units. Converting back to real square meters — with $w_{\text{raw}} = w / \text{std}$ and $b_{\text{raw}} = b - w \cdot \text{mean} / \text{std}$ — recovers the familiar `3.0·size + 20`. The program prints the raw-unit line from *both* runs side by side so you can see they land on the same answer.
 
 Both example programs run *both* versions so you can watch the difference. The habit — **always put your inputs on a similar scale** — carries through the entire course (for images we divide pixels by 255; Chapter 11's batch norm automates the idea inside deep networks).
 

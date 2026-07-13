@@ -123,11 +123,14 @@ def main():
 
     print()
     print("Training on RAW sizes (learning rate 1e-4 - watch the bias crawl):")
-    train_with_gradient_descent(
+    weight_raw, bias_raw = train_with_gradient_descent(
         APARTMENT_SIZES_M2, APARTMENT_PRICES_K,
         learning_rate=1e-4, number_of_epochs=200_000,
         epochs_to_print={0, 1, 10, 10_000, 100_000, 200_000},
     )
+    print(f"  -> converged: price = {weight_raw:.3f} * size + {bias_raw:.3f}")
+    print("     (The loss stops at ~24.4, not 0: the 12 points do not lie on a")
+    print("      perfectly straight line, so 24.4 IS the best any line can do.)")
 
     print()
     print("Training on STANDARDIZED sizes (learning rate 0.1 - same loop, 300 epochs):")
@@ -137,16 +140,21 @@ def main():
         learning_rate=0.1, number_of_epochs=300,
         epochs_to_print={0, 1, 10, 100, 300},
     )
+    print(f"  -> converged in standardized units to w={weight_standardized:.3f}, b={bias_standardized:.3f}.")
+    print("     These look nothing like the raw run's 3 and 20 because the feature")
+    print("     was shifted and scaled - but they are the SAME line, as we now show.")
 
     # The model learned prices from z = (size - mean) / std. Substituting z
     # back gives price = (w/std)*size + (b - w*mean/std): the raw-unit line.
     weight_raw_units = weight_standardized / size_standard_deviation
     bias_raw_units = bias_standardized - weight_standardized * size_mean / size_standard_deviation
     print()
-    print(f"Line recovered in raw units: price = {weight_raw_units:.3f} * size + {bias_raw_units:.3f}")
+    print(f"Standardized line converted back to raw units: price = {weight_raw_units:.3f} * size + {bias_raw_units:.3f}")
+    print(f"Raw run found:                                 price = {weight_raw:.3f} * size + {bias_raw:.3f}")
+    print("Both runs found the same line - one just took 600x more epochs to get there.")
 
     predicted_price = weight_raw_units * 80.0 + bias_raw_units
-    print(f"Inference: an 80 m^2 apartment should cost about ${predicted_price:.0f},000")
+    print(f"\nInference: an 80 m^2 apartment should cost about ${predicted_price:.0f},000")
 
 
 if __name__ == "__main__":

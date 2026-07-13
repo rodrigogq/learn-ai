@@ -162,6 +162,9 @@ int main(void) {
     double weight_raw, bias_raw;
     train_with_gradient_descent(apartment_sizes_m2, apartment_prices_k,
                                 1e-4, 200000, raw_epochs_to_print, 6, &weight_raw, &bias_raw);
+    printf("  -> converged: price = %.3f * size + %.3f\n", weight_raw, bias_raw);
+    printf("     (The loss stops at ~24.4, not 0: the 12 points do not lie on a\n");
+    printf("      perfectly straight line, so 24.4 IS the best any line can do.)\n");
 
     printf("\nTraining on STANDARDIZED sizes (learning rate 0.1 - same loop, 300 epochs):\n");
     double standardized_sizes[EXAMPLE_COUNT];
@@ -172,14 +175,22 @@ int main(void) {
     train_with_gradient_descent(standardized_sizes, apartment_prices_k,
                                 0.1, 300, standardized_epochs_to_print, 5,
                                 &weight_standardized, &bias_standardized);
+    printf("  -> converged in standardized units to w=%.3f, b=%.3f.\n",
+           weight_standardized, bias_standardized);
+    printf("     These look nothing like the raw run's 3 and 20 because the feature\n");
+    printf("     was shifted and scaled - but they are the SAME line, as we now show.\n");
 
     /* The model learned prices from z = (size - mean) / std. Substituting z
      * back gives price = (w/std)*size + (b - w*mean/std): the raw-unit line. */
     double weight_raw_units = weight_standardized / size_standard_deviation;
     double bias_raw_units = bias_standardized - weight_standardized * size_mean / size_standard_deviation;
-    printf("\nLine recovered in raw units: price = %.3f * size + %.3f\n", weight_raw_units, bias_raw_units);
+    printf("\nStandardized line converted back to raw units: price = %.3f * size + %.3f\n",
+           weight_raw_units, bias_raw_units);
+    printf("Raw run found:                                 price = %.3f * size + %.3f\n",
+           weight_raw, bias_raw);
+    printf("Both runs found the same line - one just took 600x more epochs to get there.\n");
 
     double predicted_price = weight_raw_units * 80.0 + bias_raw_units;
-    printf("Inference: an 80 m^2 apartment should cost about $%.0f,000\n", predicted_price);
+    printf("\nInference: an 80 m^2 apartment should cost about $%.0f,000\n", predicted_price);
     return 0;
 }
