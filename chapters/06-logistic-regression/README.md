@@ -110,15 +110,77 @@ With one feature the boundary is a point on the hours axis. With two features it
 
 ## Code walkthrough
 
-The example is `python/train_logistic_regression.py`. It is Chapter 5's training loop with two changes — a sigmoid on the output and cross-entropy for the loss. Notice how little else moves:
+The example is `python/train_logistic_regression.py`. It is deliberately Chapter 5's program with two surgical changes — a **sigmoid** on the output and **cross-entropy** for the loss — so we will read those two closely and move fast through the parts you already know. No prior programming assumed.
+
+### Step 1 — the sigmoid: turn a weighted sum into a probability
+
+```python
+def sigmoid(weighted_sum):
+    return 1.0 / (1.0 + math.exp(-weighted_sum))
+```
+
+`math.exp(-weighted_sum)` is the number $e$ raised to the power $-z$ (Section 2). This one line is the whole reason the program *classifies* rather than predicting a number: whatever the weighted sum comes out to — −50, 0, or +50 — the result lands strictly between 0 and 1, ready to be read as a probability. Feed it 0 and you get 0.5; feed it a big positive number and you get almost 1.
+
+### Step 2 — the loss: average surprise, with a safety rail
+
+```python
+for feature_value, true_label in zip(feature_values, true_labels):
+    predicted_probability = sigmoid(weight * feature_value + bias)
+    probability_of_what_happened = predicted_probability if true_label == 1 else 1.0 - predicted_probability
+    clamped_probability = min(max(probability_of_what_happened, PROBABILITY_CLAMP), 1.0 - PROBABILITY_CLAMP)
+    total_surprise += -math.log(clamped_probability)
+return total_surprise / len(feature_values)
+```
+
+This is Chapter 4's cross-entropy, now fed by the sigmoid:
+
+- `predicted_probability` is the model's `P(pass)` for this student.
+- The middle line picks the probability the model gave to **what actually happened**: if the student passed (`true_label == 1`) that is `predicted_probability`; otherwise it is `1.0 - predicted_probability`, the leftover probability of failing. (Same `if ... else` idea as Chapter 4's weather code.)
+- `min(max(..., PROBABILITY_CLAMP), 1.0 - PROBABILITY_CLAMP)` nudges that probability a hair away from exact 0 and 1. Why: the next line takes `-math.log(...)`, and `log(0)` is minus infinity, which would poison the whole average. Clamping is a **numerical safety rail** every real framework has.
+- `-math.log(...)` is the surprise (Chapter 4); we sum it over students and divide by the count — the average surprise, i.e. the loss.
+
+### Step 3 — the gradients: the exact same shape as Chapter 5
+
+```python
+for feature_value, true_label in zip(feature_values, true_labels):
+    prediction_error = sigmoid(weight * feature_value + bias) - true_label
+    gradient_weight += prediction_error * feature_value
+    gradient_bias += prediction_error
+return gradient_weight / number_of_examples, gradient_bias / number_of_examples
+```
+
+Look at this next to Chapter 5's gradient code — it is line-for-line the same, accumulating `error * feature` and `error`. Only the **definition of "error" changed**: here it is `sigmoid(...) - true_label`, the predicted probability minus the 0/1 label, instead of `prediction - true_price`. That is the famous cancellation from Section 3, made concrete: sigmoid and cross-entropy were designed together precisely so the messy chain-rule derivative collapses to this clean `probability − label`. (And as always, `verify_gradients_numerically` confirms this formula against Chapter 3's central difference *before* training trusts it.)
+
+### Step 4 — the training loop (unchanged) plus the decision boundary
+
+```python
+for epoch_number in range(5001):
+    gradient_weight, gradient_bias = compute_loss_gradients(weight, bias, STUDY_HOURS, PASSED_EXAM)
+    weight = weight - learning_rate * gradient_weight
+    bias = bias - learning_rate * gradient_bias
+```
+
+This is the identical *forward, loss, gradient, update* skeleton you memorized in Chapter 5 — measure the gradient, step against it, repeat. Nothing about the loop knows or cares that the model now contains a sigmoid. Alongside it, the program prints the **decision boundary**, `-bias / weight`: the study-hours value where the weighted sum is zero and the sigmoid crosses 0.5 (Section 5). Watch it settle toward 3.75 hours as training proceeds.
+
+### Step 5 — turning probabilities into decisions
+
+```python
+for hours_studied in (2.0, 3.7, 5.0):
+    pass_probability = sigmoid(weight * hours_studied + bias)
+    decision = "pass" if pass_probability >= 0.5 else "fail"
+```
+
+Inference: run the trained model on new students, then threshold at 0.5 to get a hard yes/no. The 3.7-hour student comes out at `P = 0.47` → "fail", but *barely* — the model reports its own uncertainty near the boundary, which is exactly what the messy data deserves.
+
+### Quick reference
 
 | Function | What it does | What to notice |
 |----------|--------------|----------------|
 | `sigmoid(z)` | `1 / (1 + e^(−z))` — squashes the weighted sum into a probability. | Three characters of math; the whole reason this is a classifier. |
-| `compute_cross_entropy_loss(w, b, x, y)` | Average surprise at the true labels (Chapter 4's loss, applied here). | The `PROBABILITY_CLAMP` (1e-12) keeps `log(0)` from becoming infinity — a numerical safety rail every real framework has. |
-| `compute_loss_gradients(w, b, x, y)` | The gradients — which cancel down to `(probability − label)`. | Compare with Chapter 5: **same shape**, `error·x` and `error`, but "error" is now `probability − label`. Sigmoid and cross-entropy were made for each other. |
+| `compute_cross_entropy_loss(w, b, x, y)` | Average surprise at the true labels (Chapter 4's loss, applied here). | The `PROBABILITY_CLAMP` (1e-12) keeps `log(0)` from becoming infinity — a safety rail every real framework has. |
+| `compute_loss_gradients(w, b, x, y)` | The gradients — which cancel down to `(probability − label)`. | Compare with Chapter 5: **same shape**, `error·x` and `error`, but "error" is now `probability − label`. |
 | `verify_gradients_numerically(w, b)` | Numeric check of those gradients before training. | Same discipline as Chapter 5 — the formula is confirmed, not assumed. |
-| `main()` | Trains 5000 epochs, prints the loss and the **decision boundary** each step, then predicts for 2 h / 3.7 h / 5 h students. | The boundary converges to 3.75 h; the 3.7 h student sits at P = 0.47, a coin flip — exactly what the messy data deserves. |
+| `main()` | Trains 5000 epochs, prints the loss and the **decision boundary** each step, then predicts for 2 h / 3.7 h / 5 h students. | The boundary converges to 3.75 h; the 3.7 h student sits at P = 0.47, a coin flip. |
 
 **Carry forward:** `sigmoid` + `compute_cross_entropy_loss` are the classifier core. Chapter 9 scales the same pair to ten classes (softmax); the pattern is identical.
 
