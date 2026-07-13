@@ -115,7 +115,7 @@ Status: `[ ]` not started · `[~]` drafted, examples untested · `[x]` done (tex
 
 - [x] 26-autoencoders-and-vaes — autoencoder + VAE on MNIST, 2-D latent space, generated digits. C: generative decoder MLP.
 - [x] 27-gans — DCGAN on MNIST, forger-vs-detective game, digits from noise. C: generator forward pass.
-- [ ] 28-diffusion-models — DDPM from scratch; classifier-free guidance. C: sampling loop for a tiny exported model.
+- [x] 28-diffusion-models — DDPM from scratch on MNIST, time-conditioned U-Net, digits from noise. C: the denoising sampling loop.
 - [ ] 29-text-to-image-and-video — text conditioning, latent diffusion; toy video generation. C: tiny sampler.
 
 ### Part VII — Beyond prediction

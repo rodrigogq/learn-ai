@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 500" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="940" height="500" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">Diffusion: destroy an image with noise, then learn to undo it</text>
+
+  <defs>
+    <marker id="dfArrow" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0, 9 4, 0 8" fill="#dc2626"/>
+    </marker>
+    <marker id="drArrow" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0, 9 4, 0 8" fill="#16a34a"/>
+    </marker>
+  </defs>
+
+  <!-- Five image tiles from clean to noise, showing a digit dissolving -->
+  <g>
+    <!-- tile 0: clean digit -->
+    <rect x="70" y="120" width="120" height="120" rx="6" fill="#0f172a" stroke="#334155"/>
+    <text x="112" y="200" font-size="72" fill="#e2e8f0">7</text>
+    <text x="100" y="262" font-size="13" fill="#57606a">clean</text>
+
+    <!-- tile 1 -->
+    <rect x="255" y="120" width="120" height="120" rx="6" fill="#1e293b" stroke="#334155"/>
+    <text x="297" y="200" font-size="72" fill="#94a3b8" opacity="0.8">7</text>
+    <g fill="#64748b"><circle cx="280" cy="150" r="2"/><circle cx="340" cy="180" r="2"/><circle cx="300" cy="220" r="2"/><circle cx="350" cy="150" r="2"/></g>
+
+    <!-- tile 2 -->
+    <rect x="440" y="120" width="120" height="120" rx="6" fill="#334155" stroke="#475569"/>
+    <text x="482" y="200" font-size="72" fill="#94a3b8" opacity="0.45">7</text>
+    <g fill="#94a3b8"><circle cx="465" cy="150" r="2"/><circle cx="525" cy="170" r="2"/><circle cx="490" cy="215" r="2"/><circle cx="540" cy="200" r="2"/><circle cx="470" cy="200" r="2"/><circle cx="520" cy="140" r="2"/></g>
+
+    <!-- tile 3 -->
+    <rect x="625" y="120" width="120" height="120" rx="6" fill="#475569" stroke="#64748b"/>
+    <g fill="#cbd5e1"><circle cx="650" cy="150" r="2"/><circle cx="700" cy="160" r="2"/><circle cx="680" cy="200" r="2"/><circle cx="720" cy="190" r="2"/><circle cx="660" cy="215" r="2"/><circle cx="715" cy="140" r="2"/><circle cx="685" cy="175" r="2"/><circle cx="640" cy="195" r="2"/></g>
+
+    <!-- tile 4: pure noise -->
+    <rect x="810" y="120" width="120" height="120" rx="6" fill="#64748b" stroke="#94a3b8"/>
+    <g fill="#e2e8f0"><circle cx="830" cy="145" r="2"/><circle cx="870" cy="160" r="2"/><circle cx="900" cy="150" r="2"/><circle cx="850" cy="185" r="2"/><circle cx="890" cy="195" r="2"/><circle cx="915" cy="180" r="2"/><circle cx="835" cy="210" r="2"/><circle cx="875" cy="220" r="2"/><circle cx="905" cy="215" r="2"/><circle cx="855" cy="140" r="2"/></g>
+    <text x="820" y="262" font-size="13" fill="#57606a">pure noise</text>
+  </g>
+
+  <!-- Forward arrow (top) -->
+  <line x1="70" y1="96" x2="930" y2="96" stroke="#dc2626" stroke-width="2.5" marker-end="url(#dfArrow)"/>
+  <text x="330" y="88" font-size="14" font-weight="700" fill="#b91c1c">FORWARD: add a little noise, many times (a fixed recipe, no learning)</text>
+
+  <!-- Reverse arrow (bottom) -->
+  <line x1="930" y1="300" x2="70" y2="300" stroke="#16a34a" stroke-width="2.5" marker-end="url(#drArrow)"/>
+  <text x="300" y="322" font-size="14" font-weight="700" fill="#14532d">REVERSE: the network removes a little noise, many times (this is what we train)</text>
+
+  <!-- Training box -->
+  <rect x="60" y="360" width="820" height="110" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="80" y="388" font-size="15" font-weight="700" fill="#14532d">the training objective is absurdly simple:</text>
+  <text x="80" y="414" font-size="14" fill="#14532d">1. take a real image, add a known random amount of noise (jump to any tile above in one step)</text>
+  <text x="80" y="436" font-size="14" fill="#14532d">2. show the network the noisy image, ask it to PREDICT THE NOISE that was added</text>
+  <text x="80" y="458" font-size="14" fill="#14532d">3. mean squared error between predicted and actual noise. That's it - generation falls out of doing this well.</text>
+</svg>
