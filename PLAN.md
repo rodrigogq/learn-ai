@@ -105,7 +105,7 @@ Status: `[ ]` not started · `[~]` drafted, examples untested · `[x]` done (tex
 ### Part V — Sequences and language
 
 - [x] 20-text-and-tokenization — byte-level BPE trained on Shakespeare; shared merges file. C: encoder/decoder with identical ids.
-- [ ] 21-recurrent-networks — char-level RNN/LSTM language model. C: RNN forward pass.
+- [x] 21-recurrent-networks — handmade RNN cell, char-level Shakespeare LM, sampling. C: recurrence + hand-wired bracket-checker memory demo.
 - [ ] 22-attention-and-transformers — attention with tiny matrices; transformer block. C: one attention head.
 - [ ] 23-gpt-from-scratch — nanoGPT-style model trained on a small text corpus in minutes.
 - [ ] 24-train-your-mini-llm — **capstone**: data → tokenizer → multi-day training with checkpoint/resume → sampling. Sized for a 16 GB VRAM GPU or a 64 GB unified-memory Mac.

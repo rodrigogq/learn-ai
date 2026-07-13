@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 460" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="940" height="460" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">One cell, reused: the recurrent loop and its unrolling through time</text>
+
+  <defs>
+    <marker id="rArrow" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0, 9 4, 0 8" fill="#57606a"/>
+    </marker>
+    <marker id="rState" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0, 9 4, 0 8" fill="#d97706"/>
+    </marker>
+  </defs>
+
+  <!-- Left: the loop form -->
+  <text x="90" y="106" font-size="15" font-weight="700" fill="#24292f">as written (a loop):</text>
+  <rect x="90" y="180" width="150" height="80" rx="12" fill="#dbeafe" stroke="#2563eb" stroke-width="2.5"/>
+  <text x="165" y="214" font-size="16" font-weight="700" fill="#1e3a8a" text-anchor="middle">RNN cell</text>
+  <text x="165" y="238" font-size="12" fill="#1e3a8a" text-anchor="middle">tanh(Wx + Uh + b)</text>
+  <line x1="165" y1="300" x2="165" y2="268" stroke="#57606a" stroke-width="2.5" marker-end="url(#rArrow)"/>
+  <text x="150" y="322" font-size="14" fill="#57606a">x&#8348;</text>
+  <line x1="165" y1="172" x2="165" y2="140" stroke="#57606a" stroke-width="2.5" marker-end="url(#rArrow)"/>
+  <text x="140" y="130" font-size="14" fill="#57606a">output&#8348;</text>
+  <!-- self loop -->
+  <path d="M 248 220 C 300 220, 300 160, 248 186" fill="none" stroke="#d97706" stroke-width="3" marker-end="url(#rState)"/>
+  <text x="262" y="152" font-size="13" font-weight="700" fill="#78350f">h (the state)</text>
+  <text x="262" y="170" font-size="12" fill="#78350f">fed back to itself</text>
+
+  <!-- Divider -->
+  <line x1="360" y1="100" x2="360" y2="360" stroke="#d0d7de" stroke-width="1.5" stroke-dasharray="6 6"/>
+
+  <!-- Right: unrolled -->
+  <text x="400" y="106" font-size="15" font-weight="700" fill="#24292f">as trained (unrolled &#8212; the SAME weights at every step):</text>
+  <g>
+    <rect x="400" y="180" width="120" height="80" rx="12" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+    <rect x="570" y="180" width="120" height="80" rx="12" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+    <rect x="740" y="180" width="120" height="80" rx="12" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+    <g font-size="15" font-weight="700" fill="#1e3a8a" text-anchor="middle">
+      <text x="460" y="226">cell</text>
+      <text x="630" y="226">cell</text>
+      <text x="800" y="226">cell</text>
+    </g>
+  </g>
+  <!-- state arrows -->
+  <line x1="520" y1="220" x2="562" y2="220" stroke="#d97706" stroke-width="3" marker-end="url(#rState)"/>
+  <line x1="690" y1="220" x2="732" y2="220" stroke="#d97706" stroke-width="3" marker-end="url(#rState)"/>
+  <text x="524" y="206" font-size="13" font-weight="700" fill="#78350f">h&#8321;</text>
+  <text x="694" y="206" font-size="13" font-weight="700" fill="#78350f">h&#8322;</text>
+  <!-- inputs -->
+  <g stroke="#57606a" stroke-width="2.5">
+    <line x1="460" y1="300" x2="460" y2="268" marker-end="url(#rArrow)"/>
+    <line x1="630" y1="300" x2="630" y2="268" marker-end="url(#rArrow)"/>
+    <line x1="800" y1="300" x2="800" y2="268" marker-end="url(#rArrow)"/>
+  </g>
+  <g font-size="15" font-family="ui-monospace, 'SF Mono', Menlo, monospace" fill="#24292f" text-anchor="middle">
+    <text x="460" y="326">'R'</text>
+    <text x="630" y="326">'O'</text>
+    <text x="800" y="326">'M'</text>
+  </g>
+  <!-- outputs -->
+  <g stroke="#57606a" stroke-width="2.5">
+    <line x1="460" y1="172" x2="460" y2="140" marker-end="url(#rArrow)"/>
+    <line x1="630" y1="172" x2="630" y2="140" marker-end="url(#rArrow)"/>
+    <line x1="800" y1="172" x2="800" y2="140" marker-end="url(#rArrow)"/>
+  </g>
+  <g font-size="13" fill="#57606a" text-anchor="middle">
+    <text x="460" y="128">predict 'O'</text>
+    <text x="630" y="128">predict 'M'</text>
+    <text x="800" y="128">predict 'E'</text>
+  </g>
+
+  <text x="60" y="404" font-size="15" fill="#24292f">Unrolled, an RNN is just a deep network whose depth is the sequence length &#8212; so Chapter 8's backprop applies</text>
+  <text x="60" y="426" font-size="15" fill="#24292f">unchanged ("backprop through time"). And so does Chapter 14's disease: gradients crossing many steps vanish.</text>
+</svg>
