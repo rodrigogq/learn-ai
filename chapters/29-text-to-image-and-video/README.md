@@ -76,16 +76,50 @@ The Python toy does the same — one seed, condition slid from "3" toward "8" ac
 
 ## Code walkthrough
 
-The example is `python/conditional_diffusion.py` — Chapter 28's diffusion with a label added, which turns "generate something" into "generate *this*":
+The example is `python/conditional_diffusion.py` — Chapter 28's diffusion with a label added, which turns "generate something" into "generate *this*". No prior programming assumed.
+
+### Step 1 — conditioning: tell the denoiser *what* to draw
+
+```python
+self.label_embedding = nn.Embedding(NULL_LABEL + 1, 64)   # 0..9 plus the null label
+...
+    + self.label_embedding(labels)
+```
+
+`ConditionalUNet` is Chapter 28's denoiser with one addition: the requested digit is turned into a vector (`label_embedding`) and **added into the same signal as the timestep**. Now the network does not just answer "what noise is in this image?" — it answers "what noise is in this image, *if it is supposed to be a 3*?" That single added embedding is the entire step from unconditional to conditional generation. In a real text-to-image model the label embedding is replaced by a *text* embedding, but the wiring is identical.
+
+### Step 2 — training with the label sometimes dropped
+
+```python
+drop = torch.rand(labels.shape[0], device=device) < 0.1
+```
+
+Training is Chapter 28's predict-the-noise loss, with one twist: **10% of the time the label is hidden** (replaced by a special `NULL_LABEL`). Why deliberately blind the model sometimes? So it learns to denoise *both* ways — with a label ("draw a 3") and without one ("draw any digit"). Sampling needs both predictions, as the next step shows.
+
+### Step 3 — classifier-free guidance: dial up obedience
+
+```python
+conditioned = model(image, timestep, wanted_label)
+unconditioned = model(image, timestep, null_label)
+predicted_noise = unconditioned + guidance_scale * (conditioned - unconditioned)
+```
+
+At each denoising step the model predicts the noise **twice**: once told the label, once with the null label. `conditioned - unconditioned` is the direction that "makes it more like the requested digit," and `guidance_scale` **extrapolates along it** — pushing *past* the conditioned prediction to make the digit obey the request more strongly. That is **classifier-free guidance**, and `guidance_scale` is exactly the "guidance / CFG" slider in every image tool: 0 ignores the prompt, higher forces it (at some cost to variety).
+
+### Step 4 — a toy video from a shared seed
+
+`main` first generates digits 0–4 (text-to-image), then makes a short "video" by generating a sequence of frames that **share the same starting noise** (`seed_noise`) while the label slides. Sharing the seed keeps the frames visually consistent (same style, same position) so that changing only the label *morphs* the content smoothly instead of producing unrelated pictures — the crude essence of frame-consistent video generation.
+
+The C file `c/guidance_and_frames.c` shows the same two levers — rising guidance scale, and shared-vs-different seeds across frames — the exact meaning of the "guidance scale" and "seed" fields in any image/video tool.
+
+### Quick reference
 
 | Piece | What it does | What to notice |
 |-------|--------------|----------------|
-| `class ConditionalUNet` | Chapter 28's U-Net, plus a **label embedding** added to the time signal. | The `label_embedding(labels)` added into the condition is the entire change — the net now denoises toward a *requested* digit. In Stable Diffusion this is a text embedding instead of a 10-way label. |
-| `sample_conditioned(model, ..., label, guidance_scale, seed_noise)` | Generates the requested digit with **classifier-free guidance**. | `unconditioned + scale * (conditioned − unconditioned)` — the guidance-scale formula (Section 2). `seed_noise` lets several calls share a starting point (used by the video). |
-| `main()` — training | Standard diffusion loss, but 10% of the time the label is **dropped** to a null token. | That dropout is what lets the model denoise both with and without guidance — both are needed at sampling. |
-| `main()` — demos | Requests digits 0–4 (text-to-image), then a shared-seed sequence (toy video). | Sharing the seed keeps video frames consistent; sliding the label morphs the content. |
-
-The C file `c/guidance_and_frames.c` shows the same two levers — rising guidance scale, and shared-vs-different seeds across frames — the exact meaning of the "guidance scale" and "seed" fields in any image/video tool.
+| `class ConditionalUNet` | Chapter 28's U-Net + a **label embedding** in the condition. | The added `label_embedding(labels)` is the whole change; a text embedding in real models. |
+| `main()` training | Predict-the-noise loss, label dropped 10% of the time. | The dropout lets the model denoise both with and without a label. |
+| `sample_conditioned(..., guidance_scale, seed_noise)` | Two predictions, extrapolated apart. | `unconditioned + scale * (conditioned − unconditioned)` — the CFG slider. |
+| `main()` demos | Digits 0–4, then a shared-seed sequence. | Sharing the seed keeps toy-video frames consistent as the label slides. |
 
 ## Run it
 
