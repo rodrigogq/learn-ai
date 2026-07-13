@@ -1,41 +1,50 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 500" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
-<rect x="0" y="0" width="860" height="500" rx="12" fill="#f6f8fa"/>
-<text x="40.0" y="42.0" font-size="19" fill="#24292f" font-weight="700" text-anchor="start" font-style="normal">The XOR network: 2 inputs &#8594; 3 hidden neurons &#8594; 1 output neuron</text>
-<text x="40.0" y="66.0" font-size="13.5" fill="#57606a" font-weight="normal" text-anchor="start" font-style="normal">Every arrow is one learned weight. The output neuron's whole job is to COMBINE the three hidden findings into one answer.</text>
-<line x1="156.0" y1="200.0" x2="350.0" y2="140.0" stroke="#93c5fd" stroke-width="2"/>
-<line x1="156.0" y1="200.0" x2="350.0" y2="260.0" stroke="#93c5fd" stroke-width="2"/>
-<line x1="156.0" y1="200.0" x2="350.0" y2="380.0" stroke="#93c5fd" stroke-width="2"/>
-<line x1="156.0" y1="320.0" x2="350.0" y2="140.0" stroke="#93c5fd" stroke-width="2"/>
-<line x1="156.0" y1="320.0" x2="350.0" y2="260.0" stroke="#93c5fd" stroke-width="2"/>
-<line x1="156.0" y1="320.0" x2="350.0" y2="380.0" stroke="#93c5fd" stroke-width="2"/>
-<line x1="410.0" y1="140.0" x2="600.0" y2="260.0" stroke="#c4b5fd" stroke-width="2.5"/>
-<line x1="410.0" y1="260.0" x2="600.0" y2="260.0" stroke="#c4b5fd" stroke-width="2.5"/>
-<line x1="410.0" y1="380.0" x2="600.0" y2="260.0" stroke="#c4b5fd" stroke-width="2.5"/>
-<line x1="660.0" y1="260.0" x2="764.0" y2="260.0" stroke="#6b7280" stroke-width="2"/>
-<circle cx="130.0" cy="200.0" r="26.0" fill="#ffffff" stroke="#57606a" stroke-width="2"/>
-<text x="130.0" y="206.0" font-size="18" fill="#24292f" font-weight="700" text-anchor="middle" font-style="normal">x1</text>
-<circle cx="130.0" cy="320.0" r="26.0" fill="#ffffff" stroke="#57606a" stroke-width="2"/>
-<text x="130.0" y="326.0" font-size="18" fill="#24292f" font-weight="700" text-anchor="middle" font-style="normal">x2</text>
-<text x="130.0" y="160.0" font-size="13" fill="#57606a" font-weight="700" text-anchor="middle" font-style="normal">inputs</text>
-<circle cx="380.0" cy="140.0" r="30.0" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
-<text x="380.0" y="138.0" font-size="16" fill="#1e3a8a" font-weight="700" text-anchor="middle" font-style="normal">h1</text>
-<text x="380.0" y="155.0" font-size="11" fill="#1e3a8a" font-weight="normal" text-anchor="middle" font-style="normal">tanh</text>
-<circle cx="380.0" cy="260.0" r="30.0" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
-<text x="380.0" y="258.0" font-size="16" fill="#1e3a8a" font-weight="700" text-anchor="middle" font-style="normal">h2</text>
-<text x="380.0" y="275.0" font-size="11" fill="#1e3a8a" font-weight="normal" text-anchor="middle" font-style="normal">tanh</text>
-<circle cx="380.0" cy="380.0" r="30.0" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
-<text x="380.0" y="378.0" font-size="16" fill="#1e3a8a" font-weight="700" text-anchor="middle" font-style="normal">h3</text>
-<text x="380.0" y="395.0" font-size="11" fill="#1e3a8a" font-weight="normal" text-anchor="middle" font-style="normal">tanh</text>
-<text x="380.0" y="98.0" font-size="13" fill="#1e3a8a" font-weight="700" text-anchor="middle" font-style="normal">hidden layer (3 neurons)</text>
-<circle cx="630.0" cy="260.0" r="30.0" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
-<text x="630.0" y="258.0" font-size="15" fill="#5b21b6" font-weight="700" text-anchor="middle" font-style="normal">out</text>
-<text x="630.0" y="275.0" font-size="11" fill="#5b21b6" font-weight="normal" text-anchor="middle" font-style="normal">tanh</text>
-<text x="630.0" y="216.0" font-size="13" fill="#5b21b6" font-weight="700" text-anchor="middle" font-style="normal">output layer (1 neuron)</text>
-<text x="770.0" y="265.0" font-size="16" fill="#111827" font-weight="700" text-anchor="start" font-style="normal">&#8776; &#177;1</text>
-<text x="770.0" y="284.0" font-size="11" fill="#57606a" font-weight="normal" text-anchor="start" font-style="normal">the answer</text>
-<text x="200.0" y="432.0" font-size="12.5" fill="#1e3a8a" font-weight="normal" text-anchor="start" font-style="normal">hidden neuron: tanh(w&#8321;x&#8321; + w&#8322;x&#8322; + b)</text>
-<text x="200.0" y="450.0" font-size="12" fill="#57606a" font-weight="normal" text-anchor="start" font-style="normal">one dividing line each &#8226; 3 &#215; 3 = 9 weights</text>
-<text x="840.0" y="432.0" font-size="12.5" fill="#5b21b6" font-weight="normal" text-anchor="end" font-style="normal">output: tanh(v&#8321;h&#8321; + v&#8322;h&#8322; + v&#8323;h&#8323; + b)</text>
-<text x="840.0" y="450.0" font-size="12" fill="#57606a" font-weight="normal" text-anchor="end" font-style="normal">weighs all 3 &#8226; 3 + 1 = 4 weights</text>
-<text x="40.0" y="482.0" font-size="13" fill="#24292f" font-weight="normal" text-anchor="start" font-style="normal">13 weights total: three neurons give three numbers, and the output neuron blends them into the one XOR answer.</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 545" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<rect x="0" y="0" width="860" height="545" rx="12" fill="#f6f8fa"/>
+<defs><marker id="bias" markerWidth="9" markerHeight="8" refX="7" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="#d97706"/></marker></defs>
+<text x="40.0" y="40.0" font-size="19" fill="#24292f" font-weight="700" text-anchor="start">The XOR network: 2 inputs &#8594; 3 hidden neurons &#8594; 1 output neuron</text>
+<text x="40.0" y="63.0" font-size="13.5" fill="#57606a" font-weight="normal" text-anchor="start">Blue/purple arrows are weights. Orange is each neuron's OWN bias &#8212; every neuron has its own.</text>
+<line x1="156.0" y1="215.0" x2="350.0" y2="150.0" stroke="#93c5fd" stroke-width="2"/>
+<line x1="156.0" y1="215.0" x2="350.0" y2="280.0" stroke="#93c5fd" stroke-width="2"/>
+<line x1="156.0" y1="215.0" x2="350.0" y2="410.0" stroke="#93c5fd" stroke-width="2"/>
+<line x1="156.0" y1="335.0" x2="350.0" y2="150.0" stroke="#93c5fd" stroke-width="2"/>
+<line x1="156.0" y1="335.0" x2="350.0" y2="280.0" stroke="#93c5fd" stroke-width="2"/>
+<line x1="156.0" y1="335.0" x2="350.0" y2="410.0" stroke="#93c5fd" stroke-width="2"/>
+<line x1="410.0" y1="150.0" x2="600.0" y2="280.0" stroke="#c4b5fd" stroke-width="2.5"/>
+<line x1="410.0" y1="280.0" x2="600.0" y2="280.0" stroke="#c4b5fd" stroke-width="2.5"/>
+<line x1="410.0" y1="410.0" x2="600.0" y2="280.0" stroke="#c4b5fd" stroke-width="2.5"/>
+<line x1="660.0" y1="280.0" x2="764.0" y2="280.0" stroke="#6b7280" stroke-width="2"/>
+<circle cx="130.0" cy="215.0" r="26.0" fill="#ffffff" stroke="#57606a" stroke-width="2"/>
+<text x="130.0" y="221.0" font-size="18" fill="#24292f" font-weight="700" text-anchor="middle">x1</text>
+<circle cx="130.0" cy="335.0" r="26.0" fill="#ffffff" stroke="#57606a" stroke-width="2"/>
+<text x="130.0" y="341.0" font-size="18" fill="#24292f" font-weight="700" text-anchor="middle">x2</text>
+<text x="130.0" y="175.0" font-size="13" fill="#57606a" font-weight="700" text-anchor="middle">inputs</text>
+<circle cx="380.0" cy="150.0" r="30.0" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+<text x="380.0" y="148.0" font-size="16" fill="#1e3a8a" font-weight="700" text-anchor="middle">h1</text>
+<text x="380.0" y="165.0" font-size="11" fill="#1e3a8a" font-weight="normal" text-anchor="middle">tanh</text>
+<line x1="380.0" y1="202.0" x2="380.0" y2="182.0" stroke="#d97706" stroke-width="2.2" marker-end="url(#bias)"/>
+<text x="388.0" y="198.0" font-size="12" fill="#b45309" font-weight="700" text-anchor="start">b1</text>
+<circle cx="380.0" cy="280.0" r="30.0" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+<text x="380.0" y="278.0" font-size="16" fill="#1e3a8a" font-weight="700" text-anchor="middle">h2</text>
+<text x="380.0" y="295.0" font-size="11" fill="#1e3a8a" font-weight="normal" text-anchor="middle">tanh</text>
+<line x1="380.0" y1="332.0" x2="380.0" y2="312.0" stroke="#d97706" stroke-width="2.2" marker-end="url(#bias)"/>
+<text x="388.0" y="328.0" font-size="12" fill="#b45309" font-weight="700" text-anchor="start">b2</text>
+<circle cx="380.0" cy="410.0" r="30.0" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+<text x="380.0" y="408.0" font-size="16" fill="#1e3a8a" font-weight="700" text-anchor="middle">h3</text>
+<text x="380.0" y="425.0" font-size="11" fill="#1e3a8a" font-weight="normal" text-anchor="middle">tanh</text>
+<line x1="380.0" y1="462.0" x2="380.0" y2="442.0" stroke="#d97706" stroke-width="2.2" marker-end="url(#bias)"/>
+<text x="388.0" y="458.0" font-size="12" fill="#b45309" font-weight="700" text-anchor="start">b3</text>
+<text x="380.0" y="108.0" font-size="13" fill="#1e3a8a" font-weight="700" text-anchor="middle">hidden layer (3 neurons)</text>
+<circle cx="630.0" cy="280.0" r="30.0" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+<text x="630.0" y="278.0" font-size="15" fill="#5b21b6" font-weight="700" text-anchor="middle">out</text>
+<text x="630.0" y="295.0" font-size="11" fill="#5b21b6" font-weight="normal" text-anchor="middle">tanh</text>
+<line x1="630.0" y1="332.0" x2="630.0" y2="312.0" stroke="#d97706" stroke-width="2.2" marker-end="url(#bias)"/>
+<text x="638.0" y="328.0" font-size="12" fill="#b45309" font-weight="700" text-anchor="start">b</text>
+<text x="630.0" y="236.0" font-size="13" fill="#5b21b6" font-weight="700" text-anchor="middle">output layer (1 neuron)</text>
+<text x="770.0" y="285.0" font-size="16" fill="#111827" font-weight="700" text-anchor="start">&#8776; &#177;1</text>
+<text x="770.0" y="304.0" font-size="11" fill="#57606a" font-weight="normal" text-anchor="start">the answer</text>
+<text x="180.0" y="486.0" font-size="12.5" fill="#1e3a8a" font-weight="normal" text-anchor="start">each hidden neuron: tanh(w&#8321;x&#8321; + w&#8322;x&#8322; + b)</text>
+<text x="180.0" y="504.0" font-size="12" fill="#57606a" font-weight="normal" text-anchor="start">2 weights + its own bias = 3 numbers &#8226; 3 &#215; 3 = 9</text>
+<text x="840.0" y="486.0" font-size="12.5" fill="#5b21b6" font-weight="normal" text-anchor="end">output: tanh(v&#8321;h&#8321; + v&#8322;h&#8322; + v&#8323;h&#8323; + b)</text>
+<text x="840.0" y="504.0" font-size="12" fill="#57606a" font-weight="normal" text-anchor="end">3 weights + its own bias = 4 numbers</text>
+<text x="40.0" y="530.0" font-size="13" fill="#24292f" font-weight="normal" text-anchor="start">13 weights total, and 4 of them are biases (one per neuron): b&#8321;, b&#8322;, b&#8323; in the hidden layer and b in the output.</text>
 </svg>
