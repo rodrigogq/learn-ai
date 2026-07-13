@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 500" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="940" height="500" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">Video is a tensor with one more axis: time</text>
+
+  <!-- Four sample frames, digit moving right -->
+  <g>
+    <rect x="80" y="100" width="130" height="130" rx="8" fill="#ffffff" stroke="#57606a" stroke-width="2"/>
+    <rect x="100" y="145" width="40" height="40" fill="#374151"/>
+    <text x="120" y="256" font-size="13" fill="#57606a">frame 0</text>
+
+    <rect x="240" y="100" width="130" height="130" rx="8" fill="#ffffff" stroke="#57606a" stroke-width="2"/>
+    <rect x="278" y="145" width="40" height="40" fill="#374151"/>
+    <text x="280" y="256" font-size="13" fill="#57606a">frame 2</text>
+
+    <rect x="400" y="100" width="130" height="130" rx="8" fill="#ffffff" stroke="#57606a" stroke-width="2"/>
+    <rect x="456" y="145" width="40" height="40" fill="#374151"/>
+    <text x="440" y="256" font-size="13" fill="#57606a">frame 5</text>
+
+    <rect x="560" y="100" width="130" height="130" rx="8" fill="#ffffff" stroke="#57606a" stroke-width="2"/>
+    <rect x="634" y="145" width="40" height="40" fill="#374151"/>
+    <text x="600" y="256" font-size="13" fill="#57606a">frame 7</text>
+  </g>
+  <defs>
+    <marker id="vArrow" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0, 9 4, 0 8" fill="#dc2626"/>
+    </marker>
+  </defs>
+  <line x1="120" y1="165" x2="650" y2="165" stroke="#dc2626" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#vArrow)" opacity="0.7"/>
+  <text x="330" y="90" font-size="14" font-weight="700" fill="#b91c1c">the motion lives BETWEEN frames, never inside one</text>
+
+  <text x="724" y="150" font-size="15" font-family="ui-monospace, 'SF Mono', Menlo, monospace" fill="#24292f">shape:</text>
+  <text x="724" y="176" font-size="15" font-family="ui-monospace, 'SF Mono', Menlo, monospace" fill="#24292f">(8, 48, 48)</text>
+  <text x="724" y="200" font-size="13" fill="#57606a">time &#215; height &#215; width</text>
+
+  <!-- The two strategies -->
+  <g font-size="15">
+    <rect x="80" y="300" width="380" height="150" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+    <text x="100" y="330" font-weight="700" fill="#1e3a8a">early fusion: frames become channels</text>
+    <text x="100" y="358" fill="#1e3a8a">Conv2d(in_channels=8, ...) - each kernel sees</text>
+    <text x="100" y="380" fill="#1e3a8a">all 8 frames at one place, so it can learn</text>
+    <text x="100" y="402" fill="#1e3a8a">"bright at frame 0, shifted right by frame 7".</text>
+    <text x="100" y="430" fill="#57606a" font-size="13">cheap; loses the time axis after one layer</text>
+
+    <rect x="490" y="300" width="380" height="150" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+    <text x="510" y="330" font-weight="700" fill="#14532d">3D convolutions: kernels slide over time too</text>
+    <text x="510" y="358" fill="#14532d">Conv3d with (3,3,3) kernels - a 3&#215;3 window in</text>
+    <text x="510" y="380" fill="#14532d">space AND 3 frames deep. Feature maps stay</text>
+    <text x="510" y="402" fill="#14532d">videos; layers keep reasoning about time.</text>
+    <text x="510" y="430" fill="#57606a" font-size="13">the general tool; costs kernel_time &#215; more compute</text>
+  </g>
+</svg>

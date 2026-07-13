@@ -95,7 +95,7 @@ Status: `[ ]` not started · `[~]` drafted, examples untested · `[x]` done (tex
 - [x] 14-image-classification — ResNet on CIFAR-10 with augmentation and cosine schedule. C: inference from exported (BN-folded) weights.
 - [x] 15-object-detection — IoU, grid cells, NMS; single-stage detector on synthetic digit scenes. C: IoU + NMS.
 - [x] 16-segmentation — U-Net on synthetic shape scenes, per-class IoU. C: connected-component mask post-processing.
-- [ ] 17-video-understanding — frame models / 3D convs for action recognition. C: temporal pooling.
+- [x] 17-video-understanding — motion-direction task: single-frame control vs early fusion vs 3D convs. C: frame differencing + centroid tracking.
 
 ### Part IV — Audio
 
