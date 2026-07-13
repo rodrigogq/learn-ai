@@ -75,6 +75,20 @@ Every ingredient is a previous chapter. The `x +` is Chapter 14's **residual con
 
 One last necessity: attention treats input as a *set* (shuffle the tokens and outputs shuffle identically), so word order must be injected — each position adds a learned **positional embedding** to its token embedding before the first block. With that, the parts list of GPT is complete: token embeddings + positional embeddings + N blocks + a linear head predicting the next token. [Chapter 23](../23-gpt-from-scratch/README.md) writes it down and trains it.
 
+## Code walkthrough
+
+The example is `python/attention_from_scratch.py`. The mechanism is one four-line function; the rest verifies it and watches it learn:
+
+| Piece | What it does | What to notice |
+|-------|--------------|----------------|
+| `scaled_dot_product_attention(Q, K, V, causal_mask)` | **The whole mechanism:** `softmax(Q·Kᵀ / √d) · V`, with the optional causal mask. | Four lines. `Q @ K.T` is every query dotted with every key (Chapter 2); the mask sets future scores to `−inf` before softmax. This *is* attention. |
+| `demonstrate_worked_example()` | Runs the 3-token, 2-dim example from the figure, masked and unmasked. | Reproduces the exact numbers you can check by hand. |
+| `verify_against_pytorch()` | Compares against `torch.nn.functional.scaled_dot_product_attention`. | Difference 0.00 — the fused kernel does the same math. |
+| `class OneAttentionLayerModel` | Embedding → one attention layer → classifier, for the lookup task. | The `query/key/value_projection` are the three learned matrices `W_q, W_k, W_v` — the model *learns* what to ask, offer, and hand over. |
+| `train_lookup_model(device)` | Trains on "find the card matching the query" and **prints the attention weights**. | The printout shows 99.5% of attention landing on the correct card — content-based addressing, learned. This is the atomic skill of an LLM finding a relevant clause. |
+
+The C file `c/attention_head.c` is one attention head in ~60 lines producing the same numbers — proof that the mechanism behind every LLM is dot products and a softmax.
+
 ## Run it
 
 ```bash

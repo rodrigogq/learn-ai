@@ -88,6 +88,26 @@ Every reason this model is not ChatGPT is a *quantity*, not a mystery:
 
 Two techniques from the code deserve names because they are what make bigger runs fit: a **learning-rate schedule** (warm up over the first 100 steps, then cosine-decay to near zero — bold early, precise late) and, mentioned for when you push `medium`/`large`, **mixed precision** (store and compute in 16-bit where safe — roughly halves memory and speeds things up, one `torch.autocast` context in practice). The [hardware guide](../../appendices/E-hardware-guide/README.md) sizes what your machine can actually train.
 
+## Code walkthrough
+
+Four Python files, one per pipeline stage. The key functions:
+
+**`model.py`** — the architecture, shared by everything:
+- `MODEL_SIZES` (dict at top) — the menu of runs (tiny/small/medium/large): dimensions and training defaults. Change a number here, not the code.
+- `class MiniLanguageModel` — Chapter 23's GPT with configurable dimensions, plus **weight tying** (`next_token_head.weight = token_embedding.weight` — the input and output share one matrix).
+
+**`prepare_data.py`** — data + tokenizer:
+- `download_and_clean_corpus()` — fetches ten Gutenberg novels, strips the license boilerplate.
+- `train_tokenizer(text)` — BPE, but the *fast* way: count unique **words** with frequencies and merge within those (Chapter 20's loop would take hours on megabytes; this is ~100 s).
+- `encode_corpus(text, merges)` — encodes everything with a **word cache**, then writes `tokens.bin` as uint16.
+
+**`train_mini_llm.py`** — the training loop with checkpoint/resume:
+- `get_batch(data, ...)` — samples windows from a memory-mapped token file (so gigabyte corpora need no RAM).
+- `save_checkpoint(path, model, optimizer, step, ...)` — saves weights **and optimizer state and step number**, then atomically renames. This is what makes `--resume` seamless (Section 2).
+- `main()` — the loop, with a cosine+warmup schedule and a checkpoint every few minutes; `--resume` reloads the last checkpoint and continues.
+
+**`sample.py`** — `load_tokenizer` / `encode` / `decode` / `generate` to hear the model at any checkpoint, even mid-training.
+
 ## Run it
 
 ```bash

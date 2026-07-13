@@ -64,6 +64,19 @@ Everything the model knows about the past must squeeze through $h$ — one fixed
 
 But the fix that actually ended the arms race was a different question entirely: *what if, instead of squeezing history through a state, every position could just look directly at every other position?* That is **attention** — [Chapter 22](../22-attention-and-transformers/README.md).
 
+## Code walkthrough
+
+The example is `python/char_rnn_shakespeare.py`. Two small classes and a sampler — the recurrence is a handful of lines:
+
+| Piece | What it does | What to notice |
+|-------|--------------|----------------|
+| `class HandmadeRNNCell` | One step: `tanh(W·input + U·state)` — two weighted sums and a tanh. | The `state_transform` (U) is the self-connection — the memory. That is the entire novelty of an RNN. |
+| `class CharRNN` | Embedding → the cell unrolled over the sequence → next-character logits. | In `forward`, the explicit `for time_index in range(...)` loop is the **unrolling** — the *same* cell (same weights) applied at every step. |
+| `sample_text(model, ..., prime, length, temperature)` | Generates one character at a time, feeding each choice back in. | `temperature` divides the logits: low = safe/repetitive, high = wild. Warms up the hidden state on the prompt first. |
+| `main()` | Trains on Shakespeare with **gradient clipping**, then samples. | `nn.utils.clip_grad_norm_(..., 1.0)` caps gradients — through 128 time steps they can snowball. The one-line cure for recurrent training. |
+
+The C file `c/rnn_memory.c` runs the recurrence and hand-wires a two-neuron RNN that checks bracket balancing — provably something no feedforward net can do. It makes "the hidden state is memory" unmistakable.
+
 ## Run it
 
 ```bash

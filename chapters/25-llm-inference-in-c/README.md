@@ -74,6 +74,23 @@ PyTorch, prompt 'It was a dark night, and ' - the 5 most likely next tokens:
 
 Run the C engine on the same prompt and it samples from exactly this ranking. The float values differ in the last digits (operation order differs between PyTorch's kernels and the C loops); the **ranking matches**, which is the real correctness criterion. That agreement is the proof that your C forward pass and PyTorch's are the same computation.
 
+## Code walkthrough
+
+This chapter's real code is the C file; the Python is glue. Here is the map of both.
+
+**`python/export_llm_for_c.py`** — turns the checkpoint into a flat `.bin`:
+- `write_tensor(file, tensor, quantize)` — writes a tensor as float32, or (for 2-D weight matrices, if `--quantize`) as **int8 + a scale**. Small/sensitive tensors stay float32.
+- `main()` — writes the header (magic + dimensions), the tokenizer merges, then every weight in the exact order the C engine reads them.
+
+**`c/llm_inference.c`** — the whole model, ~400 lines. The functions worth finding:
+- `load_model` / `read_matrix` — walk the `.bin` in the documented order, handling float32 or int8.
+- `matvec(weight, bias, input, output)` — matrix×vector plus bias, **dequantizing int8 on the fly**. ~99% of the runtime lives here; it is Chapter 2, finally running an LLM.
+- `forward(model, tokens, length, logits_out)` — the full pass: embeddings, then per block the multi-head causal attention (Chapter 22, by hand) and the MLP, with `layer_norm`, `gelu`, and residual adds.
+- `encode_prompt` / `print_token` — the BPE tokenizer (Chapter 20) built in.
+- `sample(logits, ..., temperature, top_k)` — Chapter 23's sampling.
+
+**`python/verify_against_c.py`** prints PyTorch's top-5 next tokens so you can confirm the C engine's ranking matches — the honest correctness check (generation is random, so text can't be the test).
+
 ## Run it
 
 ```bash

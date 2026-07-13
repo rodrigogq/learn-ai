@@ -73,6 +73,20 @@ Every generated token ends in one decision: given the logits, pick. The C progra
 
 The story is in the last columns (the "xylophone" and "%" tokens): plain sampling occasionally picks garbage, high temperature often does, and **top-k never can** — which is why production systems combine moderate temperature with top-k or top-p. When an LLM playground shows you those sliders, this table is what they do.
 
+## Code walkthrough
+
+The example is `python/train_gpt_shakespeare.py`. Three classes stack into a GPT — each is a chapter you finished:
+
+| Piece | What it does | What to notice |
+|-------|--------------|----------------|
+| `class CausalSelfAttention` | Chapter 22's attention, batched over multiple heads. | One `query_key_value_projection` computes Q, K, V for all heads at once (an efficiency idiom in every real GPT). It calls the fused `scaled_dot_product_attention` you verified in Chapter 22. |
+| `class TransformerBlock` | The block: `x = x + attention(norm(x))`, then `x = x + mlp(norm(x))`. | The `x +` is Chapter 14's residual; `norm` is Chapter 11's; the MLP is Chapter 9's. Attention *mixes across positions*, the MLP *thinks per position* — communicate, then compute. |
+| `class MiniGPT` | Token embedding + **position** embedding + N blocks + a next-token head. | The `token_embedding(ids) + position_embedding(positions)` line injects word order — attention alone is order-blind. |
+| `.generate(ids, count, temperature)` | Autoregressive sampling: predict, sample, append, repeat. | This loop is generation. Training never calls it — training predicts all positions at once. |
+| `main()` | Trains, and samples **before and after** so you see what the gradients bought. | Perplexity (`e^loss`) falls from 65 to ~5.4; the output goes from random glyphs to blank verse with character names. |
+
+The C file `c/sampling_strategies.c` measures greedy / temperature / top-k over 10,000 draws — the "decision step" of Chapter 25's inference engine, and the meaning of the sliders in every LLM playground.
+
 ## Run it
 
 ```bash

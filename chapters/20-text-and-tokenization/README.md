@@ -53,6 +53,21 @@ On held-out Shakespeare the 456-token vocabulary packs **1.85 bytes per token** 
 
 A token id is just an index — 315 is not "more" than 314. The model's first layer is an **embedding table**: a learned matrix with one row of, say, 128 numbers per vocabulary entry; reading token 315 means fetching row 315. Those vectors are parameters like any other, trained by the same backpropagation as everything since Chapter 5 — and after training, tokens used similarly end up with similar vectors (the famous king − man + woman ≈ queen arithmetic falls out of this). Chapters 21–24 all start with an embedding table; now you know what it is.
 
+## Code walkthrough
+
+The example is `python/bpe_tokenizer.py`. The whole BPE algorithm is two small helpers and a loop:
+
+| Function | What it does | What to notice |
+|----------|--------------|----------------|
+| `count_adjacent_pairs(token_ids)` | Counts how often each adjacent pair of tokens occurs. | The "which pair is most frequent?" question BPE keeps asking. |
+| `replace_pair_everywhere(token_ids, pair, new_id)` | Rewrites the sequence with a pair fused into one new token. | One merge, applied. |
+| `train_bpe(text, merge_count)` | **The whole algorithm:** count pairs, fuse the most frequent, repeat. Starts from raw bytes (0–255). | Starting from bytes means *any* text is representable — this is GPT-2's design. The printed merges are recognizable English (`th`, `ou`, `er`). |
+| `encode(text, merges)` | Replays the learned merges *in order* on new text. | Order = priority: earlier (more frequent) merges win. This is what makes encoding deterministic. |
+| `decode(token_ids, vocabulary)` | Concatenates each token's bytes. | Trivial — every token knows its bytes. The round trip is exact. |
+| `save_merges(merges, path)` | Writes the merges as `left right new` lines. | This file is the contract: the C encoder and Chapter 24's LLM read the *same* file. |
+
+The C file `c/bpe_encoder.c` loads that merges file and produces **identical token IDs** — one tokenizer, two languages. Encoding (not training) is what runs at every inference, so it is the half worth owning in C.
+
 ## Run it
 
 ```bash
