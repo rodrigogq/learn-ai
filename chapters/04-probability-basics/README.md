@@ -79,7 +79,7 @@ Here is the payoff of the chapter. We need a fair score for a model that outputs
 
 $$\text{surprise of an event you gave probability } p = -\log(p)$$
 
-**First, what is a logarithm?** You need only a couple of facts, no algebra. The natural logarithm — written $\log$ here (some books write $\ln$) — takes a positive number and answers *"how many times must I multiply $e \approx 2.718$ by itself to reach this number?"* For our purposes, forget that definition and just memorize its **shape**:
+**First, what is a logarithm?** You need only a couple of facts, no algebra. The natural logarithm — written $\log$ here (some books write $\ln$) — takes a positive number and answers *"how many times must I multiply the constant e (about 2.718) by itself to reach this number?"* For our purposes, forget that definition and just memorize its **shape**:
 
 | probability $p$ | $\log(p)$ | surprise $-\log(p)$ |
 |---|---|---|

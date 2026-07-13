@@ -144,7 +144,7 @@ A full port. It also shows the one C idea NumPy hides: a matrix is stored as a *
 4. Write (in either language) `compute_vector_length(vector)` using the dot product, and verify $\|(3,4)\| = 5$.
 5. Challenge: using the shape rule, explain why the *order* of multiplication matters: $AB \neq BA$ in general, even when both are legal.
 
-*Answer to 1: $2·1 + (-1)·4 + 3·2 = 4$.*
+*Answer to 1:* $2·1 + (-1)·4 + 3·2 = 4$.
 
 ## Next
 

@@ -51,7 +51,7 @@ $$f'(x) = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h}$$
 Let us decode that symbol by symbol, because it is the densest one in the chapter:
 
 - $f'(x)$ (read "f prime of x") is the name for the answer: the slope of $f$ at the point $x$. The other spelling, $\frac{df}{dx}$ (read "d f d x"), means the same thing — "how $f$ changes as $x$ changes".
-- $\lim_{h \to 0}$ (read "the limit as h goes to zero") is not a new operation — it is just the "shrink $h$" instruction from the paragraph above, written in symbols. It says: *do the fraction for smaller and smaller $h$, and report the number it settles on.*
+- $\lim_{h \to 0}$ (read "the limit as h goes to zero") is not a new operation — it is just the "shrink $h$" instruction from the paragraph above, written in symbols. It says: *do the fraction for smaller and smaller h, and report the number it settles on.*
 - The fraction itself is the secant slope you already understand.
 
 So the whole line reads: "the derivative is the secant slope as the second point slides infinitely close to the first." Nothing more.
@@ -87,7 +87,7 @@ Real models have many knobs, not one, so we need slopes for functions of several
 
 With more than one input, though, "the slope" is ambiguous: slope *in which direction*? The answer is to measure one direction at a time.
 
-A **partial derivative** does exactly that. The symbol $\frac{\partial f}{\partial x}$ (read "partial f by x"; the rounded $\partial$ is just a "d" that signals "one variable at a time") means: *the slope if you move only along $x$, holding $y$ completely still — as if $y$ were a fixed constant.* Likewise $\frac{\partial f}{\partial y}$ is the slope moving only along $y$, holding $x$ still. That is the only new idea here — a partial derivative is an ordinary derivative where every input except one is frozen.
+A **partial derivative** does exactly that. The symbol $\frac{\partial f}{\partial x}$ (read "partial f by x"; the rounded $\partial$ is just a "d" that signals "one variable at a time") means: *the slope if you move only along x, holding y completely still — as if y were a fixed constant.* Likewise $\frac{\partial f}{\partial y}$ is the slope moving only along $y$, holding $x$ still. That is the only new idea here — a partial derivative is an ordinary derivative where every input except one is frozen.
 
 For our bowl, here is what those two partial derivatives turn out to be. **For the sake of the demonstration, take these results as given** — calculus has fixed rules that produce them, and you genuinely do not need to know those rules to keep going. (Stay calm: a few lines from now we will *check both numbers with the computer*, using only Section 1's numerical trick.)
 
