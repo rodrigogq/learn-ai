@@ -67,6 +67,8 @@ Take $L = (a \cdot b + c)^2$. A computer never evaluates that "all at once" — 
 | $L = v^2$ | $\frac{dL}{dv} = 2v$ |
 | $t = \tanh(z)$ | $\frac{dt}{dz} = 1 - t^2$ (a gift: the slope is computable from the *output* $t$) |
 
+The first three rules are all the worked example above needs. The fourth one, **tanh**, is included for later: the neural network we train in Section 5 is built from tanh neurons — the S-shaped activation from [Chapter 7](../07-perceptron-and-neurons/README.md) — so our engine has to know its rule too. (Like "the derivative of $x^2$ is $2x$" back in Chapter 3, each of these four rules is a standard calculus result we simply quote, not something you need to derive.)
+
 ## 3. Backpropagation, by hand
 
 **Backpropagation** is the chain rule organized as a two-pass walk over the graph:
