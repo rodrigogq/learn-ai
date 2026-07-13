@@ -34,6 +34,8 @@ In this chapter you will learn the second (and last) piece of math that powers a
 
 A straight line's slope is rise over run: climb 2 meters for every 1 meter forward → slope 2. Walk in the other direction (descending) → slope −2. Flat ground → slope 0. That is all "slope" means: **how much the output changes per unit of input change.**
 
+![Slope as walking uphill, downhill and on flat ground: rise over run](figures/slope-rise-over-run.svg)
+
 Curves are trickier — their steepness changes from place to place. So we ask for the slope **at one point**:
 
 ![The derivative as the limit of secant slopes](figures/derivative-as-slope.svg)
