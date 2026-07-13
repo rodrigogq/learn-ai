@@ -10,6 +10,22 @@ Every chapter has:
 - A `python/` folder — runnable Python examples.
 - A `c/` folder — the same ideas in pure C, so you can see exactly what happens under the hood, with no libraries hiding the details.
 
+## Contents
+
+- [How to start](#how-to-start)
+- [The course](#the-course)
+  - [Part 0 — Getting ready](#part-0--getting-ready)
+  - [Part I — Foundations](#part-i--foundations-zero-prior-knowledge)
+  - [Part II — The deep learning toolkit](#part-ii--the-deep-learning-toolkit)
+  - [Part III — Computer vision](#part-iii--computer-vision)
+  - [Part IV — Audio](#part-iv--audio)
+  - [Part V — Sequences and language](#part-v--sequences-and-language-the-road-to-your-own-llm)
+  - [Part VI — Generative AI](#part-vi--generative-ai)
+  - [Part VII — Beyond prediction](#part-vii--beyond-prediction)
+  - [Appendices](#appendices)
+- [Hardware](#hardware)
+- [License](#license)
+
 ## How to start
 
 1. Open this folder in [VS Code](https://code.visualstudio.com/) (or any editor).
