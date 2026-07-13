@@ -84,17 +84,77 @@ Demo 3 trains on the full dataset (97.33% accuracy) and prints the full matrix. 
 
 ## Code walkthrough
 
-The example is `python/data_pipelines.py`. The constants at the top define the two `transforms` pipelines — `PLAIN_TRANSFORM` and `AUGMENTED_TRANSFORM` — which is where the whole augmentation idea lives:
+The example is `python/data_pipelines.py`. Almost none of it is new model code — it is the *data-handling* craft around a fixed network. No prior programming assumed.
+
+### Step 1 — the transform pipelines (where augmentation lives)
+
+```python
+PLAIN_TRANSFORM = transforms.Compose([transforms.ToTensor(), FLATTEN_TRANSFORM])
+
+AUGMENTED_TRANSFORM = transforms.Compose([
+    transforms.RandomAffine(degrees=10, translate=(0.1, 0.1), scale=(0.9, 1.1)),
+    transforms.ToTensor(),
+    FLATTEN_TRANSFORM,
+])
+```
+
+A `transform` is a small recipe applied to each image *as it leaves the dataset*. `transforms.Compose([...])` chains steps in order. `PLAIN_TRANSFORM` just converts the image to a tensor and flattens it to 784 numbers. `AUGMENTED_TRANSFORM` adds one line — `RandomAffine`, a small random rotation/shift/zoom — in front. Because the `DataLoader` re-applies the transform every time it hands out an image, that single line means **the network sees a slightly different version of each digit every epoch**. That is the entire augmentation idea; everything else is the same network from Chapter 11.
+
+### Step 2 — a training loop with a hook
+
+```python
+def train_epochs(model, training_loader, optimizer, device, number_of_epochs, per_epoch_callback=None):
+    ...
+    for epoch_number in range(1, number_of_epochs + 1):
+        for image_batch, label_batch in training_loader:
+            ...   # the usual zero_grad -> backward -> step
+        if per_epoch_callback is not None:
+            per_epoch_callback(epoch_number)
+```
+
+The loop is Chapter 10's. The one addition is `per_epoch_callback` — an *optional function* passed in and called after each epoch. It lets the early-stopping demo peek at validation accuracy every epoch without cluttering the training loop with demo-specific code. (Passing a function as an argument is the same idea that let Chapter 11 swap optimizers.)
+
+### Step 3 — demo 1: split, then let validation decide when to stop
+
+```python
+training_part = Subset(full_dataset, range(800))
+validation_part = Subset(full_dataset, range(800, SMALL_TRAINING_SIZE))
+...
+def check_validation(epoch_number):
+    validation_accuracy = measure_accuracy(model, validation_loader, device)
+    if validation_accuracy > best_validation_accuracy:
+        best_model_state = {name: tensor.clone() for name, tensor in model.state_dict().items()}
+```
+
+`Subset` carves the 1,000 labeled images into 800 train / 200 validation. Each epoch, `check_validation` (the callback) measures validation accuracy, and whenever it hits a new peak it saves a **copy** of the model's weights (`state_dict()` is the bag of all parameters; `.clone()` makes a snapshot that later training will not overwrite). At the end it restores that best snapshot and only *then* measures the test set — **once**. That save-the-peak-weights logic *is* early stopping.
+
+### Step 4 — demo 2: augmentation, by swapping one transform
+
+The augmentation demo is byte-for-byte Chapter 11's overfitting experiment, except the training dataset is built with `AUGMENTED_TRANSFORM` instead of `PLAIN_TRANSFORM`. That single swap lifts test accuracy from Chapter 11's 88.8% to 91.0% — a real gain from changing *nothing but the data pipeline*.
+
+### Step 5 — demo 3: the confusion matrix
+
+```python
+confusion_counts = torch.zeros(10, 10, dtype=torch.long)
+for image_batch, label_batch in test_loader:
+    predictions = model(image_batch.to(device)).argmax(dim=1).cpu()
+    for true_label, predicted_label in zip(label_batch, predictions):
+        confusion_counts[true_label, predicted_label] += 1
+```
+
+A 10×10 grid of counters. For every test image it adds 1 to the cell `[true digit, predicted digit]`. Correct predictions land on the diagonal (true == predicted); everything off the diagonal is a mistake. Zeroing the diagonal and taking the maximum finds the single most common confusion (true 4 predicted as 9) — which is exactly how practitioners decide what to fix next.
+
+The C file `c/batch_loader.c` rebuilds `DataLoader` — shuffle, batch, normalize — and **audits** it: one epoch touches every example exactly once, and each shuffled batch's label mix tracks the whole dataset. After this, no line of a PyTorch training script is a black box.
+
+### Quick reference
 
 | Function | What it does | What to notice |
 |----------|--------------|----------------|
-| `AUGMENTED_TRANSFORM` (module top) | `RandomAffine` (rotate/shift/zoom) + ToTensor + flatten. | This one line *is* the augmentation. Applied fresh each epoch, so the network never sees the same pixels twice. |
-| `train_epochs(model, loader, optimizer, ..., per_epoch_callback)` | The training loop, with a hook called after each epoch. | The callback is how the early-stopping demo peeks at validation without cluttering the loop. |
-| `demonstrate_validation_split(...)` | Splits 1,000 images into 800 train / 200 validation; keeps a copy of the best-validation weights. | The `best_model_state` copy **is** early stopping — train on, but remember the peak. Test is measured *once*, at the very end. |
-| `demonstrate_augmentation(...)` | Replays Chapter 11's overfitting setup with augmentation added. | Beats Chapter 11's defenses (88.8% → 91.0%) — augmentation attacks memorization at its root. |
-| `demonstrate_confusion_matrix(...)` | Trains on the full set, then counts every (true, predicted) pair. | The `off_diagonal.max()` line finds the worst mistake (4↔9) — real models are debugged exactly this way. |
-
-The C file `c/batch_loader.c` rebuilds `DataLoader` — shuffle, batch, normalize — and **audits** it: one epoch touches every example exactly once, and each shuffled batch's label mix tracks the whole dataset. After this, no line of a PyTorch training script is a black box.
+| `AUGMENTED_TRANSFORM` (module top) | `RandomAffine` (rotate/shift/zoom) + ToTensor + flatten. | This one line *is* the augmentation; applied fresh each epoch. |
+| `train_epochs(..., per_epoch_callback)` | The training loop, with a hook called after each epoch. | The callback lets the early-stopping demo peek at validation without cluttering the loop. |
+| `demonstrate_validation_split(...)` | 800 train / 200 validation; keeps the best-validation weights. | The `best_model_state` copy **is** early stopping; test is measured *once*. |
+| `demonstrate_augmentation(...)` | Chapter 11's setup with augmentation added. | Beats Chapter 11's defenses (88.8% → 91.0%). |
+| `demonstrate_confusion_matrix(...)` | Counts every (true, predicted) pair. | The off-diagonal max finds the worst mistake (4↔9). |
 
 ## Run it
 
