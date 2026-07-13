@@ -69,17 +69,58 @@ Matching the networks. Is deep learning pointless here? On *this* task — clean
 
 ## Code walkthrough
 
-The example is `python/train_motion_classifier.py`. Its structure *is* the experiment: three model classes, trained identically, so the only variable is how each sees time:
+The example is `python/train_motion_classifier.py`. Its structure *is* the experiment: three models trained identically, so the only thing that varies is **how each one sees time**. No prior programming assumed.
+
+### Step 1 — a task no single frame can solve
+
+`build_clip_batch` makes 8-frame clips of one MNIST digit sliding in a straight line — up, down, left, or right — and the label is the *direction*. The design is the whole point: any single frame is just a digit sitting somewhere, carrying **zero** information about which way it is moving. Only the *change across frames* holds the answer, so a model must look across time to win.
+
+### Step 2 — the control: one frame (and why it must fail)
+
+```python
+def forward(self, clips):
+    middle_frame = clips[:, FRAME_COUNT // 2: FRAME_COUNT // 2 + 1]
+    return self.network(middle_frame)
+```
+
+`SingleFrameCNN` is a perfectly good image CNN — but its `forward` slices out only the **middle frame** and throws the rest away. It gets stuck at ~25% (chance among 4 directions) not because it is weak, but because *the answer is not in its input*. This is the experiment's control, and the lesson to keep: always ask whether a model's input can even contain the answer before tuning the model.
+
+### Step 3 — early fusion: time becomes "color"
+
+```python
+self.network = nn.Sequential(
+    nn.Conv2d(FRAME_COUNT, 16, 3, stride=2, padding=1), nn.ReLU(),
+    ...
+```
+
+`EarlyFusionCNN` feeds all 8 frames to an ordinary 2-D CNN by treating them as 8 input **channels** — exactly where an RGB image had 3 (Chapter 13). Because the first convolution's kernels span all 8 frames at once, a single kernel can learn a pattern like "bright here in frame 0, bright two pixels to the right in frame 7" — a motion detector. Cheap, and enough to solve short clips.
+
+### Step 4 — 3D convolutions: kernels that slide over time too
+
+```python
+nn.Conv3d(1, 16, kernel_size=(3, 3, 3), stride=(1, 2, 2), padding=1), nn.ReLU(),
+...
+def forward(self, clips):
+    return self.network(clips[:, None])
+```
+
+`Small3DCNN` uses `nn.Conv3d`: kernels of shape `(time, height, width)` that slide over all three axes, so the feature maps stay little videos. `clips[:, None]` inserts a channel axis because Conv3d expects `(batch, channels, time, height, width)`. This is the general tool for real video (long clips, complex motion) — at a real compute cost, which is why early fusion is often preferred when clips are short.
+
+### Step 5 — the shared trainer (what makes it a fair experiment)
+
+`train_and_evaluate` trains whichever model it is handed with the *same* optimizer, data, and step count, then reports accuracy and parameter count. `main` calls it three times — once per contender — and the printed table is the result: the single-frame control at chance, both temporal models solving it. Same everything, only the way of seeing time differs.
+
+The C file `c/motion_energy.c` solves the same task with classic frame-differencing — no learning at all — a reminder that learning is a tool, not a religion.
+
+### Quick reference
 
 | Piece | What it does | What to notice |
 |-------|--------------|----------------|
-| `build_clip_batch(images, size, rng)` | Makes 8-frame clips of a digit sliding up/down/left/right; the label is the direction. | The task is designed so a single frame carries *zero* direction information — that is the whole point. |
-| `class SingleFrameCNN` | The control: sees only the **middle frame**. | Its `forward` slices out one frame. Stuck at chance (~25%) because the answer is not in its input. |
-| `class EarlyFusionCNN` | Stacks all 8 frames as input **channels** to a 2-D CNN. | `nn.Conv2d(FRAME_COUNT, ...)` — time becomes "color"; each kernel sees all 8 frames at once and can learn motion. |
-| `class Small3DCNN` | Uses `nn.Conv3d` — kernels sliding over time *and* space. | The `clips[:, None]` adds a channel axis; feature maps stay little videos. The general tool, at a compute cost. |
-| `train_and_evaluate(model, name, ...)` | Trains one contender, reports accuracy and parameter count. | Run for each of the three — the printed table is the experiment's result. |
-
-**The lesson to keep:** the control failing at 25% is not weakness. Always ask whether a model's *input* can contain the answer before tuning it. The C file `c/motion_energy.c` solves the same task with classic frame-differencing — no learning at all — a reminder that learning is a tool, not a religion.
+| `build_clip_batch(images, size, rng)` | 8-frame clips of a digit sliding; label is direction. | A single frame carries *zero* direction information — the whole point. |
+| `class SingleFrameCNN` | Control: sees only the **middle frame**. | Stuck at ~25% because the answer is not in its input. |
+| `class EarlyFusionCNN` | Stacks 8 frames as input **channels**. | `nn.Conv2d(FRAME_COUNT, ...)` — time becomes "color"; kernels learn motion. |
+| `class Small3DCNN` | `nn.Conv3d` — kernels over time *and* space. | `clips[:, None]` adds the channel axis; general but costly. |
+| `train_and_evaluate(model, name, ...)` | Trains one contender, reports accuracy + params. | Run for all three — the table is the experiment's result. |
 
 ## Run it
 
