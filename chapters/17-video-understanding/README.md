@@ -2,6 +2,23 @@
 
 Video adds one axis to everything you know — time — and that axis carries information that literally does not exist in any single frame: motion. This chapter proves that claim with a controlled experiment (a network that sees one frame *cannot* solve the task; networks that see time solve it perfectly), introduces the two standard ways to let convolutions see time, and closes Part III with a C program that solves the same task with no learning at all — a lesson about choosing tools.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. The task: designed so stills must fail](#1-the-task-designed-so-stills-must-fail)
+- [2. Two ways to let a CNN see time](#2-two-ways-to-let-a-cnn-see-time)
+- [3. The experiment](#3-the-experiment)
+- [4. The C counterpoint: motion by arithmetic](#4-the-c-counterpoint-motion-by-arithmetic)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - Video as a tensor: the time axis, and what only it can carry.
@@ -88,3 +105,10 @@ The full classical pipeline: clip synthesis with background noise, per-frame thr
 ## Next
 
 Part III complete — you can classify, detect, segment, and track. [Chapter 18 — Sound and spectrograms](../18-sound-and-spectrograms/README.md) begins audio: a world where the *frequency* axis plays the role pixels played here.
+
+<!-- NAV_START -->
+---
+
+[← Chapter 16: Segmentation](../16-segmentation/README.md) · [↑ Course index](../../README.md) · [Chapter 18: Sound and spectrograms →](../18-sound-and-spectrograms/README.md)
+
+<!-- NAV_END -->

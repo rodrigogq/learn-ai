@@ -4,6 +4,24 @@ Chapter 7 ended with the field's defining question: layers solve XOR, but the we
 
 This is the most important chapter of the course. Everything after it is scale.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. The chain rule](#1-the-chain-rule)
+- [2. Every formula is a graph](#2-every-formula-is-a-graph)
+- [3. Backpropagation, by hand](#3-backpropagation-by-hand)
+- [4. Building the engine](#4-building-the-engine)
+- [5. The payoff: XOR, learned this time](#5-the-payoff-xor-learned-this-time)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - The chain rule: how derivatives pass through composed functions.
@@ -140,3 +158,10 @@ A full port with one structural difference worth studying. Python builds the gra
 ## Next
 
 [Chapter 9 — Your first neural network](../09-first-neural-network/README.md)
+
+<!-- NAV_START -->
+---
+
+[← Chapter 7: Perceptrons and neurons](../07-perceptron-and-neurons/README.md) · [↑ Course index](../../README.md) · [Chapter 9: Your first neural network →](../09-first-neural-network/README.md)
+
+<!-- NAV_END -->

@@ -2,6 +2,23 @@
 
 Part V begins the road to your own language model, and it begins where every LLM begins: turning text into numbers. The answer used by GPT and virtually every modern model is **byte-pair encoding (BPE)** — a compression algorithm from 1994 that, given nothing but raw text and a counter, rediscovers letters' habits, then syllables, then whole words. You will build it completely (train in Python, encode in C from the same merges file), and the tokenizer you train here is *literally the one Chapter 24's mini-LLM will use*.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. The goldilocks problem](#1-the-goldilocks-problem)
+- [2. BPE: the whole algorithm](#2-bpe-the-whole-algorithm)
+- [3. Compression is capacity](#3-compression-is-capacity)
+- [4. What happens to the ids: embeddings (preview)](#4-what-happens-to-the-ids-embeddings-preview)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - Why models read tokens (not characters, not words).
@@ -90,3 +107,10 @@ The deployment half: load the Python-trained merges file, encode, decode. Traini
 ## Next
 
 [Chapter 21 — Recurrent networks](../21-recurrent-networks/README.md)
+
+<!-- NAV_START -->
+---
+
+[← Chapter 19: Speech recognition](../19-speech-recognition/README.md) · [↑ Course index](../../README.md) · [Chapter 21: Recurrent networks →](../21-recurrent-networks/README.md)
+
+<!-- NAV_END -->

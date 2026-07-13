@@ -2,6 +2,25 @@
 
 The milestone chapter. Everything from Chapters 0–8 assembles into one machine: a real neural network, built from scratch with no framework, that reads **handwritten digits it has never seen** and gets about 96% of them right. You will build it twice — in NumPy and in pure C — and by the end, the sentence "a neural network learned to read digits" will contain no mystery for you at all.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. The data: 70,000 handwritten digits](#1-the-data-70000-handwritten-digits)
+- [2. The architecture](#2-the-architecture)
+- [3. Softmax: sigmoid for ten answers](#3-softmax-sigmoid-for-ten-answers)
+- [4. Backpropagation as matrix operations](#4-backpropagation-as-matrix-operations)
+- [5. Mini-batch stochastic gradient descent](#5-mini-batch-stochastic-gradient-descent)
+- [6. The run](#6-the-run)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - MNIST, the "hello world" dataset: what an image is to a network.
@@ -158,3 +177,10 @@ The C program also carries its own random generator (a small LCG) instead of `ra
 ## Next
 
 Part I is complete — you can now build and train neural networks from nothing. [Chapter 10 — Introduction to PyTorch](../10-intro-to-pytorch/README.md) hands the arithmetic to a framework so the networks can get big.
+
+<!-- NAV_START -->
+---
+
+[← Chapter 8: Backpropagation](../08-backpropagation/README.md) · [↑ Course index](../../README.md) · [Chapter 10: Introduction to PyTorch →](../10-intro-to-pytorch/README.md)
+
+<!-- NAV_END -->

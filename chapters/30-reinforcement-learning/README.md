@@ -2,6 +2,23 @@
 
 Every model in this course so far learned from *examples* — here is the input, here is the right answer. Reinforcement learning throws that away. An **agent** acts in a world, receives **rewards**, and must figure out good behavior with nobody ever showing it the right move. This is how AlphaGo beat the world champion, how robots learn to walk, and — as RLHF — how chatbots are tuned to be helpful. You will build the core algorithm from scratch (tabular Q-learning, in pure C), then scale it to a neural network (a DQN balancing a pole).
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. Learning by doing](#1-learning-by-doing)
+- [2. Q-learning: the whole algorithm is one line](#2-q-learning-the-whole-algorithm-is-one-line)
+- [3. Deep Q-networks: when the table won't fit](#3-deep-q-networks-when-the-table-wont-fit)
+- [4. Where RL matters](#4-where-rl-matters)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - The RL setup: agent, environment, state, action, reward.
@@ -98,3 +115,10 @@ Complete tabular Q-learning — the environment, ε-greedy exploration, the one-
 ## Next
 
 [Chapter 31 — Deployment](../31-deployment/README.md)
+
+<!-- NAV_START -->
+---
+
+[← Chapter 29: Text-to-image and video](../29-text-to-image-and-video/README.md) · [↑ Course index](../../README.md) · [Chapter 31: Deployment →](../31-deployment/README.md)
+
+<!-- NAV_END -->

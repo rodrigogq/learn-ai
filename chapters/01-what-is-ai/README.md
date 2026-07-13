@@ -2,6 +2,24 @@
 
 In this chapter you will build two tiny programs that solve the same problem — one with hand-written rules, one that *learns* its rules from data — and see with your own eyes what "machine learning" actually means. No math yet; that starts in Chapter 2.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. The map](#1-the-map)
+- [2. The vocabulary](#2-the-vocabulary)
+- [3. The three kinds of learning](#3-the-three-kinds-of-learning)
+- [4. Rules vs learning — the demonstration](#4-rules-vs-learning-the-demonstration)
+- [5. The learning algorithm, explained before the code](#5-the-learning-algorithm-explained-before-the-code)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - The map: how AI, machine learning, and deep learning relate.
@@ -187,3 +205,10 @@ A full port of the Python program: same dataset, same learning step, same test �
 ## Next
 
 [Chapter 2 — Vectors and matrices](../02-vectors-and-matrices/README.md)
+
+<!-- NAV_START -->
+---
+
+[← Chapter 0: Setup](../00-setup/README.md) · [↑ Course index](../../README.md) · [Chapter 2: Vectors and matrices →](../02-vectors-and-matrices/README.md)
+
+<!-- NAV_END -->

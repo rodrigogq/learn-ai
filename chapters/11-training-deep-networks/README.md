@@ -2,6 +2,24 @@
 
 Training a small network on plentiful data, as you have done so far, mostly just works. Training *deep* networks on *limited* data mostly does not — unless you know the toolkit. This chapter is that toolkit: better optimizers (momentum, Adam), sane initialization, and the art of fighting **overfitting** — the failure mode where a model aces its training data and flunks reality. Every experiment here runs live, and one of them ties all the way back to Chapter 5 with a 200× speedup.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. Beyond plain SGD](#1-beyond-plain-sgd)
+- [2. Initialization: why Chapter 9 multiplied by √(2/n)](#2-initialization-why-chapter-9-multiplied-by-2n)
+- [3. Overfitting: the central disease of machine learning](#3-overfitting-the-central-disease-of-machine-learning)
+- [4. The defenses — and their honest limits](#4-the-defenses-and-their-honest-limits)
+- [5. Batch normalization, in one paragraph](#5-batch-normalization-in-one-paragraph)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - Momentum and Adam: what they add to plain gradient descent, formula by formula.
@@ -113,3 +131,10 @@ Adam implemented from scratch — about 25 lines of actual algorithm, matching t
 ## Next
 
 [Chapter 12 — Data pipelines](../12-data-pipelines/README.md)
+
+<!-- NAV_START -->
+---
+
+[← Chapter 10: Introduction to PyTorch](../10-intro-to-pytorch/README.md) · [↑ Course index](../../README.md) · [Chapter 12: Data pipelines →](../12-data-pipelines/README.md)
+
+<!-- NAV_END -->

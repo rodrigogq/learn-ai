@@ -2,6 +2,19 @@
 
 Every AI term used in this course, in one or two plain sentences, grouped by topic. The **Ch.** column links to where the term is explained in full.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [Core ideas](#core-ideas)
+- [The math](#the-math)
+- [How models learn](#how-models-learn)
+- [Building blocks](#building-blocks)
+- [Training in practice](#training-in-practice)
+- [Language and transformers](#language-and-transformers)
+- [Generative and beyond](#generative-and-beyond)
+
+<!-- CONTENTS_END -->
+
 ## Core ideas
 
 | Term | Meaning | Ch. |
@@ -121,3 +134,10 @@ Every AI term used in this course, in one or two plain sentences, grouped by top
 | **Q-learning / DQN** | Learning the value of each action in each state; a table for small problems, a network (DQN) for large ones. | [30](../../chapters/30-reinforcement-learning/README.md) |
 | **RLHF** | Reinforcement learning from human feedback: tuning an LLM to be helpful using human preference rankings as reward. | [30](../../chapters/30-reinforcement-learning/README.md) |
 | **Deployment** | Running a trained model in production: export (TorchScript/ONNX), quantize, serve without the training framework. | [31](../../chapters/31-deployment/README.md) |
+
+<!-- NAV_START -->
+---
+
+[← Appendix C: C refresher](../C-c-refresher/README.md) · [↑ Course index](../../README.md) · [Appendix E: Hardware guide →](../E-hardware-guide/README.md)
+
+<!-- NAV_END -->

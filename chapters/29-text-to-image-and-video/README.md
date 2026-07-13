@@ -2,6 +2,22 @@
 
 Chapter 28 generated a *random* digit. The magic of DALL·E and Midjourney is that you *ask* — and this chapter adds exactly that: **conditioning**, the mechanism that turns "generate something" into "generate *this*." You will build a diffusion model that draws the digit you request, meet the **guidance scale** slider every image tool exposes, and extend the idea to **video** through frame consistency. The label here stands in for a text prompt; the machinery is identical to the systems you have used.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. Conditioning: from "a digit" to "a 7"](#1-conditioning-from-a-digit-to-a-7)
+- [2. The guidance scale: how hard to obey the prompt](#2-the-guidance-scale-how-hard-to-obey-the-prompt)
+- [3. Video: consistency is the whole problem](#3-video-consistency-is-the-whole-problem)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - Conditioning: steering a generator with an instruction.
@@ -95,3 +111,10 @@ The two mechanisms of controllable generation, each with a stand-in denoiser so 
 ## Next
 
 Part VI complete — you can generate images and steer them with prompts. [Chapter 30 — Reinforcement learning](../30-reinforcement-learning/README.md) opens the final part: agents that learn by doing.
+
+<!-- NAV_START -->
+---
+
+[← Chapter 28: Diffusion models](../28-diffusion-models/README.md) · [↑ Course index](../../README.md) · [Chapter 30: Reinforcement learning →](../30-reinforcement-learning/README.md)
+
+<!-- NAV_END -->

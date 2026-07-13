@@ -2,6 +2,22 @@
 
 This is the architecture chapter of the modern era. Chapter 21 ended with the RNN's bottleneck — all history squeezed through one overwritten vector — and a question: *what if every position could just look directly at every other position?* The answer, **attention**, is one formula built entirely from Chapter 2 dot products and Chapter 9's softmax. Wrapped with pieces you already own (residuals, normalization, MLPs), it becomes the **transformer** — the architecture inside GPT, and the one you will train in Chapters 23 and 24.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. The mechanism](#1-the-mechanism)
+- [2. Watching attention learn to look](#2-watching-attention-learn-to-look)
+- [3. The transformer block: assembly of known parts](#3-the-transformer-block-assembly-of-known-parts)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - Queries, keys, values — attention worked by hand on tiny matrices.
@@ -113,3 +129,10 @@ One complete attention head — scores, scaling, causal mask, softmax, blend —
 ## Next
 
 [Chapter 23 — GPT from scratch](../23-gpt-from-scratch/README.md)
+
+<!-- NAV_START -->
+---
+
+[← Chapter 21: Recurrent networks](../21-recurrent-networks/README.md) · [↑ Course index](../../README.md) · [Chapter 23: GPT from scratch →](../23-gpt-from-scratch/README.md)
+
+<!-- NAV_END -->

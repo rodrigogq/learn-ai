@@ -2,6 +2,23 @@
 
 Part VI turns the course around: for 25 chapters, models *recognized* things; now they *create* them. This chapter builds the gentlest generative model — the autoencoder — proves that images secretly live in far fewer dimensions than their pixels suggest, and then makes one clever change that turns compression into genuine **generation**: a model that invents new digits from thin air. The idea (an encoder, a latent space, a decoder) reappears inside the diffusion models that power today's image generators.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. The autoencoder: compression that understands](#1-the-autoencoder-compression-that-understands)
+- [2. Why a plain autoencoder cannot generate](#2-why-a-plain-autoencoder-cannot-generate)
+- [3. The VAE: one change makes it generative](#3-the-vae-one-change-makes-it-generative)
+- [4. Where this leads](#4-where-this-leads)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - Autoencoders: compressing data through a bottleneck and rebuilding it.
@@ -99,3 +116,10 @@ A generative decoder — a latent point in, an image out — as a pure-C MLP, sh
 ## Next
 
 [Chapter 27 — GANs](../27-gans/README.md)
+
+<!-- NAV_START -->
+---
+
+[← Chapter 25: LLM inference in C](../25-llm-inference-in-c/README.md) · [↑ Course index](../../README.md) · [Chapter 27: GANs →](../27-gans/README.md)
+
+<!-- NAV_END -->

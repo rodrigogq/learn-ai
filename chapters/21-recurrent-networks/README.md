@@ -2,6 +2,23 @@
 
 Every model so far received its whole input at once. Language arrives as a *sequence*, and this chapter introduces the first architecture that reads one — the **recurrent neural network** — by giving a network the one thing it lacked: **memory**. You will train your first *language model* (it writes Shakespeare-shaped text after three minutes), hand-wire a two-neuron RNN in C that provably does something no feedforward network can, and meet the limitation that will hand the crown to transformers in the next chapter.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. The recurrence: a neuron that remembers](#1-the-recurrence-a-neuron-that-remembers)
+- [2. Language modeling: the task that scales to everything](#2-language-modeling-the-task-that-scales-to-everything)
+- [3. Results, and how sampling works](#3-results-and-how-sampling-works)
+- [4. The bottleneck that ends the RNN era](#4-the-bottleneck-that-ends-the-rnn-era)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - The recurrence: one cell, a hidden state, reused at every time step.
@@ -101,3 +118,10 @@ The recurrence itself (the general cell, with dimensions as arguments) plus the 
 ## Next
 
 [Chapter 22 — Attention and transformers](../22-attention-and-transformers/README.md)
+
+<!-- NAV_START -->
+---
+
+[← Chapter 20: Text and tokenization](../20-text-and-tokenization/README.md) · [↑ Course index](../../README.md) · [Chapter 22: Attention and transformers →](../22-attention-and-transformers/README.md)
+
+<!-- NAV_END -->

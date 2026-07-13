@@ -2,6 +2,24 @@
 
 Chapter 5 predicted a *number* (a price). But most AI questions want a *category*: spam or not, cat or dog, pass or fail. In this chapter you will build your first trained classifier — and meet the exact loss (cross-entropy) and output layer (sigmoid) that every classifier in this course uses, up to and including the mini-LLM.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. The problem, and why a line is not enough](#1-the-problem-and-why-a-line-is-not-enough)
+- [2. The sigmoid: from weighted sum to probability](#2-the-sigmoid-from-weighted-sum-to-probability)
+- [3. The loss and its gradient](#3-the-loss-and-its-gradient)
+- [4. Training, step by step](#4-training-step-by-step)
+- [5. The decision boundary](#5-the-decision-boundary)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - Why predicting a category needs a different model than predicting a number.
@@ -128,3 +146,10 @@ A full port. One numeric subtlety appears in the code of both languages: computi
 ## Next
 
 [Chapter 7 — Perceptrons and neurons](../07-perceptron-and-neurons/README.md)
+
+<!-- NAV_START -->
+---
+
+[← Chapter 5: Linear regression](../05-linear-regression/README.md) · [↑ Course index](../../README.md) · [Chapter 7: Perceptrons and neurons →](../07-perceptron-and-neurons/README.md)
+
+<!-- NAV_END -->

@@ -2,6 +2,23 @@
 
 The chapter where the pieces become the thing itself. A **GPT** — *generative pre-trained transformer* — is nothing beyond what you now own: Chapter 20's tokens, Chapter 22's blocks, Chapter 9's cross-entropy, Chapter 21's next-token task. You will write it in ~150 readable lines, train it on Shakespeare in about a minute, and watch the same object go from spraying random glyphs to writing blank verse with named characters. Chapter 24 will then scale exactly this file — nothing conceptually new remains.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. The architecture, in full](#1-the-architecture-in-full)
+- [2. Training, and the honest yardstick](#2-training-and-the-honest-yardstick)
+- [3. Before and after](#3-before-and-after)
+- [4. The knob at the end: sampling](#4-the-knob-at-the-end-sampling)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - The complete GPT parts list (all of it already yours).
@@ -111,3 +128,10 @@ The sampling toolbox — temperature softmax, distribution sampling, top-k filte
 ## Next
 
 [Chapter 24 — Train your mini-LLM](../24-train-your-mini-llm/README.md): this file, scaled, with checkpoints, BPE, and your GPU's full attention for a night.
+
+<!-- NAV_START -->
+---
+
+[← Chapter 22: Attention and transformers](../22-attention-and-transformers/README.md) · [↑ Course index](../../README.md) · [Chapter 24: Train your mini-LLM →](../24-train-your-mini-llm/README.md)
+
+<!-- NAV_END -->

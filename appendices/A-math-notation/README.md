@@ -4,6 +4,19 @@ Every math symbol used in this course, in one place. Chapters link here the firs
 
 This appendix grows as the course grows.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [Numbers and variables](#numbers-and-variables)
+- [Sums and products](#sums-and-products)
+- [Vectors and matrices (Chapter 2)](#vectors-and-matrices-chapter-2)
+- [Functions](#functions)
+- [Derivatives and gradients (Chapter 3)](#derivatives-and-gradients-chapter-3)
+- [Probability (Chapter 4)](#probability-chapter-4)
+- [Greek letters used in this course](#greek-letters-used-in-this-course)
+
+<!-- CONTENTS_END -->
+
 ## Numbers and variables
 
 | Notation | Read it as | Meaning |
@@ -76,3 +89,10 @@ This appendix grows as the course grows.
 | $\sigma$ | sigma | standard deviation; also the sigmoid function $\sigma(x)$ (context makes it clear) |
 | $\epsilon$ | epsilon | a very small number |
 | $\lambda$ | lambda | a strength knob, e.g. for regularization |
+
+<!-- NAV_START -->
+---
+
+[↑ Course index](../../README.md) · [Appendix B: Python refresher →](../B-python-refresher/README.md)
+
+<!-- NAV_END -->

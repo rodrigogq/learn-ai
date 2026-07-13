@@ -2,6 +2,23 @@
 
 This is the chapter behind the images you have actually seen — Stable Diffusion, DALL·E, Midjourney all run on **diffusion**. And the surprise, after the VAE's distributions and the GAN's fragile duel, is that diffusion's core is the *simplest* generative idea in the course: destroy an image by gradually adding noise, then train a network to reverse one step of that. You will build a working diffusion model on MNIST from scratch, watch digits crystallize out of static, and run the sampling loop in pure C.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. Two processes: destroy, then restore](#1-two-processes-destroy-then-restore)
+- [2. The absurdly simple training objective](#2-the-absurdly-simple-training-objective)
+- [3. Sampling: the loop that makes the picture](#3-sampling-the-loop-that-makes-the-picture)
+- [4. Diffusion vs the others, and the road to real generators](#4-diffusion-vs-the-others-and-the-road-to-real-generators)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - The forward process: turning any image into noise, one small step at a time.
@@ -101,3 +118,10 @@ The sampling loop — the schedule, the reverse step, the re-injected noise — 
 ## Next
 
 [Chapter 29 — Text-to-image and video](../29-text-to-image-and-video/README.md)
+
+<!-- NAV_START -->
+---
+
+[← Chapter 27: GANs](../27-gans/README.md) · [↑ Course index](../../README.md) · [Chapter 29: Text-to-image and video →](../29-text-to-image-and-video/README.md)
+
+<!-- NAV_END -->

@@ -2,6 +2,24 @@
 
 The course's biggest payoff, and the reason this book insisted on C the whole way. The language model you trained in Chapter 24 — a real transformer — now **runs in a single pure-C file**: no PyTorch, no framework, nothing but `libm` and about 400 lines of loops. It takes a text prompt and writes English. Along the way you add **int8 quantization**, the trick that lets `llama.cpp` run billion-parameter models on laptops. When you finish this chapter, the last piece of mystery is gone: an LLM is a file of numbers and arithmetic you have personally written.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. Training and inference are different jobs](#1-training-and-inference-are-different-jobs)
+- [2. Export: from checkpoint to a flat file](#2-export-from-checkpoint-to-a-flat-file)
+- [3. The forward pass in C](#3-the-forward-pass-in-c)
+- [4. Quantization: 4× smaller, still fluent](#4-quantization-4-smaller-still-fluent)
+- [5. Trust, but verify](#5-trust-but-verify)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - Why training and inference are different problems with different tools.
@@ -120,3 +138,10 @@ Everything — this chapter *is* the C chapter. One file loads the model (float3
 ## Next
 
 Part V complete — you trained a language model and run it in pure C. [Chapter 26 — Autoencoders and VAEs](../26-autoencoders-and-vaes/README.md) opens Part VI: teaching machines not to classify, but to *create*.
+
+<!-- NAV_START -->
+---
+
+[← Chapter 24: Train your mini-LLM](../24-train-your-mini-llm/README.md) · [↑ Course index](../../README.md) · [Chapter 26: Autoencoders and VAEs →](../26-autoencoders-and-vaes/README.md)
+
+<!-- NAV_END -->

@@ -2,6 +2,25 @@
 
 This is the chapter where the pieces snap together. You have vectors (Chapter 2), gradients (Chapter 3), and the idea of a loss (Chapter 4). Now you will train your first real model — from scratch, in both languages — and watch it learn the price of apartments. Every model you build for the rest of the course, up to and including the mini-LLM, trains with **exactly** the loop you write today. Only the model gets bigger.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. The problem](#1-the-problem)
+- [2. The loss: measuring how wrong a line is](#2-the-loss-measuring-how-wrong-a-line-is)
+- [3. The gradients, derived slowly](#3-the-gradients-derived-slowly)
+- [4. The training loop](#4-the-training-loop)
+- [5. Feature scaling: the same algorithm, 200× faster](#5-feature-scaling-the-same-algorithm-200-faster)
+- [6. Inference](#6-inference)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - The three-part recipe of supervised learning: **model, loss, optimizer**.
@@ -128,3 +147,10 @@ A full port, identical output. Notice it is barely longer than the Python: at th
 ## Next
 
 [Chapter 6 — Logistic regression](../06-logistic-regression/README.md)
+
+<!-- NAV_START -->
+---
+
+[← Chapter 4: Probability basics](../04-probability-basics/README.md) · [↑ Course index](../../README.md) · [Chapter 6: Logistic regression →](../06-logistic-regression/README.md)
+
+<!-- NAV_END -->

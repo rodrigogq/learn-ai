@@ -2,6 +2,23 @@
 
 In this chapter you will get your computer ready for the whole course and run your first two programs — one in Python, one in C. At the end you will know exactly what tools you have, whether you have a usable GPU, and how to run any example in any chapter.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. Install the tools](#1-install-the-tools)
+- [2. Run your first Python program](#2-run-your-first-python-program)
+- [3. Run your first C program](#3-run-your-first-c-program)
+- [4. How every chapter works](#4-how-every-chapter-works)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - What each tool in this course is for (Python, NumPy, PyTorch, a C compiler, `make`).
@@ -162,3 +179,10 @@ A full equivalent of the Python check, minus the GPU part: C programs in this co
 ## Next
 
 [Chapter 1 — What is AI?](../01-what-is-ai/README.md)
+
+<!-- NAV_START -->
+---
+
+[↑ Course index](../../README.md) · [Chapter 1: What is AI? →](../01-what-is-ai/README.md)
+
+<!-- NAV_END -->

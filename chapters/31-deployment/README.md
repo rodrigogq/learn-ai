@@ -2,6 +2,24 @@
 
 The final chapter, and a full-circle one. Every model you have built has, so far, lived in a training script. **Deployment** is the last mile: getting a trained model to run where it is actually needed — a server, a phone, a microcontroller, a game — fast enough, small enough, and without dragging PyTorch along. You will measure the real trade-offs (size, speed, accuracy), shrink a model with quantization, export it to run without Python, and embed one in a pure-C program. Then we close the whole course.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. Training is not deploying](#1-training-is-not-deploying)
+- [2. The deployment decision table](#2-the-deployment-decision-table)
+- [3. Export: leaving Python behind](#3-export-leaving-python-behind)
+- [4. Full circle: a model in a C program](#4-full-circle-a-model-in-a-c-program)
+- [5. Where you are, and where to go](#5-where-you-are-and-where-to-go)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [The end](#the-end)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - Why deployment is a distinct problem from training.
@@ -91,3 +109,10 @@ A trained model embedded directly in a C application — weights as constants, a
 ## The end
 
 That is the course. From [Chapter 1](../01-what-is-ai/README.md)'s "what is AI?" to a language model running in pure C, you went the whole way — and built every step yourself. [Back to the index](../../README.md).
+
+<!-- NAV_START -->
+---
+
+[← Chapter 30: Reinforcement learning](../30-reinforcement-learning/README.md) · [↑ Course index](../../README.md)
+
+<!-- NAV_END -->

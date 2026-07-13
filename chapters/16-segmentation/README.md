@@ -2,6 +2,23 @@
 
 Detection draws boxes; **segmentation** answers at the finest possible grain: a class for *every pixel*. It powers medical imaging (which pixels are tumor?), autonomous driving (which pixels are road?), and photo editing (which pixels are the person?). The good news: you already know almost everything needed — segmentation is classification, run 4,096 times per image. The one new idea is an architecture problem, and its famous solution is the **U-Net**.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. The task, and the dilemma](#1-the-task-and-the-dilemma)
+- [2. The U-Net](#2-the-u-net)
+- [3. Results](#3-results)
+- [4. From mask to objects: the C part](#4-from-mask-to-objects-the-c-part)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - Semantic segmentation as per-pixel classification.
@@ -90,3 +107,10 @@ The full post-processing stage: iterative flood fill (a stack instead of recursi
 ## Next
 
 [Chapter 17 — Video understanding](../17-video-understanding/README.md)
+
+<!-- NAV_START -->
+---
+
+[← Chapter 15: Object detection](../15-object-detection/README.md) · [↑ Course index](../../README.md) · [Chapter 17: Video understanding →](../17-video-understanding/README.md)
+
+<!-- NAV_END -->

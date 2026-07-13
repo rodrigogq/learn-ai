@@ -2,6 +2,23 @@
 
 Classification answers *what*; detection answers *what and where* — for every object in the scene at once. This is the chapter of bounding boxes, and of the three ideas that make box-prediction work: **IoU** (measuring box agreement), **grid-based prediction** (every image region votes), and **NMS** (cleaning up duplicate votes). You will train a real single-stage detector — the same design family as YOLO — on scenes it can never memorize, because every training image is generated fresh.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. The task, and the dataset trick](#1-the-task-and-the-dataset-trick)
+- [2. IoU: the ruler for boxes](#2-iou-the-ruler-for-boxes)
+- [3. The single-stage detector](#3-the-single-stage-detector)
+- [4. Scoring a detector](#4-scoring-a-detector)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - The detection task and how boxes are represented.
@@ -106,3 +123,10 @@ IoU and NMS, complete — reproducing the chapter's worked example (0.231) and r
 ## Next
 
 [Chapter 16 — Segmentation](../16-segmentation/README.md)
+
+<!-- NAV_START -->
+---
+
+[← Chapter 14: Image classification](../14-image-classification/README.md) · [↑ Course index](../../README.md) · [Chapter 16: Segmentation →](../16-segmentation/README.md)
+
+<!-- NAV_END -->

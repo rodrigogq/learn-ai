@@ -2,6 +2,16 @@
 
 What your computer can and cannot train, and why. Nothing in this course *requires* a GPU — but this page tells you what to expect from what you have.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [The one idea that matters: memory](#the-one-idea-that-matters-memory)
+- [The three kinds of machine](#the-three-kinds-of-machine)
+- [What each course milestone needs](#what-each-course-milestone-needs)
+- [Practical tips](#practical-tips)
+
+<!-- CONTENTS_END -->
+
 ## The one idea that matters: memory
 
 Training a neural network keeps four things in fast memory at once:
@@ -52,3 +62,10 @@ Numbers are rough orders of magnitude; each chapter gives concrete settings for 
 - **Heat and sleep:** on laptops, plug in and disable sleep for long runs (macOS: `caffeinate -i python train.py ...`).
 - **Disk:** datasets in this course are small (MB to a few GB). The Chapter 24 corpus is the largest download at a few GB. Keep ~20 GB free.
 - **Cloud is always an option:** any chapter runs on a rented GPU exactly as on your desk; nothing in the course assumes local hardware beyond speed.
+
+<!-- NAV_START -->
+---
+
+[← Appendix D: Glossary](../D-glossary/README.md) · [↑ Course index](../../README.md)
+
+<!-- NAV_END -->

@@ -2,6 +2,24 @@
 
 This is the chapter where the course has finally earned the word **neuron**. You have used every ingredient already — weighted sums since Chapter 0, the sigmoid since Chapter 6 — and now they get their proper name and their history. You will train the very first learning machine ever built (the 1957 perceptron), watch it hit the famous wall that froze AI research for a decade (XOR), and then break through that wall with the idea that defines deep learning: **layers**.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. The artificial neuron](#1-the-artificial-neuron)
+- [2. Activation functions, and why they must exist](#2-activation-functions-and-why-they-must-exist)
+- [3. The perceptron and its learning rule](#3-the-perceptron-and-its-learning-rule)
+- [4. The wall: XOR](#4-the-wall-xor)
+- [5. Breaking the wall with layers](#5-breaking-the-wall-with-layers)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - What an artificial neuron is (you already know the parts).
@@ -142,3 +160,10 @@ A full port. Notice that the perceptron's learning rule in C is four lines of in
 ## Next
 
 [Chapter 8 — Backpropagation](../08-backpropagation/README.md)
+
+<!-- NAV_START -->
+---
+
+[← Chapter 6: Logistic regression](../06-logistic-regression/README.md) · [↑ Course index](../../README.md) · [Chapter 8: Backpropagation →](../08-backpropagation/README.md)
+
+<!-- NAV_END -->

@@ -2,6 +2,23 @@
 
 In this chapter you will learn the last piece of foundation math: probability. Modern AI models do not output answers — they output *probabilities of answers* ("87% cat, 13% dog"), and they are trained by a probability-based score called cross-entropy. By the end you will understand that score well enough to compute it by hand, and you will have simulated thousands of dice rolls in both languages to check the theory.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. Probability and distributions](#1-probability-and-distributions)
+- [2. Sampling and the law of large numbers](#2-sampling-and-the-law-of-large-numbers)
+- [3. Expected value: the long-run average](#3-expected-value-the-long-run-average)
+- [4. Surprise and cross-entropy — how classifiers are graded](#4-surprise-and-cross-entropy-how-classifiers-are-graded)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - What a probability and a probability distribution are.
@@ -115,3 +132,10 @@ A full port. Worth reading for one detail: how a random integer 1–6 is made fr
 ## Next
 
 [Chapter 5 — Linear regression](../05-linear-regression/README.md)
+
+<!-- NAV_START -->
+---
+
+[← Chapter 3: Derivatives and gradients](../03-derivatives-and-gradients/README.md) · [↑ Course index](../../README.md) · [Chapter 5: Linear regression →](../05-linear-regression/README.md)
+
+<!-- NAV_END -->

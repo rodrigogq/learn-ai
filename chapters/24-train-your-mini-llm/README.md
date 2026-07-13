@@ -2,6 +2,23 @@
 
 The capstone. Everything in Part V converges here into a **complete, real language-model pipeline you run yourself**: download and clean a corpus, train a BPE tokenizer on it, train a GPT with checkpoint/resume so the run survives reboots, and generate text from your own model. Nothing here is conceptually new — Chapter 23 already built the GPT — so this chapter is about the *engineering* that turns a toy into a model you leave training overnight, and about the honest realities of scale.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. The pipeline, one script at a time](#1-the-pipeline-one-script-at-a-time)
+- [2. Checkpoint and resume: the point of the chapter](#2-checkpoint-and-resume-the-point-of-the-chapter)
+- [3. A real run](#3-a-real-run)
+- [4. Scale: what the missing rows would buy](#4-scale-what-the-missing-rows-would-buy)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - The full LLM data pipeline: download → clean → tokenize → pack.
@@ -140,3 +157,10 @@ None in this chapter — training a transformer belongs in PyTorch on a GPU (per
 ## Next
 
 [Chapter 25 — LLM inference in C](../25-llm-inference-in-c/README.md)
+
+<!-- NAV_START -->
+---
+
+[← Chapter 23: GPT from scratch](../23-gpt-from-scratch/README.md) · [↑ Course index](../../README.md) · [Chapter 25: LLM inference in C →](../25-llm-inference-in-c/README.md)
+
+<!-- NAV_END -->

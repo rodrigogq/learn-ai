@@ -2,6 +2,22 @@
 
 In this chapter you will learn the second (and last) piece of math that powers all of AI: the derivative. Chapter 2 gave models a way to *compute* (dot products); this chapter gives them a way to *improve* (follow slopes). By the end you will write a program that finds the bottom of a valley by feeling the ground — which is literally how neural networks learn.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. Slope: how fast something changes](#1-slope-how-fast-something-changes)
+- [2. Many inputs: partial derivatives and the gradient](#2-many-inputs-partial-derivatives-and-the-gradient)
+- [3. Gradient descent: learning is walking downhill](#3-gradient-descent-learning-is-walking-downhill)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - What a slope is, and what a derivative is (the slope of a curve at one point).
@@ -133,3 +149,10 @@ A full port. Note how a "function of two variables" is passed around in C: as a 
 ## Next
 
 [Chapter 4 — Probability basics](../04-probability-basics/README.md)
+
+<!-- NAV_START -->
+---
+
+[← Chapter 2: Vectors and matrices](../02-vectors-and-matrices/README.md) · [↑ Course index](../../README.md) · [Chapter 4: Probability basics →](../04-probability-basics/README.md)
+
+<!-- NAV_END -->

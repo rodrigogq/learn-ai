@@ -2,6 +2,23 @@
 
 In this chapter you will learn the small amount of linear algebra that powers *all* of AI. This is not an exaggeration: a neural network spends almost 100% of its time doing exactly the two operations you will build here by hand — the dot product and matrix multiplication.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. Vectors: a list of numbers with a meaning](#1-vectors-a-list-of-numbers-with-a-meaning)
+- [2. The dot product — the most important operation in this course](#2-the-dot-product-the-most-important-operation-in-this-course)
+- [3. Matrices: many dot products at once](#3-matrices-many-dot-products-at-once)
+- [4. Why NumPy](#4-why-numpy)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - What a vector is (two views: list of numbers, arrow in space).
@@ -128,3 +145,10 @@ A full port. It also shows the one C idea NumPy hides: a matrix is stored as a *
 ## Next
 
 [Chapter 3 — Derivatives and gradients](../03-derivatives-and-gradients/README.md)
+
+<!-- NAV_START -->
+---
+
+[← Chapter 1: What is AI?](../01-what-is-ai/README.md) · [↑ Course index](../../README.md) · [Chapter 3: Derivatives and gradients →](../03-derivatives-and-gradients/README.md)
+
+<!-- NAV_END -->

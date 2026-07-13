@@ -2,6 +2,23 @@
 
 Audio AI rests on one beautiful move: turn sound into an *image* (the spectrogram) and reuse everything you built in Part III. This chapter earns that move from first principles: what sound is as data, the Fourier transform (built from its definition — it is two dot products per frequency), and the spectrogram. As payoff, a CNN learns to classify sounds it can only distinguish by *seeing time and frequency at once* — and the C program writes a real `.wav` file you can play, then extracts the musical notes back out of it with a from-scratch FFT.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. Sound is a vector](#1-sound-is-a-vector)
+- [2. The Fourier transform, from its definition](#2-the-fourier-transform-from-its-definition)
+- [3. The spectrogram: sound becomes an image](#3-the-spectrogram-sound-becomes-an-image)
+- [4. Sound classification = image classification](#4-sound-classification-image-classification)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - Sound as a vector: sampling, sample rates, and synthesis with `sin`.
@@ -94,3 +111,10 @@ Three real artifacts: a WAV **writer** with every header field spelled out (44 b
 ## Next
 
 [Chapter 19 — Speech recognition](../19-speech-recognition/README.md)
+
+<!-- NAV_START -->
+---
+
+[← Chapter 17: Video understanding](../17-video-understanding/README.md) · [↑ Course index](../../README.md) · [Chapter 19: Speech recognition →](../19-speech-recognition/README.md)
+
+<!-- NAV_END -->

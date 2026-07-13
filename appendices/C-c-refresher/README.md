@@ -2,6 +2,16 @@
 
 The C examples in this course use a small, deliberate subset of C11. This appendix reviews exactly that subset. If you can read this page comfortably, you can read every `.c` file in the course.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [Why C at all?](#why-c-at-all)
+- [Compiling and running](#compiling-and-running)
+- [The pieces the course uses](#the-pieces-the-course-uses)
+- [What you do NOT need](#what-you-do-not-need)
+
+<!-- CONTENTS_END -->
+
 ## Why C at all?
 
 Python with NumPy and PyTorch hides the machinery: one line multiplies matrices. The C versions hide nothing — every loop, every byte of memory is yours. Seeing both builds real understanding: Python for productivity, C for truth.
@@ -113,3 +123,10 @@ printf("epoch %d: loss = %.4f\n", epoch_number, loss_value);
 ## What you do NOT need
 
 No function pointers beyond an occasional callback, no unions, no bit manipulation, no threads, no preprocessor tricks. When a chapter needs anything beyond this page, it explains it on the spot.
+
+<!-- NAV_START -->
+---
+
+[← Appendix B: Python refresher](../B-python-refresher/README.md) · [↑ Course index](../../README.md) · [Appendix D: Glossary →](../D-glossary/README.md)
+
+<!-- NAV_END -->

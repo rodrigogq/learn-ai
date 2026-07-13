@@ -2,6 +2,22 @@
 
 Chapter 9 ended with a diagnosis: the MLP scored "only" 96% on digits because it treats an image as an unordered bag of 784 numbers — shuffle the pixels consistently and it would learn just as well. Images have *structure*: nearby pixels form edges, edges form shapes. The **convolution** is the operation that finally looks at images the way images work, and it powers everything visual from here to the end of the course.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. The operation](#1-the-operation)
+- [2. Why this beats a dense layer at seeing](#2-why-this-beats-a-dense-layer-at-seeing)
+- [3. The four knobs](#3-the-four-knobs)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - The convolution operation, worked by hand on paper-sized numbers.
@@ -93,3 +109,10 @@ A full port of the core algorithm plus the padding helper and the benchmark. Not
 ## Next
 
 [Chapter 14 — Image classification](../14-image-classification/README.md)
+
+<!-- NAV_START -->
+---
+
+[← Chapter 12: Data pipelines](../12-data-pipelines/README.md) · [↑ Course index](../../README.md) · [Chapter 14: Image classification →](../14-image-classification/README.md)
+
+<!-- NAV_END -->

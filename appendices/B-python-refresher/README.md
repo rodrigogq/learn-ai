@@ -2,6 +2,22 @@
 
 The course assumes you can already read and write basic Python. This appendix reviews the specific features the course leans on, so nothing in the chapters surprises you. It is a checklist, not a Python course — if most of this looks new, spend a day with the [official Python tutorial](https://docs.python.org/3/tutorial/) first.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [Lists, loops, and comprehensions](#lists-loops-and-comprehensions)
+- [Functions, default arguments, keyword arguments](#functions-default-arguments-keyword-arguments)
+- [Classes (used from Chapter 8 on)](#classes-used-from-chapter-8-on)
+- [Tuples and multiple return values](#tuples-and-multiple-return-values)
+- [Slicing](#slicing)
+- [f-strings](#f-strings)
+- [`if __name__ == "__main__"`](#if-__name__-__main__)
+- [`argparse` (used by the longer training scripts)](#argparse-used-by-the-longer-training-scripts)
+- [Paths with `pathlib`](#paths-with-pathlib)
+- [What you do NOT need](#what-you-do-not-need)
+
+<!-- CONTENTS_END -->
+
 ## Lists, loops, and comprehensions
 
 ```python
@@ -116,3 +132,10 @@ if checkpoint_file_path.exists():
 ## What you do NOT need
 
 No decorators, generators, async, metaclasses, or type-system tricks. When a chapter needs anything beyond this page, it explains it on the spot.
+
+<!-- NAV_START -->
+---
+
+[← Appendix A: Math notation, in plain English](../A-math-notation/README.md) · [↑ Course index](../../README.md) · [Appendix C: C refresher →](../C-c-refresher/README.md)
+
+<!-- NAV_END -->

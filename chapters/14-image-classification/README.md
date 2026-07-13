@@ -2,6 +2,24 @@
 
 Chapter 13 gave you the convolution; this chapter assembles convolutions into a real image classifier and trains it on real photographs — CIFAR-10, the classic "small but honest" vision benchmark. On the way you meet the architecture that made deep learning *deep* (the ResNet), and close the loop with C: the network you train here runs, weight for weight, in a pure-C inference engine — including a genuine deployment trick, batch-norm folding.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. The data: CIFAR-10](#1-the-data-cifar-10)
+- [2. The architecture, stage by stage](#2-the-architecture-stage-by-stage)
+- [3. The residual block: the idea that unlocked depth](#3-the-residual-block-the-idea-that-unlocked-depth)
+- [4. Training and results](#4-training-and-results)
+- [5. Deployment preview: batch norm folds away](#5-deployment-preview-batch-norm-folds-away)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - CIFAR-10 and why it is a real step up from MNIST.
@@ -130,3 +148,10 @@ Full inference of the exact trained network: the generic strided/padded multi-ch
 ## Next
 
 [Chapter 15 — Object detection](../15-object-detection/README.md)
+
+<!-- NAV_START -->
+---
+
+[← Chapter 13: Convolutions](../13-convolutions/README.md) · [↑ Course index](../../README.md) · [Chapter 15: Object detection →](../15-object-detection/README.md)
+
+<!-- NAV_END -->

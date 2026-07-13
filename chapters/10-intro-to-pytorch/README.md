@@ -2,6 +2,24 @@
 
 You have now built everything yourself: matrix math (Chapter 2), gradients (Chapter 3), an autograd engine (Chapter 8), and a full network (Chapter 9). From this chapter on, a framework does that arithmetic for you — not because you cannot do it, but because *you have already done it* and repeating it at scale is a waste of your time. PyTorch will feel eerily familiar: every one of its three core ideas is a chapter you finished.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. Why a framework — and why only now](#1-why-a-framework-and-why-only-now)
+- [2. Tensors — and what one actually is](#2-tensors-and-what-one-actually-is)
+- [3. Autograd: your Chapter 8 engine, grown up](#3-autograd-your-chapter-8-engine-grown-up)
+- [4. Devices: one word moves the work](#4-devices-one-word-moves-the-work)
+- [5. Chapter 9 in thirty lines](#5-chapter-9-in-thirty-lines)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - Tensors: shapes, views, broadcasting — and what a tensor really is underneath (storage + shape + strides).
@@ -151,3 +169,10 @@ Not a port this time — a **microscope**. PyTorch itself is C++ underneath (its
 ## Next
 
 [Chapter 11 — Training deep networks](../11-training-deep-networks/README.md)
+
+<!-- NAV_START -->
+---
+
+[← Chapter 9: Your first neural network](../09-first-neural-network/README.md) · [↑ Course index](../../README.md) · [Chapter 11: Training deep networks →](../11-training-deep-networks/README.md)
+
+<!-- NAV_END -->

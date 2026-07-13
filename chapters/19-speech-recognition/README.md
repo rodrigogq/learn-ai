@@ -2,6 +2,23 @@
 
 Speech-to-text hides one problem that dwarfs the others: **alignment**. A second of audio is dozens of spectrogram frames; the transcript is a handful of letters; and no dataset tells you which frames belong to which letter. This chapter teaches the elegant solution the field used for a decade and still ships today — **CTC** — by training a model that genuinely learns to *spell what it hears*, and closes Part IV with the decoder in pure C.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. The alignment problem](#1-the-alignment-problem)
+- [2. CTC: let the network place the letters itself](#2-ctc-let-the-network-place-the-letters-itself)
+- [3. The miniature speech-to-text system](#3-the-miniature-speech-to-text-system)
+- [4. Decoding, greedy and beyond](#4-decoding-greedy-and-beyond)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - Why speech is not just Chapter 18 + a classifier: the alignment problem.
@@ -95,3 +112,10 @@ The complete greedy CTC decoder — the exact code path that turns model output 
 ## Next
 
 Part IV complete — you have taken sound from air pressure to text. [Chapter 20 — Text and tokenization](../20-text-and-tokenization/README.md) opens Part V: the road to your own language model.
+
+<!-- NAV_START -->
+---
+
+[← Chapter 18: Sound and spectrograms](../18-sound-and-spectrograms/README.md) · [↑ Course index](../../README.md) · [Chapter 20: Text and tokenization →](../20-text-and-tokenization/README.md)
+
+<!-- NAV_END -->

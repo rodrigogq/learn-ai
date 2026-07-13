@@ -2,6 +2,23 @@
 
 Practitioners share a secret: most of the work — and most of the wins — are in the *data*, not the model. This chapter closes Part II with the data-side craft: honest splits, loaders, augmentation (which beats Chapter 11's defenses on Chapter 11's own problem), and metrics that tell you *where* a model fails instead of just how often.
 
+<!-- CONTENTS_START -->
+## Contents
+
+- [What you will learn](#what-you-will-learn)
+- [Prerequisites](#prerequisites)
+- [1. The three-way split](#1-the-three-way-split)
+- [2. Datasets and loaders](#2-datasets-and-loaders)
+- [3. Augmentation: the free data machine](#3-augmentation-the-free-data-machine)
+- [4. The confusion matrix: mistakes have structure](#4-the-confusion-matrix-mistakes-have-structure)
+- [Code walkthrough](#code-walkthrough)
+- [Run it](#run-it)
+- [What the C version covers](#what-the-c-version-covers)
+- [Exercises](#exercises)
+- [Next](#next)
+
+<!-- CONTENTS_END -->
+
 ## What you will learn
 
 - The train/validation/test split, and the discipline that makes scores trustworthy.
@@ -104,3 +121,10 @@ A complete `DataLoader` equivalent — shuffle (Fisher-Yates), batch gathering, 
 ## Next
 
 Part II is complete — you command the full modern toolkit. [Chapter 13 — Convolutions](../13-convolutions/README.md) begins computer vision: the fix for the MLP's pixel-order blindness that Chapter 9 promised.
+
+<!-- NAV_START -->
+---
+
+[← Chapter 11: Training deep networks](../11-training-deep-networks/README.md) · [↑ Course index](../../README.md) · [Chapter 13: Convolutions →](../13-convolutions/README.md)
+
+<!-- NAV_END -->
