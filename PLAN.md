@@ -120,7 +120,7 @@ Status: `[ ]` not started · `[~]` drafted, examples untested · `[x]` done (tex
 
 ### Part VII — Beyond prediction
 
-- [ ] 30-reinforcement-learning — Q-learning on a gridworld (both languages), DQN on CartPole, policy gradients.
+- [x] 30-reinforcement-learning — tabular Q-learning gridworld + DQN on CartPole. C: Q-learning from scratch, no framework.
 - [ ] 31-deployment — ONNX/TorchScript export, quantization, local serving, embedding models in C programs; course wrap-up.
 
 ## Per-session workflow

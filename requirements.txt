@@ -5,3 +5,7 @@ numpy>=2.5
 torch>=2.13
 torchvision>=0.28
 matplotlib>=3.11
+
+# Chapter 30 only (reinforcement learning environments). Optional: the
+# gridworld runs without it; only the CartPole DQN needs it.
+gymnasium>=1.0

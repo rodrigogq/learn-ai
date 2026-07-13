@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 500" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="940" height="500" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">A different kind of learning: act, get a reward, get better</text>
+
+  <defs>
+    <marker id="rlArrow" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0, 9 4, 0 8" fill="#57606a"/>
+    </marker>
+  </defs>
+
+  <!-- The loop -->
+  <rect x="120" y="120" width="200" height="90" rx="12" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="150" y="158" font-size="18" font-weight="700" fill="#1e3a8a">AGENT</text>
+  <text x="150" y="184" font-size="13" fill="#1e3a8a">picks an action</text>
+
+  <rect x="620" y="120" width="200" height="90" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="650" y="158" font-size="18" font-weight="700" fill="#14532d">ENVIRONMENT</text>
+  <text x="650" y="184" font-size="13" fill="#14532d">gridworld, CartPole, ...</text>
+
+  <!-- action arrow -->
+  <line x1="320" y1="150" x2="612" y2="150" stroke="#57606a" stroke-width="2.5" marker-end="url(#rlArrow)"/>
+  <text x="400" y="138" font-size="14" font-weight="700" fill="#24292f">action ("move right")</text>
+
+  <!-- state + reward arrow back -->
+  <line x1="620" y1="185" x2="328" y2="185" stroke="#57606a" stroke-width="2.5" marker-end="url(#rlArrow)"/>
+  <text x="370" y="205" font-size="14" font-weight="700" fill="#24292f">new state + reward (+1, -1, or a little cost)</text>
+
+  <text x="330" y="255" font-size="14" fill="#57606a">no labeled examples, ever - the ONLY signal is the reward. The agent must discover good</text>
+  <text x="330" y="275" font-size="14" fill="#57606a">behavior by trying things (exploration) and remembering what paid off (exploitation).</text>
+
+  <!-- The Q-learning update box -->
+  <rect x="60" y="310" width="820" height="130" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+  <text x="80" y="338" font-size="15" font-weight="700" fill="#78350f">the whole algorithm is one update (Q-learning): learn "how good is each action in each state?"</text>
+  <text x="80" y="372" font-size="15" font-family="ui-monospace, 'SF Mono', Menlo, monospace" fill="#78350f">Q[state][action] += rate &#215; ( reward + discount &#215; max Q[next state]  &#8722;  Q[state][action] )</text>
+  <text x="80" y="400" font-size="13.5" fill="#92610a">read it: nudge my estimate toward (what I just earned) + (the best I can still do from where I landed).</text>
+  <text x="80" y="422" font-size="13.5" fill="#92610a">a TABLE for small worlds (gridworld, in C); a NEURAL NETWORK for big ones (CartPole DQN) - identical idea.</text>
+
+  <text x="60" y="474" font-size="14" fill="#57606a">This is how AlphaGo and game-playing AIs learn, and (as RLHF) how chatbots are tuned to be helpful - Chapter 31.</text>
+</svg>
