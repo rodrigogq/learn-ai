@@ -54,9 +54,9 @@ Say $\mathbf{a} = (1, 2)$ and $\mathbf{b} = (3, 1)$.
 
 ## 2. The dot product — the most important operation in this course
 
-$$\mathbf{a} \cdot \mathbf{b} = \sum_{i=1}^{n} a_i \, b_i$$
+$$\mathbf{a} \cdot \mathbf{b} = \sum_{i=1}^{n} a_i b_i$$
 
-That $\sum$ symbol (a Greek capital "sigma") is the mathematician's shorthand for "add all of these up". The $i=1$ underneath and the $n$ on top say "let the counter $i$ run from 1 up to $n$", and the term being added, $a_i\,b_i$, means "the $i$-th element of $\mathbf{a}$ times the $i$-th element of $\mathbf{b}$" (so $a_i$ is just `a[i]` in code). Put together, the whole line reads aloud as: "multiply the first elements together, the second elements together, and so on, then add everything up." The result is **one single number**. In code it is a plain loop:
+That $\sum$ symbol (a Greek capital "sigma") is the mathematician's shorthand for "add all of these up". The $i=1$ underneath and the $n$ on top say "let the counter $i$ run from 1 up to $n$", and the term being added, $a_i b_i$, means "the $i$-th element of $\mathbf{a}$ times the $i$-th element of $\mathbf{b}$" (so $a_i$ is just `a[i]` in code). Put together, the whole line reads aloud as: "multiply the first elements together, the second elements together, and so on, then add everything up." The result is **one single number**. In code it is a plain loop:
 
 ```python
 dot_product = 0.0
@@ -85,7 +85,7 @@ Why this matters: a **layer** of a neural network is $m$ neurons all looking at 
 
 **Matrix × matrix**: the same idea repeated. $C = AB$ means every element $C_{ij}$ is the dot product of **row $i$ of $A$** with **column $j$ of $B$**:
 
-$$C_{ij} = \sum_{k} A_{ik} \, B_{kj}$$
+$$C_{ij} = \sum_{k} A_{ik} B_{kj}$$
 
 That triple loop over $i$, $j$, $k$ is what you will write in both languages today, and it is what GPUs were built to do billions of times per second.
 

@@ -75,7 +75,7 @@ $$L(w, b) = \frac{1}{n} \sum_{i=1}^{n} -\log\big(p_i \text{ if student } i \text
 
 To train, we need the gradients. The derivation (chain rule through the log and the sigmoid) has a famous punchline — nearly everything cancels, leaving:
 
-$$\frac{\partial L}{\partial w} = \frac{1}{n} \sum_{i=1}^{n} (p_i - y_i) \, x_i \qquad\qquad \frac{\partial L}{\partial b} = \frac{1}{n} \sum_{i=1}^{n} (p_i - y_i)$$
+$$\frac{\partial L}{\partial w} = \frac{1}{n} \sum_{i=1}^{n} (p_i - y_i) x_i \qquad\qquad \frac{\partial L}{\partial b} = \frac{1}{n} \sum_{i=1}^{n} (p_i - y_i)$$
 
 Stop and compare with Chapter 5's gradients: **identical shape** — average of (error × input), average of (error) — except the "error" is now `probability − label` instead of `prediction − truth`, and the factor 2 is gone. This is not a coincidence; sigmoid + cross-entropy were made for each other, and the same clean pattern will reappear with softmax in Chapter 9. We do not reproduce the full cancellation here (it is a satisfying exercise once you have Chapter 8's chain-rule practice), but we do not ask for faith either: **both programs verify these formulas numerically before training**, exactly like Chapter 5.
 

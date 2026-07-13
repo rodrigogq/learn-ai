@@ -95,7 +95,7 @@ For perspective: ~70% of a random 32×32 photo's class recovered in minutes of t
 
 The C program does *not* implement batch normalization — yet matches the Python evaluation. The trick, performed by `export_for_c.py`: at inference time a batch norm is frozen (fixed mean, variance, scale, shift — Chapter 11), which makes it a per-channel multiply-and-add, and *that* can be **absorbed into the preceding convolution's weights**:
 
-$$W' = W \cdot \frac{\gamma}{\sqrt{\sigma^2 + \epsilon}} \qquad b' = \beta - \frac{\gamma \, \mu}{\sqrt{\sigma^2 + \epsilon}}$$
+$$W' = W \cdot \frac{\gamma}{\sqrt{\sigma^2 + \epsilon}} \qquad b' = \beta - \frac{\gamma \mu}{\sqrt{\sigma^2 + \epsilon}}$$
 
 Sixteen batch norms vanish into sixteen convolutions. Every production inference engine does this; you will meet the idea again (harder) in Chapter 25's quantization and Chapter 31.
 

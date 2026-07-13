@@ -68,7 +68,7 @@ We need $\frac{\partial L}{\partial w}$ and $\frac{\partial L}{\partial b}$. Tak
 
 Therefore, averaging over the dataset:
 
-$$\frac{\partial L}{\partial w} = \frac{2}{n} \sum_{i=1}^{n} e_i \, x_i \qquad\qquad \frac{\partial L}{\partial b} = \frac{2}{n} \sum_{i=1}^{n} e_i$$
+$$\frac{\partial L}{\partial w} = \frac{2}{n} \sum_{i=1}^{n} e_i x_i \qquad\qquad \frac{\partial L}{\partial b} = \frac{2}{n} \sum_{i=1}^{n} e_i$$
 
 Read them aloud, they are friendlier than they look: *the weight's gradient is the average of (error × input); the bias's gradient is the average error.* If predictions run too high, the average error is positive and both parameters get pushed down. The formulas do the sensible thing.
 

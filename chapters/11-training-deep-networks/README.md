@@ -39,13 +39,13 @@ Plain gradient descent takes the current gradient and steps. Two upgrades domina
 
 **Momentum** gives the walker memory. Instead of stepping by the raw gradient, keep a running average of recent gradients and step by that:
 
-$$v \leftarrow \beta \, v + (1-\beta)\, g \qquad\qquad \theta \leftarrow \theta - \eta \, v$$
+$$v \leftarrow \beta v + (1-\beta) g \qquad\qquad \theta \leftarrow \theta - \eta v$$
 
 Symbols: $g$ is the current gradient, $v$ the "velocity" (the running average; $\beta \approx 0.9$ means "keep 90% of yesterday's speed"), $\theta$ any parameter, $\eta$ the learning rate. Effect: consistent directions build up speed; zigzagging directions cancel out. Think of a heavy ball rolling down the loss landscape instead of a cautious hiker re-deciding at every step — mini-batch noise (Chapter 9) averages away, and progress along narrow valleys accelerates.
 
 **Adam** adds a second memory: a running average of the *squared* gradient per parameter, used to normalize each step:
 
-$$\text{step for } \theta = -\eta \; \frac{\text{average of recent } g}{\sqrt{\text{average of recent } g^2}}$$
+$$\text{step for } \theta = -\eta \frac{\text{average of recent } g}{\sqrt{\text{average of recent } g^2}}$$
 
 (Plus small corrections for startup, which the C code spells out.) The division is the point: a parameter whose gradients are habitually large gets its steps shrunk; one with tiny gradients gets boosted. **Every parameter receives its own effective learning rate.** If that sounds like the cure for Chapter 5's scale-mismatch disease — the bias that crawled for 200,000 epochs while the weight raced — it is, and the C example proves it on that exact problem:
 

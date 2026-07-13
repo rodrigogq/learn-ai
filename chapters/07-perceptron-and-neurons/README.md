@@ -55,7 +55,7 @@ Four activations cover this whole course. **Step** (0 below the threshold, 1 abo
 
 Why insist on an activation at all? Here is the one-paragraph argument, and it matters enough to read twice. Suppose we stack two activation-free neurons: the first computes $z = w_1 x + b_1$, the second takes that as input and computes $w_2 z + b_2$. Substitute:
 
-$$w_2 (w_1 x + b_1) + b_2 = (w_2 w_1)\, x + (w_2 b_1 + b_2)$$
+$$w_2 (w_1 x + b_1) + b_2 = (w_2 w_1) x + (w_2 b_1 + b_2)$$
 
 — which is just *one* weighted sum with weight $w_2 w_1$ and bias $w_2 b_1 + b_2$. Stack a hundred linear neurons and the whole tower still collapses into a single straight line. **Without a nonlinear function between layers, depth buys nothing.** The activation is the bend that stops the collapse — it is what lets networks build curves out of straight pieces, as Section 5 will show concretely.
 
@@ -108,7 +108,7 @@ This observation, published by Minsky and Papert in 1969, helped freeze neural-n
 
 XOR is not separable by one line — but it *is* buildable from things that are. Notice:
 
-$$\text{XOR}(x_1, x_2) = \text{OR}(x_1, x_2) \;\text{AND NOT}\; \text{AND}(x_1, x_2)$$
+$$\text{XOR}(x_1, x_2) = \text{OR}(x_1, x_2) \text{ AND NOT } \text{AND}(x_1, x_2)$$
 
 ("at least one is on, but not both.") OR and AND are each one perceptron. So wire **three neurons in two layers** — no training, weights chosen by hand:
 

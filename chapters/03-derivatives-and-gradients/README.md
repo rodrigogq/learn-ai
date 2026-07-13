@@ -88,7 +88,7 @@ And — this is the reassuring part — **you do not have to believe those two r
 
 The **gradient** simply collects every partial derivative into one vector (a list of the slopes, one per input), written $\nabla f$ — the upside-down triangle is called "nabla", and you can read $\nabla f$ as "the gradient of $f$":
 
-$$\nabla f(x, y) = \left( \frac{\partial f}{\partial x}, \; \frac{\partial f}{\partial y} \right) = (2x, \; 6y)$$
+$$\nabla f(x, y) = \left( \frac{\partial f}{\partial x}, \frac{\partial f}{\partial y} \right) = (2x, 6y)$$
 
 So the gradient is not a new kind of object — it is a *vector of the partial derivatives you just computed*, packed together so we can talk about "all the slopes at once".
 
@@ -98,7 +98,7 @@ The gradient has a superpower, and it is the single most important fact in this 
 
 (Why it points uphill is itself a lovely piece of calculus we will not prove — the [Wikipedia article on the gradient](https://en.wikipedia.org/wiki/Gradient) has the full derivation for the curious — but you can simply take it as the one fact to memorize, and the descent experiments in the next section will make you *believe* it by watching it work.)
 
-Plug in the point $(2, 1)$: $\nabla f = (2\times 2,\; 6\times 1) = (4, 6)$. The bowl climbs fastest in the direction $(4,6)$; to descend fastest, step toward $(-4, -6)$. That single sentence — *step against the gradient* — is the seed of every training algorithm in the course.
+Plug in the point $(2, 1)$: $\nabla f = (2\times 2, 6\times 1) = (4, 6)$. The bowl climbs fastest in the direction $(4,6)$; to descend fastest, step toward $(-4, -6)$. That single sentence — *step against the gradient* — is the seed of every training algorithm in the course.
 
 ## 3. Gradient descent: learning is walking downhill
 
@@ -111,7 +111,7 @@ Here is the plan that trains every model from Chapter 5 to Chapter 31:
 
 As one formula, applied to every parameter:
 
-$$x_{\text{new}} = x_{\text{old}} - \eta \, \nabla f(x_{\text{old}})$$
+$$x_{\text{new}} = x_{\text{old}} - \eta \nabla f(x_{\text{old}})$$
 
 $\eta$ ("eta") is the **learning rate** — the step size. It is the first *hyperparameter* you meet (a knob *you* choose rather than the model learning it). Too small: you crawl. Too large: you overshoot the valley and bounce out. The example programs let you feel both failure modes.
 
