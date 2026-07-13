@@ -83,16 +83,58 @@ But the fix that actually ended the arms race was a different question entirely:
 
 ## Code walkthrough
 
-The example is `python/char_rnn_shakespeare.py`. Two small classes and a sampler — the recurrence is a handful of lines:
+The example is `python/char_rnn_shakespeare.py`. Two small classes and a sampler — the recurrence itself is only a few lines. No prior programming assumed.
+
+### Step 1 — the RNN cell: a neuron that also reads its own memory
+
+```python
+def forward(self, input_vector, previous_state):
+    return torch.tanh(self.input_transform(input_vector) + self.state_transform(previous_state))
+```
+
+`HandmadeRNNCell` is one step of memory. It takes two inputs — the current `input_vector` (this character) and the `previous_state` (everything remembered so far) — puts a weighted sum through each (`input_transform` and `state_transform`, both `nn.Linear`), adds them, and applies `tanh` to get the **new state**. That is Chapter 7's neuron, except one of its inputs is *the network's own previous output*. That self-connection — feeding the state back into itself — **is** the memory, and it is the entire novelty of an RNN.
+
+### Step 2 — unrolling the cell over the sequence
+
+```python
+for time_index in range(time_steps):
+    hidden_state = self.rnn_cell(embedded[:, time_index], hidden_state)
+    logits_per_step.append(self.next_character_head(hidden_state))
+```
+
+`CharRNN.forward` turns each character id into a vector (`nn.Embedding` — a learned lookup table, replacing Chapter 9's one-hot) and then runs this loop. The loop is the **unrolling**: the *same* cell with the *same* weights is applied at every time step, with the hidden state chaining forward from one step to the next. At each step it also predicts the next character (`next_character_head`), so a length-128 sequence yields 128 training examples in one pass — the efficiency that makes language models train fast. Backprop then flows back through the whole unrolled chain ("backprop through time" is just Chapter 8's backprop on a long graph).
+
+### Step 3 — training: predict-the-next-character, with gradient clipping
+
+```python
+input_ids = torch.stack([corpus[s:s + SEQUENCE_LENGTH] for s in starts]).to(device)
+target_ids = torch.stack([corpus[s + 1:s + SEQUENCE_LENGTH + 1] for s in starts]).to(device)
+...
+loss.backward()
+nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+```
+
+The targets are just the inputs **shifted by one character** — at every position the model must predict the next one, scored by cross-entropy. The one new trick is `clip_grad_norm_`: because gradients flow back through 128 time steps, they can *snowball* (the exploding-gradient cousin of vanishing). Clipping caps the total gradient size, and it is the standard one-line cure for training recurrent nets.
+
+### Step 4 — generating text one character at a time
+
+```python
+probabilities = torch.softmax(logits[0, -1] / temperature, dim=0)
+next_id = torch.multinomial(probabilities, 1)
+```
+
+`sample_text` first "warms up" the hidden state by feeding it the prompt, then generates: predict the next character's probabilities, **sample** one from them (`torch.multinomial` — a weighted dice roll, not always the top choice, which keeps text from looping), append it, feed it back in, repeat. `temperature` divides the logits before softmax: below 1 the model plays safe and repetitive, above 1 it gambles and gets chaotic; 0.8 is a pleasant middle. This feed-your-own-output-back loop is exactly how every LLM generates, GPT included.
+
+The C file `c/rnn_memory.c` runs the recurrence and hand-wires a two-neuron RNN that checks bracket balancing — provably something no feedforward net can do. It makes "the hidden state is memory" unmistakable.
+
+### Quick reference
 
 | Piece | What it does | What to notice |
 |-------|--------------|----------------|
-| `class HandmadeRNNCell` | One step: `tanh(W·input + U·state)` — two weighted sums and a tanh. | The `state_transform` (U) is the self-connection — the memory. That is the entire novelty of an RNN. |
-| `class CharRNN` | Embedding → the cell unrolled over the sequence → next-character logits. | In `forward`, the explicit `for time_index in range(...)` loop is the **unrolling** — the *same* cell (same weights) applied at every step. |
-| `sample_text(model, ..., prime, length, temperature)` | Generates one character at a time, feeding each choice back in. | `temperature` divides the logits: low = safe/repetitive, high = wild. Warms up the hidden state on the prompt first. |
-| `main()` | Trains on Shakespeare with **gradient clipping**, then samples. | `nn.utils.clip_grad_norm_(..., 1.0)` caps gradients — through 128 time steps they can snowball. The one-line cure for recurrent training. |
-
-The C file `c/rnn_memory.c` runs the recurrence and hand-wires a two-neuron RNN that checks bracket balancing — provably something no feedforward net can do. It makes "the hidden state is memory" unmistakable.
+| `class HandmadeRNNCell` | One step: `tanh(W·input + U·state)`. | The `state_transform` (U) self-connection is the memory. |
+| `class CharRNN` | Embedding → cell unrolled over time → next-char logits. | The `for time_index` loop is the **unrolling** — same cell, same weights, every step. |
+| `sample_text(..., temperature)` | Generates one character at a time, feeding each back in. | `temperature` divides the logits: low = safe, high = wild. |
+| `main()` | Trains with **gradient clipping**, then samples. | `nn.utils.clip_grad_norm_(..., 1.0)` stops gradients snowballing over 128 steps. |
 
 ## Run it
 
