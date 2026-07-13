@@ -197,7 +197,46 @@ def run_backward_pass(self):
 
 This is Section 3, mechanized. `visit_parents_first` walks the graph and lists every node so that parents always appear before children (a *topological sort*). Then the two lines that matter: seed the final node's gradient with `self.gradient = 1.0` (that is $dL/dL = 1$, the starting point), and walk the list **backward**, calling each node's stored rule. Because we go in reverse, a node's gradient is fully collected before it hands anything to its parents. One pass, and every `TrackedValue` in the graph now holds its gradient.
 
-### Step 4 — the payoff: XOR, learned
+### Step 4 — building the network (how the layers are actually assembled)
+
+Before anything can train, `train_xor_network()` builds the network. Its shape is **fixed by hand** — that is deliberate — and it is written out as plain numbers:
+
+```python
+HIDDEN_NEURON_INITIAL_PARAMETERS = [
+    [0.5, -0.3, 0.1],   # neuron 1: weight for x1, weight for x2, bias
+    [-0.4, 0.8, -0.2],  # neuron 2
+    [0.7, 0.6, 0.0],    # neuron 3
+]
+OUTPUT_NEURON_INITIAL_PARAMETERS = [0.6, -0.5, 0.4, 0.05]  # three weights + bias
+```
+
+Read that as the architecture spelled out. There are **two layers**:
+
+- A **hidden layer of 3 neurons**. Each neuron is three numbers — a weight for input `x1`, a weight for input `x2`, and a bias — so `[0.5, -0.3, 0.1]` is one neuron (Chapter 7's `w1·x1 + w2·x2 + b`). Three neurons × 3 numbers = **9 parameters**.
+- An **output layer of 1 neuron**. Its inputs are the *three hidden outputs*, so it needs three weights plus a bias = **4 parameters**.
+
+That is **13 parameters** in total — the "all 13" the training printout referred to. Why 3 hidden neurons rather than 2 or 10? It is a hand-picked choice, guided by Chapter 7's geometry: XOR needs at least two straight lines to separate, so at least two hidden neurons; three gives the trainer a little breathing room. **Nothing in the code discovers the number of layers or neurons — *you* choose the architecture, and gradient descent only fills in the numbers inside it.** (Choosing good architectures is its own craft, and later chapters are largely about it.) The starting values are written down instead of randomized so every run — and the C port — produces the exact same numbers.
+
+Each of those 13 numbers is then wrapped in a `TrackedValue` (so a gradient can flow to it), and one function performs the forward pass:
+
+```python
+def network_forward(first_input, second_input):
+    hidden_activations = []
+    for weight_for_x1, weight_for_x2, bias in hidden_neuron_parameters:
+        weighted_sum = weight_for_x1 * first_input + weight_for_x2 * second_input + bias
+        hidden_activations.append(weighted_sum.tanh())
+    output_weighted_sum = (
+        output_neuron_parameters[0] * hidden_activations[0]
+        + output_neuron_parameters[1] * hidden_activations[1]
+        + output_neuron_parameters[2] * hidden_activations[2]
+        + output_neuron_parameters[3]
+    )
+    return output_weighted_sum.tanh()
+```
+
+This is Chapter 7's two-layer picture, in code. The loop runs each hidden neuron — weighted sum of the two inputs, plus bias, through `tanh` — and collects the three results in `hidden_activations`. Then the output neuron takes *those three* as its inputs, forms its own weighted sum plus bias, and passes it through `tanh` to give the single prediction. The key point: every `*`, `+`, and `.tanh()` here is a `TrackedValue` operation, so merely *computing the prediction* wires up the whole computation graph — ready for one `run_backward_pass()` to reach all 13 parameters.
+
+### Step 5 — the payoff: XOR, learned
 
 ```python
 for parameter in all_parameters:
