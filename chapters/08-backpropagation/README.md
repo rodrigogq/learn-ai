@@ -121,16 +121,87 @@ No truth-table staring. The gradients flowed backward through two layers and fou
 
 ## Code walkthrough
 
-The example is `python/tiny_autograd.py`, and it is the most important code in the course — a working autograd engine in ~100 lines. The heart is one class:
+The example is `python/tiny_autograd.py` — the most important code in the course, a working autograd engine in ~100 lines. It uses one programming idea we have not needed until now, so we will start there and go slowly. No prior programming assumed.
+
+### Step 0 — the one new idea: an object that bundles a number with its history
+
+So far every value in our programs was a plain number. Backpropagation needs each number to *remember where it came from*, so we upgrade it into an **object**: a small bundle that carries both some data and its own little functions. In Python you describe the bundle with `class`, and the description has one special method, `__init__`, that sets up a fresh bundle's contents. The word `self` inside a class always means "this particular bundle", and `self.data` means "the `data` slot belonging to this bundle". That is the whole of the object idea you need here — a labelled box with a few slots and a few attached functions.
+
+### Step 1 — `TrackedValue`: a number that remembers how it was made
+
+```python
+class TrackedValue:
+    def __init__(self, data, parent_values=()):
+        self.data = data
+        self.gradient = 0.0
+        self._parent_values = parent_values
+        self._propagate_gradient_to_parents = lambda: None
+```
+
+Each `TrackedValue` stores exactly the four things Section 4 promised: `data` (the forward number), `gradient` (dLoss/d(this), starting at 0 and filled in later), `_parent_values` (the values it was computed from), and `_propagate_gradient_to_parents` — a small function holding this node's **local derivative rule**. For a leaf you type in yourself there are no parents and nothing to propagate, so that function starts as `lambda: None` (Python's way of writing "a function that does nothing"). The interesting nodes get a real rule attached by the operations below.
+
+### Step 2 — operations that compute *and* wire up the graph
+
+```python
+def __mul__(self, other_value):
+    other_value = TrackedValue._wrap_if_plain_number(other_value)
+    result = TrackedValue(self.data * other_value.data, (self, other_value))
+
+    def propagate_multiplication_gradient():
+        self.gradient += other_value.data * result.gradient
+        other_value.gradient += self.data * result.gradient
+
+    result._propagate_gradient_to_parents = propagate_multiplication_gradient
+    return result
+```
+
+`__mul__` is a Python trick called *operator overloading*: defining it means you can write `a * b` on two `TrackedValue`s and Python calls this method. It does **double duty**. First it computes the forward result and records its parents: `TrackedValue(self.data * other_value.data, (self, other_value))`. Then — the clever part — it defines a little inner function `propagate_multiplication_gradient` and stores it on the result. That inner function is the multiply rule from Section 2 ("each input's slope is the *other* input"): it adds `other_value.data * result.gradient` to `self`'s gradient, and `self.data * result.gradient` to the other parent's. The inner function still "remembers" `self`, `other_value`, and `result` even after `__mul__` returns — a **closure** — which is exactly what lets the backward pass replay each operation's rule later. `__add__` and `tanh` follow the identical pattern with their own rules. **The computation graph builds itself as a side effect of ordinary arithmetic.**
+
+Notice the `+=` (not `=`) on every gradient. That is Section 3's "a value used in several places collects gradient from all of them" rule, and forgetting it is the single most common autograd bug.
+
+### Step 3 — the backward pass
+
+```python
+def run_backward_pass(self):
+    nodes_in_construction_order = []
+    already_visited = set()
+
+    def visit_parents_first(value):
+        if id(value) not in already_visited:
+            already_visited.add(id(value))
+            for parent in value._parent_values:
+                visit_parents_first(parent)
+            nodes_in_construction_order.append(value)
+
+    visit_parents_first(self)
+    self.gradient = 1.0
+    for value in reversed(nodes_in_construction_order):
+        value._propagate_gradient_to_parents()
+```
+
+This is Section 3, mechanized. `visit_parents_first` walks the graph and lists every node so that parents always appear before children (a *topological sort*). Then the two lines that matter: seed the final node's gradient with `self.gradient = 1.0` (that is $dL/dL = 1$, the starting point), and walk the list **backward**, calling each node's stored rule. Because we go in reverse, a node's gradient is fully collected before it hands anything to its parents. One pass, and every `TrackedValue` in the graph now holds its gradient.
+
+### Step 4 — the payoff: XOR, learned
+
+```python
+for parameter in all_parameters:
+    parameter.gradient = 0.0
+total_loss.run_backward_pass()
+for parameter in all_parameters:
+    parameter.data -= learning_rate * parameter.gradient
+```
+
+Here is Chapter 5's training loop with step 3 fully automated. Each epoch: build the network's predictions and the squared-error `total_loss` out of `TrackedValue`s (the graph assembles itself), then these three moves — **zero** every gradient (so this epoch's gradients do not add onto last epoch's, remembering the `+=`), **backpropagate** with one call to `total_loss.run_backward_pass()`, and **update** each parameter a step against its gradient. That single `run_backward_pass()` line replaces all the hand-derived gradient formulas of Chapters 5 and 6 — and it would work unchanged for a million parameters. This is the mechanism, bigger and on a GPU, that trains the Chapter 24 LLM.
+
+### Quick reference
 
 | Piece | What it does | What to notice |
 |-------|--------------|----------------|
-| `class TrackedValue` | Wraps a number and remembers four things: its **data**, its **gradient**, the **parents** it was made from, and a small function holding the operation's **local derivative rule**. | This is exactly PyTorch's autograd, shrunk to one number per node. Everything else is built on it. |
-| `__add__`, `__mul__`, `tanh` (methods) | Each does *double duty*: computes the result **and** records how to send gradient back to its parents. | Look at how `__mul__` sends each parent `other.data * out.grad` — the multiply rule "each input's slope is the other input". The graph builds itself as a side effect of doing arithmetic. |
-| `run_backward_pass()` (method) | Seeds the final gradient with 1, then visits nodes in reverse order applying each local rule. | The `+=` on gradients (never `=`) is the "a value used twice collects gradient from both paths" rule from Section 3. |
-| `demonstrate_chain_rule()` | Verifies the Section 1 example numerically. | Warms you up before the engine. |
-| `demonstrate_graph_backpropagation()` | Backpropagates `L = (a·b + c)²`, reproduces the figure's gradients (30, 20, 10), **and re-checks them numerically**. | The numeric re-check is the engine grading itself against Chapter 3. |
-| `train_xor_network()` | Builds a 2-3-1 tanh net out of `TrackedValue`s and trains it on XOR. | The training loop is Chapter 5's — but step 3 is now a single `loss.run_backward_pass()`. That line is the payoff of the whole chapter. |
+| `class TrackedValue` | Wraps a number and remembers four things: **data**, **gradient**, **parents**, and a function with the operation's **local derivative rule**. | Exactly PyTorch's autograd, shrunk to one number per node. |
+| `__add__`, `__mul__`, `tanh` (methods) | Each does *double duty*: computes the result **and** records how to send gradient back to its parents (a closure). | The graph builds itself as a side effect of doing arithmetic. |
+| `run_backward_pass()` (method) | Seeds the final gradient with 1, then visits nodes in reverse order applying each local rule. | The `+=` on gradients is the "used twice → gradient from both paths" rule. |
+| `demonstrate_graph_backpropagation()` | Backpropagates `L = (a·b + c)²`, reproduces the figure's gradients (30, 20, 10), **and re-checks them numerically**. | The engine grading itself against Chapter 3. |
+| `train_xor_network()` | Builds a 2-3-1 tanh net out of `TrackedValue`s and trains it on XOR. | Step 3 is now a single `loss.run_backward_pass()` — the payoff of the whole chapter. |
 
 The C version (`c/tiny_autograd.c`) does the same with an **arena** — one array of node structs, each storing its operation and parent indices — because C has no operator overloading. It is closer to how real frameworks actually work than the Python.
 
