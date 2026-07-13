@@ -84,10 +84,10 @@ The complete backward pass is five lines. With $m$ = batch size, $G_2$ = the sco
 | gradient | formula | which Chapter 8 rule it is |
 |----------|---------|---------------------------|
 | output weights | $\nabla W_2 = H^\top G_2$ | multiply rule: each input's slope is the other factor |
-| output biases | $\nabla b_2 = $ column sums of $G_2$ | add rule: gradients pass through, summed over the batch |
+| output biases | $\nabla b_2$ = column sums of $G_2$ | add rule: gradients pass through, summed over the batch |
 | hidden activations | $G_H = G_2 W_2^\top$ | multiply rule, other side |
 | hidden weighted sums | $G_1 = G_H$ where the sum was $> 0$, else $0$ | ReLU's rule: gradient flows only where the input was positive |
-| hidden weights, biases | $\nabla W_1 = X^\top G_1$, $\nabla b_1 = $ column sums | same two rules again |
+| hidden weights, biases | $\nabla W_1 = X^\top G_1$, $\nabla b_1$ = column sums | same two rules again |
 
 You do not have to take these on faith — **both programs numerically spot-check them** (Chapter 3's trick) before training starts, on representative weights from all four parameter arrays.
 
