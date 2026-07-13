@@ -83,16 +83,49 @@ Two ideas turn this MNIST toy into Stable Diffusion, both previews of Chapter 29
 
 ## Code walkthrough
 
-The example is `python/train_diffusion_mnist.py`. The training objective is astonishingly small; find it in `main()`:
+The example is `python/train_diffusion_mnist.py`. The training objective is astonishingly small — four lines — and everything else supports it. No prior programming assumed.
+
+### Step 1 — the noise schedule: jump to any noise level in one step
+
+`build_noise_schedule` precomputes `alpha_bar[t]` — the fraction of the *original* image still present after `t` steps of adding noise. The payoff is a closed form: a `t`-steps-noisy image is just `sqrt(alpha_bar[t]) * image + sqrt(1 - alpha_bar[t]) * noise`. So instead of simulating a long chain of noising steps, you can leap straight to any noise level in one line — which is what makes training cheap.
+
+### Step 2 — the training objective: predict the noise
+
+```python
+noise = torch.randn_like(real_images)
+signal_scale = torch.sqrt(alpha_bar[timesteps])[:, None, None, None]
+noise_scale = torch.sqrt(1 - alpha_bar[timesteps])[:, None, None, None]
+noisy_images = signal_scale * real_images + noise_scale * noise
+predicted_noise = model(noisy_images, timesteps)
+loss = nn.functional.mse_loss(predicted_noise, noise)   # just predict the noise!
+```
+
+This is the whole idea of diffusion, and it is almost unbelievably simple. Take a real image, pick a random noise level `t`, and **add a known amount of noise** to it (Step 1's formula). Then ask the network to look at the noisy image and **predict the noise that was added** — scored by plain mean-squared error. That's it. The network never sees a "generate" instruction; it only ever learns to answer "what noise is in this picture?" Everything generative falls out of that one skill.
+
+### Step 3 — the denoiser: a U-Net that knows how noisy its input is
+
+`TimeConditionedUNet` is Chapter 16's U-Net with one addition: the timestep `t` is embedded and mixed in, so the network is *told how noisy* its input is. That matters because denoising a barely-speckled image and denoising near-pure static are different jobs, and one network must do both depending on `t`.
+
+### Step 4 — sampling: grow a picture out of static
+
+```python
+image = (image - betas[step] / torch.sqrt(1 - alpha_bar[step]) * predicted_noise) / torch.sqrt(alpha)
+if step > 0:
+    image = image + torch.sqrt(betas[step]) * torch.randn_like(image)
+```
+
+To generate, `sample_image` starts from **pure random noise** and runs the training skill in reverse, ~200 times: predict the noise in the current image, subtract a slice of it, and — except on the last step — **add a little fresh noise back**. Repeating this slowly precipitates structure out of static, one small denoising at a time. The re-injected noise is what keeps samples sharp and varied instead of collapsing to one blurry average.
+
+The C file `c/denoising_sampler.c` runs this reverse loop with a stand-in denoiser, printing the image every few steps — you watch structure precipitate out of static. Swap the stand-in for a network and it is Stable Diffusion's inner loop.
+
+### Quick reference
 
 | Piece | What it does | What to notice |
 |-------|--------------|----------------|
-| `build_noise_schedule(device)` | Precomputes `alpha_bar[t]` — how much of the original image survives after t noising steps. | The closed form lets you jump to *any* noise level in one step, no chain simulation. |
-| `class TimeConditionedUNet` | Chapter 16's U-Net, plus a **timestep embedding** added at the bottleneck. | The time info is essential — the network must denoise differently for "barely noisy" and "almost static". |
-| `sample_image(model, alpha_bar, device)` | The reverse loop: from pure noise, predict noise, remove a slice, add a little back, repeat 200×. | This loop *grows* the picture. The re-injected noise (except at the last step) is what keeps samples sharp, not blurry averages. |
-| `main()` — training | Add known noise to a real image, ask the net to predict it, MSE. | The loss is literally `mse_loss(model(noisy, t), noise)` — "predict the noise". The simplest objective in Part VI, yet it generates. |
-
-The C file `c/denoising_sampler.c` runs the reverse loop with a stand-in denoiser, printing the image every few steps — you watch structure precipitate out of static. Swap the stand-in for a network and it is Stable Diffusion's inner loop.
+| `build_noise_schedule(device)` | Precomputes `alpha_bar[t]`. | Closed form to jump to *any* noise level in one step. |
+| `class TimeConditionedUNet` | Chapter 16's U-Net + a **timestep embedding**. | The network must denoise differently at each noise level. |
+| training (in `main`) | Add known noise, predict it, MSE. | `mse_loss(model(noisy, t), noise)` — "predict the noise", the whole objective. |
+| `sample_image(...)` | From noise: predict, subtract, re-inject, repeat 200×. | The re-injected noise keeps samples sharp, not blurry. |
 
 ## Run it
 
