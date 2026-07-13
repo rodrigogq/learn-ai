@@ -155,3 +155,21 @@ Every AI term used in this course, defined in one or two plain sentences. Terms 
 **Temperature / top-k** — sampling controls: temperature scales the logits (higher = wilder), top-k restricts sampling to the k most likely tokens. → [Chapter 23](../../chapters/23-gpt-from-scratch/README.md)
 
 **Quantization** — storing weights in fewer bits (e.g. int8) with a scale factor, shrinking a model ~4× with little quality loss. → [Chapter 25](../../chapters/25-llm-inference-in-c/README.md)
+
+**Autoencoder / VAE** — an encoder-bottleneck-decoder network; the variational version makes the bottleneck a sampleable distribution, enabling generation. → [Chapter 26](../../chapters/26-autoencoders-and-vaes/README.md)
+
+**Latent space** — the compact code an encoder maps data into; smooth latent spaces let you generate by sampling and interpolate by walking. → [Chapter 26](../../chapters/26-autoencoders-and-vaes/README.md)
+
+**GAN (generative adversarial network)** — a generator and discriminator trained against each other; the generator learns to forge realistic data. → [Chapter 27](../../chapters/27-gans/README.md)
+
+**Diffusion model** — a generator that learns to reverse gradual noising; generation is repeated denoising from pure noise. The basis of modern image generators. → [Chapter 28](../../chapters/28-diffusion-models/README.md)
+
+**Conditioning / guidance scale** — feeding an instruction (a label or text prompt) into a generator; the guidance scale dials how strongly it obeys. → [Chapter 29](../../chapters/29-text-to-image-and-video/README.md)
+
+**Reinforcement learning** — learning good behavior from rewards by trial and error, with no labeled examples. → [Chapter 30](../../chapters/30-reinforcement-learning/README.md)
+
+**Q-learning / DQN** — learning the value of each action in each state; a table for small problems, a neural network (DQN) for large ones. → [Chapter 30](../../chapters/30-reinforcement-learning/README.md)
+
+**RLHF** — reinforcement learning from human feedback: tuning a language model to be helpful using human preference rankings as reward. → [Chapter 30](../../chapters/30-reinforcement-learning/README.md)
+
+**Deployment** — running a trained model in production: export (TorchScript/ONNX), quantize, and serve without the training framework. → [Chapter 31](../../chapters/31-deployment/README.md)

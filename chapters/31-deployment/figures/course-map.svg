@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 560" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="940" height="560" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">The whole course, and where to go next</text>
+
+  <!-- The seven parts as a vertical spine -->
+  <g font-size="14">
+    <rect x="60" y="80" width="360" height="40" rx="8" fill="#dbeafe" stroke="#2563eb"/>
+    <text x="76" y="105" fill="#1e3a8a" font-weight="700">Part I &#183; Foundations</text>
+    <text x="250" y="105" fill="#1e3a8a" font-size="12">math, neuron, backprop, first network</text>
+
+    <rect x="60" y="128" width="360" height="40" rx="8" fill="#dcfce7" stroke="#16a34a"/>
+    <text x="76" y="153" fill="#14532d" font-weight="700">Part II &#183; Toolkit</text>
+    <text x="250" y="153" fill="#14532d" font-size="12">PyTorch, optimizers, data pipelines</text>
+
+    <rect x="60" y="176" width="360" height="40" rx="8" fill="#fde68a" stroke="#d97706"/>
+    <text x="76" y="201" fill="#78350f" font-weight="700">Part III &#183; Vision</text>
+    <text x="250" y="201" fill="#78350f" font-size="12">CNNs, detection, segmentation, video</text>
+
+    <rect x="60" y="224" width="360" height="40" rx="8" fill="#fce7f3" stroke="#db2777"/>
+    <text x="76" y="249" fill="#9d174d" font-weight="700">Part IV &#183; Audio</text>
+    <text x="250" y="249" fill="#9d174d" font-size="12">spectrograms, speech (CTC)</text>
+
+    <rect x="60" y="272" width="360" height="40" rx="8" fill="#e0e7ff" stroke="#6366f1"/>
+    <text x="76" y="297" fill="#3730a3" font-weight="700">Part V &#183; Language</text>
+    <text x="250" y="297" fill="#3730a3" font-size="12">tokenizers, transformers, YOUR mini-LLM</text>
+
+    <rect x="60" y="320" width="360" height="40" rx="8" fill="#ccfbf1" stroke="#0d9488"/>
+    <text x="76" y="345" fill="#115e59" font-weight="700">Part VI &#183; Generative</text>
+    <text x="250" y="345" fill="#115e59" font-size="12">VAEs, GANs, diffusion, text-to-image</text>
+
+    <rect x="60" y="368" width="360" height="40" rx="8" fill="#fee2e2" stroke="#dc2626"/>
+    <text x="76" y="393" fill="#7f1d1d" font-weight="700">Part VII &#183; Beyond</text>
+    <text x="250" y="393" fill="#7f1d1d" font-size="12">reinforcement learning, deployment</text>
+
+    <text x="60" y="448" font-size="15" font-weight="700" fill="#24292f">you built every one of these from scratch,</text>
+    <text x="60" y="470" font-size="15" font-weight="700" fill="#24292f">in Python AND pure C. nothing is a black box now.</text>
+  </g>
+
+  <!-- Where to go next -->
+  <rect x="470" y="80" width="410" height="410" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+  <text x="490" y="110" font-size="16" font-weight="700" fill="#24292f">where to go next</text>
+  <g font-size="14" fill="#24292f">
+    <text x="490" y="146" font-weight="700">go deeper on what you loved:</text>
+    <text x="504" y="170">&#8226; scale the mini-LLM (ch. 24) - bigger, more data</text>
+    <text x="504" y="192">&#8226; fine-tune a pretrained model on your own task</text>
+    <text x="504" y="214">&#8226; reproduce a paper you admire, from scratch</text>
+
+    <text x="490" y="252" font-weight="700">fill the gaps this course left:</text>
+    <text x="504" y="276">&#8226; graph neural networks, RL beyond DQN (PPO)</text>
+    <text x="504" y="298">&#8226; multimodal models (vision + language together)</text>
+    <text x="504" y="320">&#8226; the systems side: distributed training, serving</text>
+
+    <text x="490" y="358" font-weight="700">build something real:</text>
+    <text x="504" y="382">&#8226; ship one small model into an app you use</text>
+    <text x="504" y="404">&#8226; the deploy toolkit (this chapter) is your start</text>
+
+    <text x="490" y="444" font-style="italic" fill="#57606a" font-size="13">The field moves fast, but the fundamentals</text>
+    <text x="490" y="462" font-style="italic" fill="#57606a" font-size="13">you now own underlie all of it. Keep building.</text>
+  </g>
+
+  <text x="60" y="524" font-size="15" fill="#24292f">From "what is AI?" (Chapter 1) to a language model running in pure C (Chapter 25): you went the whole way.</text>
+</svg>
