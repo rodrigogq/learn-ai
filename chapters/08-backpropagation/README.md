@@ -110,7 +110,11 @@ The Python version (`python/tiny_autograd.py`) spells this out in ~100 heavily d
 
 ## 5. The payoff: XOR, learned this time
 
-With the engine, Chapter 7's embarrassment disappears. We build a tiny network — 2 inputs → 3 tanh neurons → 1 tanh output — as ordinary arithmetic on `TrackedValue`s, and train it on XOR with targets −1 and +1 (tanh's natural range):
+With the engine, Chapter 7's embarrassment disappears. We build a tiny network — 2 inputs → 3 tanh neurons → 1 tanh output — as ordinary arithmetic on `TrackedValue`s, and train it on XOR.
+
+**Why tanh here, and not Chapter 7's step function?** This is not a detail — it is the whole reason backpropagation needs a new activation. The perceptron's **step** has a slope of exactly zero everywhere (it is flat, then it jumps, then flat again). But backprop trains by *multiplying* gradients as they flow backward, so a zero slope multiplies everything to zero: no gradient survives, and the network can never learn. To send gradient back through a layer you need a **smooth** activation — one with a real, nonzero slope. `tanh` is exactly that: the S-shaped squashing function from Chapter 7, smooth and bounded, with the clean derivative $1 - t^2$ already sitting in our Section 2 table. (Chapter 6's sigmoid would work too; tanh is the conventional pick for hidden layers because its output is centered on zero.)
+
+That choice also fixes how we phrase the problem. Because tanh only ever outputs values between $-1$ and $+1$, we encode XOR's two answers at those ends — $-1$ meaning "false", $+1$ meaning "true" — and the squared-error loss (`sum of (out − target)²`) pushes each prediction toward its target:
 
 ```
 forward:   build the graph, out = network(x), loss = sum of (out - target)^2
@@ -126,6 +130,8 @@ epoch   loss       predictions for (0,0) (0,1) (1,0) (1,1)
    50   0.064431   -0.976  +0.863  +0.871  -0.832      <- shape of XOR appearing
  2000   0.000515   -0.995  +0.988  +0.988  -0.986      <- XOR, learned
 ```
+
+Read the numbers with the tanh encoding in mind. In the final row, $-0.995$ and $-0.986$ are the network saying "false" with near-total confidence, while the two $+0.988$s are "true" — exactly XOR's `0, 1, 1, 0`, spoken in tanh's language. And notice the outputs approach ±1 but never quite reach them (tanh touches its limits only at infinity), so the loss keeps shrinking toward zero without ever arriving at it — the same honest uncertainty the sigmoid showed in Chapter 6, not a flaw.
 
 No truth-table staring. The gradients flowed backward through two layers and found weights that Chapter 7 needed a human for. This exact mechanism — bigger, batched, on a GPU — is how the mini-LLM in Chapter 24 will learn to write.
 
