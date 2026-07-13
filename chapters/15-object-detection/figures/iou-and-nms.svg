@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 520" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="940" height="520" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">The two tools every detector needs: IoU and NMS</text>
+
+  <!-- ==================== Left: IoU ==================== -->
+  <text x="80" y="96" font-size="16" font-weight="700" fill="#24292f">IoU: how much do two boxes agree?</text>
+  <!-- coordinate scale: 3x pixels; origin (80,120) -->
+  <!-- Box A (20,20)-(60,60) -> (140,180)-(260,300) -->
+  <rect x="140" y="180" width="120" height="120" fill="none" stroke="#2563eb" stroke-width="3"/>
+  <text x="144" y="172" font-size="14" font-weight="700" fill="#1e3a8a">A (20,20)-(60,60)</text>
+  <!-- Box B (40,30)-(80,70) -> (200,210)-(320,330) -->
+  <rect x="200" y="210" width="120" height="120" fill="none" stroke="#d97706" stroke-width="3"/>
+  <text x="230" y="350" font-size="14" font-weight="700" fill="#78350f">B (40,30)-(80,70)</text>
+  <!-- Intersection (40,30)-(60,60) -> (200,210)-(260,300) -->
+  <rect x="200" y="210" width="60" height="90" fill="#86efac" opacity="0.7"/>
+  <text x="204" y="262" font-size="13" font-weight="700" fill="#14532d">600</text>
+
+  <g font-size="15" fill="#24292f">
+    <text x="80" y="404">intersection = 20 &#215; 30 = 600</text>
+    <text x="80" y="428">union = 1600 + 1600 &#8722; 600 = 2600</text>
+    <text x="80" y="456" font-weight="700">IoU = 600 / 2600 &#8776; 0.23</text>
+  </g>
+  <text x="80" y="490" font-size="13" fill="#57606a">detection scoring usually demands IoU &#8805; 0.5 to count as a hit</text>
+
+  <!-- ==================== Right: NMS ==================== -->
+  <text x="520" y="96" font-size="16" font-weight="700" fill="#24292f">NMS: collapse duplicate detections</text>
+
+  <!-- Before panel -->
+  <rect x="520" y="112" width="180" height="180" rx="8" fill="#ffffff" stroke="#d0d7de"/>
+  <text x="530" y="132" font-size="13" fill="#57606a">before</text>
+  <!-- digit blob -->
+  <circle cx="600" cy="205" r="26" fill="#e5e7eb"/>
+  <text x="600" y="213" font-size="24" text-anchor="middle" fill="#6b7280" font-weight="700">7</text>
+  <!-- three overlapping boxes -->
+  <rect x="562" y="168" width="76" height="76" fill="none" stroke="#16a34a" stroke-width="3"/>
+  <rect x="572" y="176" width="74" height="74" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="6 4"/>
+  <rect x="554" y="160" width="74" height="74" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="6 4"/>
+  <text x="530" y="280" font-size="12" fill="#57606a">0.92, 0.75 and 0.61 all fired</text>
+
+  <!-- Arrow -->
+  <defs>
+    <marker id="nmsArrow" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0, 9 4, 0 8" fill="#57606a"/>
+    </marker>
+  </defs>
+  <line x1="710" y1="200" x2="748" y2="200" stroke="#57606a" stroke-width="2.5" marker-end="url(#nmsArrow)"/>
+  <text x="702" y="184" font-size="13" fill="#57606a">NMS</text>
+
+  <!-- After panel -->
+  <rect x="756" y="112" width="180" height="180" rx="8" fill="#ffffff" stroke="#d0d7de"/>
+  <text x="766" y="132" font-size="13" fill="#57606a">after</text>
+  <circle cx="836" cy="205" r="26" fill="#e5e7eb"/>
+  <text x="836" y="213" font-size="24" text-anchor="middle" fill="#6b7280" font-weight="700">7</text>
+  <rect x="798" y="168" width="76" height="76" fill="none" stroke="#16a34a" stroke-width="3"/>
+  <text x="766" y="280" font-size="12" fill="#57606a">only the 0.92 box survives</text>
+
+  <g font-size="14" fill="#24292f">
+    <text x="520" y="340">the algorithm, in full:</text>
+    <text x="520" y="366">1. take the highest-confidence box, keep it</text>
+    <text x="520" y="390">2. delete every box overlapping it with IoU &gt; 0.5</text>
+    <text x="520" y="414">3. repeat with what remains</text>
+  </g>
+  <text x="520" y="456" font-size="13" fill="#57606a">duplicates happen because neighboring grid cells</text>
+  <text x="520" y="474" font-size="13" fill="#57606a">legitimately fire on the same object</text>
+</svg>
