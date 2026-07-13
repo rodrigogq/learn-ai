@@ -80,17 +80,45 @@ The VAE's ideas are load-bearing across generative AI. Its **latent space** — 
 
 ## Code walkthrough
 
-The example is `python/train_vae_mnist.py`. Two model classes, side by side, so the *one* difference that makes generation possible is easy to spot:
+The example is `python/train_vae_mnist.py`. Two models sit side by side so the *one* change that makes generation possible stands out. No prior programming assumed.
+
+### Step 1 — the autoencoder: a bottleneck that forces compression
+
+`Autoencoder` is two ordinary networks back to back: an **encoder** that squeezes 784 pixels down to just **2 numbers**, and a **decoder** that expands those 2 back to 784. It is trained so the output ≈ the input (reconstruct what went in). Because everything must pass through the 2-number waist, those two numbers are forced to capture the *essence* of a digit. But there is no randomness, and the 2-D space of codes has gaps — pick a random point and the decoder usually produces mush. Good for compression, not for generating.
+
+### Step 2 — the VAE: encode a *distribution*, and the reparameterization trick
+
+```python
+sampled_code = mean + standard_deviation * torch.randn_like(standard_deviation)
+```
+
+The `VariationalAutoencoder` has the same shape with one change: its encoder outputs not a point but a little **distribution** per image — a `mean` and a spread (`latent_log_variance`). To get a code you *sample* from that distribution. But sampling is random, and you cannot backpropagate through a dice roll. The line above is the famous **reparameterization trick**: instead of sampling directly, take the fixed `mean`, and add `standard_deviation` times some external noise (`randn_like`). Now the randomness enters as an *input* that sits **outside** the gradient path, so backprop flows cleanly through `mean` and `standard_deviation`. That one rewrite is what makes VAEs trainable.
+
+### Step 3 — the loss: reconstruct, *and* pack the space
+
+```python
+reconstruction_loss = nn.functional.binary_cross_entropy(reconstruction, images, reduction="sum")
+kl_divergence = -0.5 * torch.sum(1 + log_variance - mean.pow(2) - log_variance.exp())
+return (reconstruction_loss + kl_divergence) / images.shape[0]
+```
+
+Two terms. `reconstruction_loss` asks "did the pixels come back?" (cross-entropy per pixel). The `kl_divergence` term is the new one: it measures how far each image's little Gaussian is from one standard normal, and penalizes the distance. That gentle pull packs all the codes into the same well-filled region around the origin **with no gaps** — which is exactly why, afterward, a *random* point decodes into a real-looking digit. Reconstruction alone gives you an autoencoder; adding KL gives you a generator.
+
+### Step 4 — generating from thin air
+
+After training, `main` reconstructs a '7' with both models, then does the thing only the VAE can: it draws **random points** from a standard normal and runs them through the decoder — and out come new digits (a '1', an '8', a '9') that were never in the data, invented from two random numbers. That is generation.
+
+The C file `c/decoder_inference.c` is a generative decoder — a latent point in, an image out — showing that *generating* an image is one forward pass ending in pixels.
+
+### Quick reference
 
 | Piece | What it does | What to notice |
 |-------|--------------|----------------|
-| `class Autoencoder` | Encoder squeezes 784 → 2, decoder expands 2 → 784. | Trained to make output ≈ input — the 2-number waist must capture the digit's essence. No randomness. |
-| `class VariationalAutoencoder` | Same shape, but the encoder outputs a **distribution** (`latent_mean`, `latent_log_variance`). | In `forward`, `mean + std * randn_like(std)` is the **reparameterization trick** — the randomness sits outside the gradient path, so backprop still works. This is the one clever idea that makes VAEs trainable. |
-| `vae_loss(reconstruction, images, mean, log_variance)` | Reconstruction loss **plus** the KL term. | The KL line pulls every image's little Gaussian toward one standard normal — that is what packs the codes with no gaps, so random points decode to real digits. |
-| `train_model(model, is_variational, ...)` | Shared loop for both models. | The `is_variational` flag picks which loss — everything else is identical. |
-| `main()` | Trains both, reconstructs a '7', then **decodes random latent points**. | The plain AE reconstructs; only the VAE generates from random points (a '1', an '8', a '9' invented from two numbers). |
-
-The C file `c/decoder_inference.c` is a generative decoder — a latent point in, an image out — showing that *generating* an image is one forward pass ending in pixels.
+| `class Autoencoder` | Encoder 784 → 2, decoder 2 → 784. | Output ≈ input; the 2-number waist captures the essence. No randomness, has gaps. |
+| `class VariationalAutoencoder` | Encoder outputs a **distribution** (`latent_mean`, `latent_log_variance`). | `mean + std * randn_like(std)` — the **reparameterization trick** keeps noise off the gradient path. |
+| `vae_loss(...)` | Reconstruction **plus** the KL term. | KL pulls every code toward one standard normal — packs the space so random points decode to digits. |
+| `train_model(model, is_variational, ...)` | Shared loop for both models. | The `is_variational` flag just picks the loss. |
+| `main()` | Trains both, reconstructs a '7', **decodes random points**. | Only the VAE generates from random points. |
 
 ## Run it
 
