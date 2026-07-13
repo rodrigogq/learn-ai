@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 500" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="940" height="500" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">CTC: one symbol per frame, then collapse</text>
+  <text x="60" y="72" font-size="15" fill="#57606a">The word "ABBA", spoken over 14 audio frames. Nobody told the model where letters begin or end.</text>
+
+  <!-- Frame row -->
+  <text x="60" y="122" font-size="14" font-weight="700" fill="#24292f">per-frame argmax (what the network outputs):</text>
+  <g font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="20" text-anchor="middle">
+    <!-- 14 cells -->
+    <g>
+      <rect x="80"  y="140" width="52" height="52" fill="#dbeafe" stroke="#2563eb"/>
+      <rect x="132" y="140" width="52" height="52" fill="#dbeafe" stroke="#2563eb"/>
+      <rect x="184" y="140" width="52" height="52" fill="#e5e7eb" stroke="#9ca3af"/>
+      <rect x="236" y="140" width="52" height="52" fill="#fde68a" stroke="#d97706"/>
+      <rect x="288" y="140" width="52" height="52" fill="#fde68a" stroke="#d97706"/>
+      <rect x="340" y="140" width="52" height="52" fill="#fde68a" stroke="#d97706"/>
+      <rect x="392" y="140" width="52" height="52" fill="#e5e7eb" stroke="#9ca3af"/>
+      <rect x="444" y="140" width="52" height="52" fill="#e5e7eb" stroke="#9ca3af"/>
+      <rect x="496" y="140" width="52" height="52" fill="#fde68a" stroke="#d97706"/>
+      <rect x="548" y="140" width="52" height="52" fill="#fde68a" stroke="#d97706"/>
+      <rect x="600" y="140" width="52" height="52" fill="#e5e7eb" stroke="#9ca3af"/>
+      <rect x="652" y="140" width="52" height="52" fill="#dbeafe" stroke="#2563eb"/>
+      <rect x="704" y="140" width="52" height="52" fill="#dbeafe" stroke="#2563eb"/>
+      <rect x="756" y="140" width="52" height="52" fill="#e5e7eb" stroke="#9ca3af"/>
+    </g>
+    <g fill="#24292f">
+      <text x="106" y="175">A</text><text x="158" y="175">A</text>
+      <text x="210" y="175" fill="#6b7280">&#8211;</text>
+      <text x="262" y="175">B</text><text x="314" y="175">B</text><text x="366" y="175">B</text>
+      <text x="418" y="175" fill="#6b7280">&#8211;</text><text x="470" y="175" fill="#6b7280">&#8211;</text>
+      <text x="522" y="175">B</text><text x="574" y="175">B</text>
+      <text x="626" y="175" fill="#6b7280">&#8211;</text>
+      <text x="678" y="175">A</text><text x="730" y="175">A</text>
+      <text x="782" y="175" fill="#6b7280">&#8211;</text>
+    </g>
+  </g>
+  <text x="80" y="216" font-size="13" fill="#57606a">("&#8211;" is the blank: the network's way of saying "between letters" or "still the same letter coming up")</text>
+
+  <!-- Step 1 -->
+  <defs>
+    <marker id="cArrow" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0, 9 4, 0 8" fill="#57606a"/>
+    </marker>
+  </defs>
+  <line x1="440" y1="228" x2="440" y2="258" stroke="#57606a" stroke-width="2.5" marker-end="url(#cArrow)"/>
+  <text x="456" y="248" font-size="14" fill="#24292f">step 1: merge consecutive repeats</text>
+
+  <g font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="20" text-anchor="middle">
+    <rect x="288" y="270" width="52" height="52" fill="#dbeafe" stroke="#2563eb"/>
+    <rect x="340" y="270" width="52" height="52" fill="#e5e7eb" stroke="#9ca3af"/>
+    <rect x="392" y="270" width="52" height="52" fill="#fde68a" stroke="#d97706"/>
+    <rect x="444" y="270" width="52" height="52" fill="#e5e7eb" stroke="#9ca3af"/>
+    <rect x="496" y="270" width="52" height="52" fill="#fde68a" stroke="#d97706"/>
+    <rect x="548" y="270" width="52" height="52" fill="#e5e7eb" stroke="#9ca3af"/>
+    <rect x="600" y="270" width="52" height="52" fill="#dbeafe" stroke="#2563eb"/>
+    <rect x="652" y="270" width="52" height="52" fill="#e5e7eb" stroke="#9ca3af"/>
+    <g fill="#24292f">
+      <text x="314" y="305">A</text>
+      <text x="366" y="305" fill="#6b7280">&#8211;</text>
+      <text x="418" y="305">B</text>
+      <text x="470" y="305" fill="#6b7280">&#8211;</text>
+      <text x="522" y="305">B</text>
+      <text x="574" y="305" fill="#6b7280">&#8211;</text>
+      <text x="626" y="305">A</text>
+      <text x="678" y="305" fill="#6b7280">&#8211;</text>
+    </g>
+  </g>
+  <text x="712" y="303" font-size="13" fill="#14532d" font-weight="700">&#8592; the blank kept B,B apart!</text>
+
+  <!-- Step 2 -->
+  <line x1="440" y1="336" x2="440" y2="366" stroke="#57606a" stroke-width="2.5" marker-end="url(#cArrow)"/>
+  <text x="456" y="356" font-size="14" fill="#24292f">step 2: drop the blanks</text>
+
+  <g font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="24" text-anchor="middle">
+    <rect x="366" y="378" width="52" height="52" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+    <rect x="418" y="378" width="52" height="52" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+    <rect x="470" y="378" width="52" height="52" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+    <rect x="522" y="378" width="52" height="52" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+    <g fill="#14532d" font-weight="700">
+      <text x="392" y="412">A</text><text x="444" y="412">B</text><text x="496" y="412">B</text><text x="548" y="412">A</text>
+    </g>
+  </g>
+
+  <text x="60" y="472" font-size="15" fill="#24292f">Training sums probability over EVERY frame-labeling that collapses to the target (nn.CTCLoss does the sum</text>
+  <text x="60" y="492" font-size="15" fill="#24292f">efficiently) &#8212; so the network is free to place letter boundaries wherever the audio actually has them.</text>
+</svg>
