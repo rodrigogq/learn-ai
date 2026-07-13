@@ -85,16 +85,52 @@ All three chase the same target — turn noise into realistic data — and moder
 
 ## Code walkthrough
 
-The example is `python/train_gan_mnist.py`. Two networks and one loop where they fight — read `main()` slowly, it is where the game happens:
+The example is `python/train_gan_mnist.py`. Two networks and one loop where they fight — the loop in `main()` is the whole chapter. No prior programming assumed.
+
+### Step 1 — the two players
+
+`Generator` takes 64 random numbers (noise) and grows them into a 28×28 image using transposed convolutions (Chapter 16's upsampling, 7→14→28), ending in a `Sigmoid` for 0–1 pixels — the **forger**. `Discriminator` is a plain Chapter 14 CNN that takes a 28×28 image and outputs *one* number, real-vs-fake — the **detective**. Neither is new; the novelty is entirely in how they train each other.
+
+### Step 2 — the discriminator's turn: learn real from fake
+
+```python
+real_labels = torch.ones(batch_size, 1, device=device)
+fake_labels = torch.zeros(batch_size, 1, device=device)
+discriminator_loss = (
+    binary_loss(discriminator(real_images), real_labels)
+    + binary_loss(discriminator(fake_images.detach()), fake_labels)
+)
+```
+
+First the detective learns. It is shown real images with the label **1** ("real") and the generator's fakes with the label **0** ("fake"), and trained by ordinary Chapter 6 binary cross-entropy to tell them apart. The `.detach()` on `fake_images` is important: it cuts the fakes off from the generator's graph so this step trains *only* the discriminator — the generator must not learn on the detective's turn.
+
+### Step 3 — the generator's turn: the label flip that is the whole game
+
+```python
+generator_loss = binary_loss(discriminator(fake_images), real_labels)
+```
+
+Now the forger learns — and here is the single trick that makes a GAN a GAN. It runs its fakes through the discriminator, but scores them against the label **`real_labels` (1)** — the *opposite* of the truth. In other words, the generator is rewarded whenever it fools the detective into saying "real". The gradient flows back *through* the discriminator into the generator, nudging its weights to make images the detective is more likely to accept. Two networks, opposite goals, taking turns: the arms race that ends with the forger producing real-looking digits.
+
+### Step 4 — judging by eye
+
+```python
+grid = pixels.detach().cpu().reshape(28, 28)
+```
+
+There is no "loss = quality" number here — GAN losses just oscillate around an equilibrium, so you cannot read progress off the loss. Instead the code runs one **fixed** noise vector through the generator every epoch and prints it: watching the *same* seed sharpen from static into a clean digit is the honest measure of training.
+
+The C file `c/generator_inference.c` shows a generator's forward pass (noise → image) in pure C.
+
+### Quick reference
 
 | Piece | What it does | What to notice |
 |-------|--------------|----------------|
-| `class Generator` | Noise (64) → a 28×28 image, via transposed convolutions growing 7→14→28. | Chapter 16's upsampling, run to *create* rather than segment. Ends in `Sigmoid` for 0–1 pixels. |
-| `class Discriminator` | A 28×28 image → one number (real-vs-fake logit). | Just a Chapter 14 CNN with a single output. |
-| `main()` — the loop | Two update steps per batch: train the discriminator (real→1, fake→0), then the generator (make the discriminator say "real"). | The generator is trained on the **opposite** label for its own fakes — that flip is the entire adversarial game. `fake_images.detach()` in the discriminator step stops gradients leaking into the generator there. |
-| fixed noise sample | One seed, printed every epoch. | Watching the *same* seed sharpen from static to a digit is the clearest view of progress. |
-
-There is no separate "loss = quality" number — GAN losses oscillate around an equilibrium, so you judge by looking at samples. The C file `c/generator_inference.c` shows a generator's forward pass (noise → image) in pure C.
+| `class Generator` | Noise (64) → 28×28 image via transposed convs. | Chapter 16's upsampling, used to *create*; `Sigmoid` for 0–1 pixels. |
+| `class Discriminator` | Image → one real-vs-fake number. | A Chapter 14 CNN with a single output. |
+| discriminator step | Real→1, fake→0; `fake_images.detach()`. | `.detach()` trains only the detective on its turn. |
+| generator step | Fakes scored against **`real_labels`**. | The label flip *is* the adversarial game. |
+| fixed noise sample | One seed, printed every epoch. | GAN losses oscillate; judge by looking at samples. |
 
 ## Run it
 
