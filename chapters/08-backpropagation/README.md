@@ -78,11 +78,19 @@ Here is the whole thing on our example with $a=2, b=3, c=-1$:
 
 ![Computation graph with forward values and backward gradients](figures/computation-graph.svg)
 
-Follow the red numbers right to left: $\frac{dL}{de} = 2e = 10$; the addition passes 10 unchanged to both $d$ and $c$; the multiplication turns the 10 into $b \cdot 10 = 30$ for $a$ and $a \cdot 10 = 20$ for $b$. Done — the gradient of *every* input, in one backward sweep.
+Follow the red numbers right to left. Every node does the same tiny job: take the gradient handed to it from the right, multiply by its **own local rule** (from Section 2's table, in this chapter), and pass the result to each parent.
 
-Notice two things. First, no step needed anything beyond the tables above and multiplication. Second — and this is why backprop wins — one forward plus one backward pass produces **all** the gradients at once. The numerical method of Chapter 3 would need two extra evaluations of the whole formula *per parameter*; for a million-parameter network, that is two million forward passes versus backprop's single one.
+- $L = e^2$: the loss's gradient with respect to itself is 1 (that is where we start). Its local rule is $\frac{dL}{de} = 2e = 2 \times 5 = 10$, so $e$ receives **10**.
+- $e = d + c$: addition's rule is "pass through unchanged" (slope 1 to each parent), so both $d$ and $c$ receive that **10** untouched.
+- $d = a \cdot b$: multiplication's rule is "each input's slope is the *other* input". The incoming gradient is 10, so $a$ receives $b \times 10 = 3 \times 10 = 30$ and $b$ receives $a \times 10 = 2 \times 10 = 20$.
 
-One extra rule completes the algorithm: if a value feeds *two* places (say $a$ is used twice), the gradients arriving from both paths **add up**. Keep that in mind when you read the code — it is why gradients are written `+=`, never `=`.
+Done — the gradient of *every* input, in one right-to-left sweep, using nothing but Section 2's four rules and multiplication.
+
+**What each node actually needs (this answers the common questions).** No node ever sees the whole formula — it works **purely locally**, from just two ingredients: the gradient arriving from its right, and its own local rule. But look closely at that multiplication step: to send gradient to $a$, the rule is "$b \times$ incoming", so it needs $b$'s **forward value** (3); to send gradient to $b$, it needs $a$'s value (2). So a node with two parents *reuses the forward values of its parents* — each parent's gradient is built from the **other** parent's stored value. **That is exactly why the forward pass saves every value**: the backward pass reads them back. (Addition needs no saved values; multiplication and tanh do.)
+
+**Why this gives all the gradients in one pass.** Because we walk right to left, each node's own gradient $\frac{dL}{d(\text{node})}$ is computed **once** and then reused to feed all of its parents — nothing is ever recomputed. Contrast Chapter 3's numerical method, which needs two whole extra evaluations of the formula *per parameter*: for a million-parameter network, that is two million forward passes versus backprop's single backward sweep.
+
+**One last rule, for a value that feeds two places at once** (two arrows leaving it, a *fan-out*). Each place it feeds sends back its own gradient contribution, and the node's total gradient is their **sum** — you add them up. That is the only reason the code writes gradients with `+=` (accumulate onto what is there) instead of `=` (overwrite): a value used in several places must collect gradient from every one of them.
 
 ## 4. Building the engine
 
