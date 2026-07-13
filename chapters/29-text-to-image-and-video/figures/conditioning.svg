@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 520" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="940" height="520" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">From random generation to controllable generation: conditioning</text>
+
+  <defs>
+    <marker id="cdArrow" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0, 9 4, 0 8" fill="#57606a"/>
+    </marker>
+  </defs>
+
+  <!-- Chapter 28 (unconditional) -->
+  <rect x="60" y="86" width="380" height="150" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="80" y="114" font-size="15" font-weight="700" fill="#334155">Chapter 28: unconditional</text>
+  <text x="80" y="142" font-size="14" fill="#334155">noise &#8594; denoiser &#8594; SOME digit</text>
+  <text x="80" y="168" font-size="13" fill="#64748b">you get a digit, but not one you chose.</text>
+  <text x="80" y="192" font-size="13" fill="#64748b">the denoiser knows the noise level (time)</text>
+  <text x="80" y="212" font-size="13" fill="#64748b">and nothing about WHAT to draw.</text>
+
+  <!-- Chapter 29 (conditional) -->
+  <rect x="500" y="86" width="380" height="150" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="520" y="114" font-size="15" font-weight="700" fill="#14532d">Chapter 29: conditional</text>
+  <text x="520" y="142" font-size="14" fill="#14532d">noise + "draw a 7" &#8594; denoiser &#8594; a 7</text>
+  <text x="520" y="168" font-size="13" fill="#166534">the condition (a digit label here; a TEXT</text>
+  <text x="520" y="192" font-size="13" fill="#166534">embedding in Stable Diffusion) is added to</text>
+  <text x="520" y="212" font-size="13" fill="#166534">the time signal, steering every denoise step.</text>
+
+  <line x1="440" y1="161" x2="496" y2="161" stroke="#57606a" stroke-width="2.5" marker-end="url(#cdArrow)"/>
+  <text x="446" y="150" font-size="12" fill="#57606a">add a</text>
+  <text x="446" y="185" font-size="12" fill="#57606a">condition</text>
+
+  <!-- Classifier-free guidance knob -->
+  <rect x="60" y="270" width="820" height="100" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+  <text x="80" y="298" font-size="15" font-weight="700" fill="#78350f">classifier-free guidance: the "how hard should it obey the prompt" dial</text>
+  <text x="80" y="324" font-size="14" font-family="ui-monospace, 'SF Mono', Menlo, monospace" fill="#78350f">prediction = unconditioned + scale &#215; (conditioned &#8722; unconditioned)</text>
+  <text x="80" y="350" font-size="13" fill="#92610a">scale 0 = ignore the prompt (vague blob) &#183; scale 3-8 = strongly on-prompt (sharp, less varied) &#8212; the "guidance scale" slider you have seen.</text>
+
+  <!-- Video row -->
+  <text x="60" y="410" font-size="15" font-weight="700" fill="#24292f">video = consistent frames: share the noise seed, slide the condition</text>
+  <g>
+    <rect x="80" y="426" width="60" height="60" rx="4" fill="#0f172a" stroke="#334155"/>
+    <rect x="160" y="426" width="60" height="60" rx="4" fill="#0f172a" stroke="#334155"/>
+    <rect x="240" y="426" width="60" height="60" rx="4" fill="#0f172a" stroke="#334155"/>
+    <rect x="320" y="426" width="60" height="60" rx="4" fill="#0f172a" stroke="#334155"/>
+    <g fill="#e2e8f0">
+      <circle cx="100" cy="446" r="4"/><circle cx="185" cy="452" r="4"/><circle cx="268" cy="458" r="4"/><circle cx="350" cy="464" r="4"/>
+    </g>
+    <text x="400" y="462" font-size="14" fill="#24292f">the same latent, nudged frame to frame &#8594; smooth motion</text>
+  </g>
+  <text x="60" y="512" font-size="13" fill="#57606a">shared seed keeps frames from flickering (the C program shows shared vs different seeds); a temporal network adds real motion.</text>
+</svg>
