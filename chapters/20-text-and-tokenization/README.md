@@ -72,18 +72,61 @@ A token id is just an index — 315 is not "more" than 314. The model's first la
 
 ## Code walkthrough
 
-The example is `python/bpe_tokenizer.py`. The whole BPE algorithm is two small helpers and a loop:
+The example is `python/bpe_tokenizer.py`. The whole algorithm is two small helpers and a loop — genuinely simple. No prior programming assumed.
+
+### Step 1 — the two helpers: count pairs, and fuse a pair
+
+```python
+def count_adjacent_pairs(token_ids):
+    pair_counts = {}
+    for left_id, right_id in zip(token_ids, token_ids[1:]):
+        pair_counts[(left_id, right_id)] = pair_counts.get((left_id, right_id), 0) + 1
+    return pair_counts
+```
+
+`count_adjacent_pairs` walks the sequence looking at each neighbor pair (`zip(token_ids, token_ids[1:])` pairs each token with the next) and tallies how often each pair appears — a dictionary of counts. Its partner `replace_pair_everywhere` does the opposite: it rewrites the sequence with every occurrence of one chosen pair fused into a single new token. Count, then fuse — those are the only two operations BPE needs.
+
+### Step 2 — training: merge the most frequent pair, over and over
+
+```python
+token_ids = list(text.encode("utf-8"))                # start from raw bytes
+vocabulary = {token_id: bytes([token_id]) for token_id in range(256)}
+for merge_index in range(merge_count):
+    pair_counts = count_adjacent_pairs(token_ids)
+    most_frequent_pair = max(pair_counts, key=pair_counts.get)
+    new_token_id = 256 + merge_index
+    token_ids = replace_pair_everywhere(token_ids, most_frequent_pair, new_token_id)
+    merges.append((most_frequent_pair, new_token_id))
+```
+
+This is the *entire* BPE training algorithm. Start with the text as raw **bytes** (0–255) — starting from bytes means *any* text in any language is representable, which is exactly GPT-2's design. Then repeat: count all pairs, find the **most frequent** one (`max(..., key=pair_counts.get)`), mint a new token id for it, and fuse every occurrence. Each pass adds one shortcut to the vocabulary. The merges it discovers first are recognizable English — `th`, `ou`, `er` — the algorithm rediscovers spelling from statistics alone.
+
+### Step 3 — encoding: replay the merges, in order
+
+```python
+token_ids = list(text.encode("utf-8"))
+for pair, new_token_id in merges:
+    token_ids = replace_pair_everywhere(token_ids, pair, new_token_id)
+```
+
+To tokenize new text, `encode` starts from its bytes and replays the learned merges **in the order they were learned**. That order is priority: earlier merges were more frequent in training, so they apply first, which is what makes tokenization deterministic — the same string always becomes the same tokens.
+
+### Step 4 — decoding: bytes back to text
+
+`decode` is trivial because every token id remembers its bytes in the `vocabulary` dict: concatenate each token's bytes and interpret as UTF-8. The round trip `decode(encode(text)) == text` is exact. Finally `save_merges` writes the merge list to a file — the contract that the C encoder and Chapter 24's mini-LLM both read, so all three share one tokenizer.
+
+The C file `c/bpe_encoder.c` loads that merges file and produces **identical token IDs** — one tokenizer, two languages. Encoding (not training) is what runs at every inference, so it is the half worth owning in C.
+
+### Quick reference
 
 | Function | What it does | What to notice |
 |----------|--------------|----------------|
-| `count_adjacent_pairs(token_ids)` | Counts how often each adjacent pair of tokens occurs. | The "which pair is most frequent?" question BPE keeps asking. |
-| `replace_pair_everywhere(token_ids, pair, new_id)` | Rewrites the sequence with a pair fused into one new token. | One merge, applied. |
-| `train_bpe(text, merge_count)` | **The whole algorithm:** count pairs, fuse the most frequent, repeat. Starts from raw bytes (0–255). | Starting from bytes means *any* text is representable — this is GPT-2's design. The printed merges are recognizable English (`th`, `ou`, `er`). |
-| `encode(text, merges)` | Replays the learned merges *in order* on new text. | Order = priority: earlier (more frequent) merges win. This is what makes encoding deterministic. |
-| `decode(token_ids, vocabulary)` | Concatenates each token's bytes. | Trivial — every token knows its bytes. The round trip is exact. |
-| `save_merges(merges, path)` | Writes the merges as `left right new` lines. | This file is the contract: the C encoder and Chapter 24's LLM read the *same* file. |
-
-The C file `c/bpe_encoder.c` loads that merges file and produces **identical token IDs** — one tokenizer, two languages. Encoding (not training) is what runs at every inference, so it is the half worth owning in C.
+| `count_adjacent_pairs(token_ids)` | Counts how often each adjacent pair occurs. | The "which pair is most frequent?" question BPE keeps asking. |
+| `replace_pair_everywhere(token_ids, pair, new_id)` | Fuses a pair into one new token everywhere. | One merge, applied. |
+| `train_bpe(text, merge_count)` | Count pairs, fuse the most frequent, repeat — from raw bytes. | Starting from bytes means *any* text is representable (GPT-2's design). |
+| `encode(text, merges)` | Replays the learned merges *in order*. | Order = priority; this makes encoding deterministic. |
+| `decode(token_ids, vocabulary)` | Concatenates each token's bytes. | Every token knows its bytes; the round trip is exact. |
+| `save_merges(merges, path)` | Writes `left right new` lines. | The contract the C encoder and Chapter 24 read back. |
 
 ## Run it
 
