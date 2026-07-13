@@ -50,6 +50,20 @@ Classic computer vision read motion without any learning: subtract consecutive f
 
 Matching the networks. Is deep learning pointless here? On *this* task — clean background, one rigid object — yes, and knowing that is professional competence: a 60-line C program that ships today beats a model that needs a GPU. The networks earn their keep when the assumptions break: multiple objects (whose centroid?), moving backgrounds (differencing lights up everywhere), deformable subjects, and above all *semantic* questions — "is this person waving or falling?" — where motion must be interpreted, not just measured. Real action-recognition systems are this chapter's temporal CNNs scaled up (3D ResNets, video transformers) trained on datasets like Kinetics.
 
+## Code walkthrough
+
+The example is `python/train_motion_classifier.py`. Its structure *is* the experiment: three model classes, trained identically, so the only variable is how each sees time:
+
+| Piece | What it does | What to notice |
+|-------|--------------|----------------|
+| `build_clip_batch(images, size, rng)` | Makes 8-frame clips of a digit sliding up/down/left/right; the label is the direction. | The task is designed so a single frame carries *zero* direction information — that is the whole point. |
+| `class SingleFrameCNN` | The control: sees only the **middle frame**. | Its `forward` slices out one frame. Stuck at chance (~25%) because the answer is not in its input. |
+| `class EarlyFusionCNN` | Stacks all 8 frames as input **channels** to a 2-D CNN. | `nn.Conv2d(FRAME_COUNT, ...)` — time becomes "color"; each kernel sees all 8 frames at once and can learn motion. |
+| `class Small3DCNN` | Uses `nn.Conv3d` — kernels sliding over time *and* space. | The `clips[:, None]` adds a channel axis; feature maps stay little videos. The general tool, at a compute cost. |
+| `train_and_evaluate(model, name, ...)` | Trains one contender, reports accuracy and parameter count. | Run for each of the three — the printed table is the experiment's result. |
+
+**The lesson to keep:** the control failing at 25% is not weakness. Always ask whether a model's *input* can contain the answer before tuning it. The C file `c/motion_energy.c` solves the same task with classic frame-differencing — no learning at all — a reminder that learning is a tool, not a religion.
+
 ## Run it
 
 ```bash

@@ -52,6 +52,20 @@ Two terms you will meet in the wild: this chapter is **semantic** segmentation (
 
 Applications rarely want a mask; they want *"two circles, here and here, this big."* The bridge is classic computer science, no learning required: **connected-component labeling**. Flood-fill from any unlabeled foreground pixel, marking every reachable same-class pixel as one component; repeat. Per component, count pixels (area), average coordinates (centroid), track min/max (bounding box) — and drop tiny components as noise, the poor practitioner's mask cleanup. The C program does all of it on a demo mask, including correctly flagging a 2-pixel speck for deletion.
 
+## Code walkthrough
+
+The example is `python/train_unet_shapes.py`. The `MiniUNet` class is the whole architecture; its `forward` is where the skip connections happen:
+
+| Piece | What it does | What to notice |
+|-------|--------------|----------------|
+| `build_shape_batch(size, rng)` | Generates scenes of noisy circles/rectangles with **exact** per-pixel masks. | The masks are exact because we drew the shapes — Chapter 15's synthetic-data trick again. |
+| `class MiniUNet` | Encoder (64→32→16), bottleneck, decoder (16→32→64), per-pixel classifier. | In `forward`, the `torch.cat([upsampled, encoder_features], dim=1)` lines **are** the skip connections — the decoder gets context from below and crisp edges from the skip, at once. |
+| `compute_per_class_iou(predicted, true)` | IoU per class, treating each class's pixels as a set. | Chapter 15's box IoU, now applied to pixel sets — same formula, different shapes. |
+| `render_mask_as_text(mask)` | Prints a mask as a character grid (`.` `o` `#`). | How you see the result in a terminal; at IoU 0.98 you must hunt for wrong pixels, and they sit on boundaries. |
+| `main()` | Per-pixel cross-entropy, Adam, prints IoU and a truth-vs-prediction comparison. | The loss is `nn.CrossEntropyLoss()` — segmentation is classification, run 4,096 times per image. |
+
+The C file `c/mask_postprocessing.c` turns a mask into *objects* via flood-fill connected-component labeling — the glue between a segmentation model and whatever consumes it (counting cells, driving a robot arm).
+
 ## Run it
 
 ```bash

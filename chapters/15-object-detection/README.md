@@ -67,6 +67,21 @@ Reading the trade-off: raise the confidence threshold and precision climbs while
 
 Also visible in the results: detection is genuinely harder than classification. The same digits that Chapter 9 classified at 96% yield much lower detection scores — the model must *find* them, *box* them, and classify them, with overlapping digits and truncated context. State-of-the-art detectors close the gap with anchors of multiple sizes, multi-scale feature pyramids, and much bigger backbones — extensions, not different ideas.
 
+## Code walkthrough
+
+The example is `python/train_digit_detector.py`. Detection has more moving parts than a classifier, so read the functions as a pipeline — build data, predict, score:
+
+| Function | What it does | What to notice |
+|----------|--------------|----------------|
+| `build_scene_batch(...)` | Pastes 1–3 MNIST digits at random spots, and builds the **target grid**: objectness + box + class at the cell holding each digit's center. | The target layout (`PREDICTION_CHANNELS` per cell) mirrors the model output — that alignment is what makes the loss simple. |
+| `class SingleStageDetector` | A conv backbone (64→8 grid) + a 1×1 head predicting 15 numbers per cell. | The head is a **1×1 convolution** — every grid cell makes its own prediction from its own features. Detection = per-cell classify+regress. |
+| `compute_detection_loss(predictions, targets)` | Three parts: objectness (all cells), box (MSE) and class (only where an object is). | The `pos_weight=5` on objectness fixes the imbalance (only ~2 of 64 cells have an object) — Section 3's fix. |
+| `compute_iou(box_a, box_b)` | Intersection over union of two boxes. | The universal ruler — reused by both NMS and scoring. |
+| `decode_predictions(preds, threshold, nms_threshold)` | Thresholds cells, then runs **non-maximum suppression** to drop duplicate boxes. | The greedy "keep the best, delete overlaps, repeat" loop is right here in a few lines. |
+| `evaluate_detector(...)` | Matches detections to truths (IoU ≥ 0.5, same class), computes precision and recall. | Accuracy makes no sense for lists — this is how detection is actually scored. |
+
+The C file `c/iou_and_nms.c` is `compute_iou` and NMS in pure C — the exact post-processing that runs inside every deployed detector, including your phone's camera.
+
 ## Run it
 
 ```bash

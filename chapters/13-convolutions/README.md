@@ -47,6 +47,20 @@ $$\text{output size} = \left\lfloor \frac{\text{input size} + 2 \cdot \text{padd
 
 A classic CNN is just these pieces repeated — conv, ReLU, pool, repeat — maps getting *smaller* but *deeper* (more channels), until a final dense layer reads the distilled features. Chapter 14 builds exactly that, plus the trick that lets it go really deep.
 
+## Code walkthrough
+
+The example is `python/convolution_from_scratch.py`. One function does the real work; the rest are demonstrations that check and time it:
+
+| Function | What it does | What to notice |
+|----------|--------------|----------------|
+| `convolve_2d(image, kernel, padding, stride)` | **The whole operation** — pads, then slides the kernel, computing `(patch × kernel).sum()` at each position. | The core line is one weighted sum (Chapter 0!) per output pixel. The output-size formula from Section 3 lives in the `output_height/width` calculation. |
+| `demonstrate_worked_example()` | Runs the vertical-edge kernel on the striped image from the figure. | Output is +3 / −3 along the edges — the figure's exact numbers. |
+| `demonstrate_padding_and_stride()` | Prints output sizes for four padding/stride combos next to the formula. | `padding=1` keeps size (28→28); `stride=2` halves it. This is how CNNs shrink maps. |
+| `demonstrate_agreement_with_pytorch()` | Compares `convolve_2d` against `torch.nn.functional.conv2d`. | Difference ~1e-15 — the real correctness check. |
+| `demonstrate_speed()` | Times Python loops vs PyTorch on a 224×224 image. | Sets up the punchline; the C file lands close to PyTorch on this single-channel case. |
+
+**Carry forward:** `convolve_2d` is the operation behind every vision chapter. Chapter 14's C ResNet calls a multi-channel version of this exact loop.
+
 ## Run it
 
 ```bash

@@ -57,6 +57,20 @@ Scaling this to real speech is engineering, not new theory: characters → subwo
 
 At inference the model gives per-frame scores; **greedy decoding** takes the argmax per frame and applies the collapse rule — what our Python and the C program both do. Its weakness: it commits frame by frame, so a near-tie decided wrong can never be repaired. **Beam search** keeps the $k$ best partial transcripts alive across frames (optionally scored by a language model — why "recognize speech" beats "wreck a nice beach" despite similar sound). Greedy is what you ship when latency rules; beams when accuracy does.
 
+## Code walkthrough
+
+The example is `python/train_ctc_speller.py`. The interesting parts are how the data is made (durations vary, so alignment is unknown) and the collapse rule that recovers text:
+
+| Piece | What it does | What to notice |
+|-------|--------------|----------------|
+| `speak_word(word, rng)` | Plays each letter's tone for a **random** duration. | The randomness is the point — the model is never told where letters start or end. |
+| `build_word_batch(size, rng)` | Random words → spectrograms → padded batch, plus the lengths `nn.CTCLoss` needs. | Returns `frame_counts` and `target_lengths` — CTC needs both to know the real (unpadded) sizes. |
+| `class FramewiseSpeller` | 1-D convs over time, then a per-frame classifier over {A–E, blank}. | It emits a symbol *per frame*; no recurrence needed for tones (real speech puts a sequence model here). |
+| `greedy_ctc_decode(logits)` | The **collapse rule**: argmax per frame, merge repeats, drop blanks. | Order matters — merge repeats *first*, so the blank between two of the same letter survives as a real double letter. This is the deployment code. |
+| `main()` | Trains with `nn.CTCLoss`, prints the raw per-frame symbols and the collapsed text. | Look at the raw frames of a double-letter word — the network learned to place a blank wall between them, unprogrammed. Note the CPU hop for MPS (a real backend-gap lesson). |
+
+The C file `c/greedy_ctc_decoder.c` is `greedy_ctc_decode` in pure C, run over hand-built cases (held notes, true doubles, silence) — the exact decoder shipped in production speech systems.
+
 ## Run it
 
 ```bash

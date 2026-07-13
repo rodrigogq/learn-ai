@@ -81,6 +81,26 @@ $$W' = W \cdot \frac{\gamma}{\sqrt{\sigma^2 + \epsilon}} \qquad b' = \beta - \fr
 
 Sixteen batch norms vanish into sixteen convolutions. Every production inference engine does this; you will meet the idea again (harder) in Chapter 25's quantization and Chapter 31.
 
+## Code walkthrough
+
+Two Python files: `train_cifar10_resnet.py` builds and trains the network, `export_for_c.py` prepares it for the C engine.
+
+**`train_cifar10_resnet.py`:**
+
+| Piece | What it does | What to notice |
+|-------|--------------|----------------|
+| `class ResidualBlock` | Two 3×3 convs plus the shortcut: `relu(F(x) + x)`. | The `if stride != 1 or channels differ` branch adds a 1×1 conv to the shortcut so shapes match before the add — the two shortcut variants from Section 3. |
+| `class SmallResNet` | Stem + three stages of residual blocks (16→32→64 channels, 32→16→8 spatial) + global average pool + linear head. | Follow the `forward`: maps get smaller but deeper, then `feature_map.mean(dim=(2,3))` collapses each channel to one number — global average pooling. |
+| `build_data_loaders(quick)` | Augmented training loader (random crop + flip), plain test loader. | Flips are safe for photos (a mirrored truck is a truck) — unlike Chapter 12's digits. |
+| `main()` | SGD + momentum + cosine schedule, saves a checkpoint. | The cosine `learning_rate_schedule.step()` glides the rate to zero — bold early, precise late. |
+
+**`export_for_c.py`:**
+
+| Function | What it does | What to notice |
+|----------|--------------|----------------|
+| `fold_batch_norm_into_convolution(conv, bn)` | Merges an inference-mode batch norm into the preceding conv's weights and bias. | This is the deployment trick from Section 5 — 16 batch norms *vanish* into 16 convolutions, so the C engine needs only convs. |
+| `export_weights` / `export_test_images` | Write the folded weights and 1,000 test images as flat binaries. | The fixed layer order documented here is the contract the C file reads back. |
+
 ## Run it
 
 ```bash

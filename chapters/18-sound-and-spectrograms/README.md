@@ -55,6 +55,20 @@ Five classes: pure tone, chord, rising chirp, falling chirp, noise — designed 
 
 From chance to 93.5% in 500 steps, using literally the machinery of Part III — the kernels now learn "diagonal stripe going up" (a chirp) instead of "cat ear". This one trick — spectrogram + CNN — carries you into real audio work: replace the synthetic sounds with recordings of glass breaking / dogs barking / machinery humming and the same script is an industrial sound monitor.
 
+## Code walkthrough
+
+The example is `python/audio_and_spectrograms.py`. It builds sound from `sin`, then the Fourier transform from its definition, then reuses a CNN:
+
+| Piece | What it does | What to notice |
+|-------|--------------|----------------|
+| `synthesize_sound(class, rng)` | Builds a tone, chord, chirp, or noise as a plain array. | A pure tone is one line: `sin(2π·f·t)`. A chord is a *sum* of sines — sound superimposes by addition. |
+| `naive_discrete_fourier_transform(waveform)` | The DFT exactly as defined — correlate the signal with a cosine and a sine at each frequency (two dot products). | O(N²) and slow, but it *is* Chapter 2's "how aligned are these?" applied to frequencies. The chord's three notes come straight back out. |
+| `compute_spectrogram(waveform, window, hop)` | Slices the clip into overlapping windows and FFTs each (the STFT). | Uses `numpy.fft.rfft` (the fast version) now that you have seen the slow one. The Hann `window_function` tapers edges so the slicing doesn't ring. |
+| `class SpectrogramCNN` | An ordinary Chapter 14 CNN over the spectrogram "image". | Unchanged from vision — that is the chapter's magic: sound became a picture. |
+| `train_sound_classifier(...)` | Trains on five sound classes, prints accuracy. | Rising vs falling chirps share their spectrum and differ only along the spectrogram's *time* axis — the CNN must read both axes. |
+
+The C file `c/wav_and_fft.c` writes a **playable `.wav` file**, reads it back, and runs a real radix-2 FFT (Cooley-Tukey) — recovering the chord's notes from the file. Open `chord.wav` and listen to your arithmetic.
+
 ## Run it
 
 ```bash
