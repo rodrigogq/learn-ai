@@ -259,6 +259,10 @@ static void train_xor_network(void) {
                     multiply_values(parameter_nodes[11], hidden_activations[2])),
                 parameter_nodes[12]);
             int prediction = tanh_value(output_weighted_sum);
+            /* prediction is an arena INDEX, not a value. tanh_value already
+             * computed the output and stored it in graph_nodes[prediction].data
+             * when it created the node above, so we just read it back here -
+             * this is the C spelling of Python's prediction.data. */
             predictions_this_epoch[example_index] = graph_nodes[prediction].data;
 
             /* error = prediction - target, built as prediction + target*(-1)
