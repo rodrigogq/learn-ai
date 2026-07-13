@@ -74,17 +74,62 @@ From chance to 93.5% in 500 steps, using literally the machinery of Part III —
 
 ## Code walkthrough
 
-The example is `python/audio_and_spectrograms.py`. It builds sound from `sin`, then the Fourier transform from its definition, then reuses a CNN:
+The example is `python/audio_and_spectrograms.py`. It builds sound from `sin`, computes the Fourier transform from its definition, then reuses a vision CNN unchanged. No prior programming assumed.
+
+### Step 1 — sound is just a vector of numbers
+
+```python
+time_axis = numpy.arange(CLIP_SAMPLES) / SAMPLE_RATE
+waveform = numpy.sin(2 * numpy.pi * base_frequency * time_axis)
+```
+
+`synthesize_sound` makes a sound as a plain array. `time_axis` is the list of moments (8000 per second), and a pure tone is one line: `sin(2π · f · t)`, a sine wave at frequency `f`. A **chord** is a *sum* of sines (sounds add), and a **chirp** sweeps its frequency over time. That is all sound is to a computer — a long vector of amplitude numbers.
+
+### Step 2 — the Fourier transform, from its definition
+
+```python
+for frequency_index in range(sample_count // 2):
+    angles = 2 * numpy.pi * frequency_index * sample_indices / sample_count
+    cosine_correlation = (waveform * numpy.cos(angles)).sum()
+    sine_correlation = (waveform * numpy.sin(angles)).sum()
+    magnitudes[frequency_index] = numpy.sqrt(cosine_correlation ** 2 + sine_correlation ** 2)
+```
+
+`naive_discrete_fourier_transform` answers "which frequencies are in this sound?" the honest way. For each candidate frequency, it correlates the waveform with a cosine and a sine of that frequency — **two dot products**, Chapter 2's "how aligned are these two things?" applied to frequencies. A strong correlation means that frequency is present; the magnitude combines the cosine and sine parts. It is O(N²) and slow, but exact — feed it a chord and its three notes come straight back out. (The `numpy.fft.rfft` used later is the *same math*, reorganized to O(N log N).)
+
+### Step 3 — the spectrogram: sound becomes an image
+
+```python
+for start in range(0, len(waveform) - window_size + 1, hop_size):
+    windowed = waveform[start:start + window_size] * window_function
+    magnitudes = numpy.abs(numpy.fft.rfft(windowed))
+    frames.append(numpy.log(magnitudes + 1e-6))
+return numpy.stack(frames, axis=1)
+```
+
+A single Fourier transform tells you *what* frequencies are present but not *when*. `compute_spectrogram` fixes that: it slides a short window across the clip (`hop_size` apart, overlapping), FFTs each window, and stacks the results side by side — frequency on one axis, time on the other. The `window_function` (a Hann taper) softens each window's edges so the slicing does not create false clicks. The result is a 2-D array: a **picture of the sound**.
+
+### Step 4 — classify sounds with a vision CNN, unchanged
+
+```python
+self.network = nn.Sequential(
+    nn.Conv2d(1, 16, 3, stride=2, padding=1), nn.BatchNorm2d(16), nn.ReLU(),
+    ...
+```
+
+`SpectrogramCNN` is an ordinary Chapter 14 CNN — conv, batch norm, ReLU, pool, linear — run on the spectrogram as if it were an image. **That is the chapter's whole payoff: once sound is a picture, all of Part III's vision machinery works on audio with zero changes.** Rising and falling chirps contain the *same* frequencies overall and differ only along the spectrogram's time axis, so the CNN has to read both axes — exactly what a 2-D CNN does.
+
+The C file `c/wav_and_fft.c` writes a **playable `.wav` file**, reads it back, and runs a real radix-2 FFT (Cooley-Tukey) — recovering the chord's notes from the file. Open `chord.wav` and listen to your arithmetic.
+
+### Quick reference
 
 | Piece | What it does | What to notice |
 |-------|--------------|----------------|
-| `synthesize_sound(class, rng)` | Builds a tone, chord, chirp, or noise as a plain array. | A pure tone is one line: `sin(2π·f·t)`. A chord is a *sum* of sines — sound superimposes by addition. |
-| `naive_discrete_fourier_transform(waveform)` | The DFT exactly as defined — correlate the signal with a cosine and a sine at each frequency (two dot products). | O(N²) and slow, but it *is* Chapter 2's "how aligned are these?" applied to frequencies. The chord's three notes come straight back out. |
-| `compute_spectrogram(waveform, window, hop)` | Slices the clip into overlapping windows and FFTs each (the STFT). | Uses `numpy.fft.rfft` (the fast version) now that you have seen the slow one. The Hann `window_function` tapers edges so the slicing doesn't ring. |
-| `class SpectrogramCNN` | An ordinary Chapter 14 CNN over the spectrogram "image". | Unchanged from vision — that is the chapter's magic: sound became a picture. |
-| `train_sound_classifier(...)` | Trains on five sound classes, prints accuracy. | Rising vs falling chirps share their spectrum and differ only along the spectrogram's *time* axis — the CNN must read both axes. |
-
-The C file `c/wav_and_fft.c` writes a **playable `.wav` file**, reads it back, and runs a real radix-2 FFT (Cooley-Tukey) — recovering the chord's notes from the file. Open `chord.wav` and listen to your arithmetic.
+| `synthesize_sound(class, rng)` | A tone, chord, chirp, or noise as a plain array. | A pure tone is `sin(2π·f·t)`; a chord is a *sum* of sines. |
+| `naive_discrete_fourier_transform(waveform)` | The DFT from its definition — two dot products per frequency. | Chapter 2's "how aligned?" applied to frequencies; the chord's notes come back out. |
+| `compute_spectrogram(waveform, window, hop)` | Overlapping windows, FFT each (the STFT). | Sound becomes a picture; the Hann window stops edge artifacts. |
+| `class SpectrogramCNN` | A Chapter 14 CNN over the spectrogram. | Unchanged from vision — sound became an image. |
+| `train_sound_classifier(...)` | Trains on five sound classes, prints accuracy. | Rising vs falling chirps differ only along the *time* axis. |
 
 ## Run it
 
