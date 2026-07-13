@@ -86,18 +86,83 @@ Also visible in the results: detection is genuinely harder than classification. 
 
 ## Code walkthrough
 
-The example is `python/train_digit_detector.py`. Detection has more moving parts than a classifier, so read the functions as a pipeline — build data, predict, score:
+The example is `python/train_digit_detector.py`. Detection has more moving parts than a classifier, so read it as a pipeline: build data → predict → score. No prior programming assumed.
+
+### Step 1 — turning "predict a list" into "fill in a grid"
+
+```python
+cell_column = min(int(center_x // CELL_SIZE), GRID_SIZE - 1)
+cell_row = min(int(center_y // CELL_SIZE), GRID_SIZE - 1)
+target_maps[scene_index, 0, cell_row, cell_column] = 1.0                    # objectness
+target_maps[scene_index, 1, cell_row, cell_column] = center_x / CELL_SIZE - cell_column
+...
+target_maps[scene_index, 5 + digit_class, cell_row, cell_column] = 1.0      # one-hot class
+```
+
+`build_scene_batch` pastes 1–3 random digits onto a blank 64×64 canvas — and, crucially, builds the **target grid** the network will be trained to reproduce. For each pasted digit it finds which of the 8×8 cells holds the digit's *center*, and writes into that cell: a `1.0` objectness flag ("an object's center is here"), the 4 box numbers, and a one-hot class. This is the whole idea of the chapter — a variable-length *list* of objects becomes a fixed-size grid the network can output. The target is laid out in exactly the channel order the model predicts, which is what makes the loss simple.
+
+### Step 2 — the model: a backbone then a 1×1 head
+
+```python
+self.backbone = nn.Sequential(conv_block(1, 16), conv_block(16, 32), conv_block(32, 64))
+self.prediction_head = nn.Conv2d(64, PREDICTION_CHANNELS, kernel_size=1)
+```
+
+The backbone is three stride-2 conv blocks (Chapter 14's kind) that shrink 64×64 down to an 8×8 grid of 64-feature vectors. The head is a **1×1 convolution** — the elegant trick: a 1×1 conv applies the same little classifier independently to every grid cell, turning each cell's 64 features into its 15 predictions. Detection is just per-cell classify-and-regress, run 64 times in one convolution.
+
+### Step 3 — the three-part loss (and the imbalance fix)
+
+```python
+objectness_loss = nn.functional.binary_cross_entropy_with_logits(
+    objectness_logits, object_present,
+    pos_weight=torch.tensor(5.0, device=predictions.device),
+)
+responsible = object_present > 0.5
+...
+return objectness_loss + 5.0 * box_loss + class_loss
+```
+
+Three losses added up: **objectness** (is a center here?) scored on *every* cell with binary cross-entropy; **box** (MSE) and **class** (cross-entropy) scored only on the `responsible` cells — the ones that actually contain an object. The key line is `pos_weight=5.0`: since only ~2 of 64 cells hold an object, plain BCE would let the model win by always saying "no". Weighting the rare positive cells 5× rebalances the lesson — Section 3's fix, and the ancestor of focal loss.
+
+### Step 4 — IoU, the ruler for boxes
+
+```python
+intersection_width = max(0.0, min(first_box[2], second_box[2]) - max(first_box[0], second_box[0]))
+intersection_height = max(0.0, min(first_box[3], second_box[3]) - max(first_box[1], second_box[1]))
+intersection_area = intersection_width * intersection_height
+return intersection_area / (first_area + second_area - intersection_area + 1e-9)
+```
+
+`compute_iou` is Section 2 in code: the overlap rectangle's area divided by the two boxes' combined area. The `max(0.0, ...)` handles non-overlapping boxes (a negative width becomes 0). This one small function is reused everywhere below — by NMS and by scoring.
+
+### Step 5 — decoding: threshold, then non-maximum suppression
+
+```python
+candidate_detections.sort(key=lambda detection: -detection[0])   # strongest first
+kept_detections = []
+for detection in candidate_detections:
+    if all(compute_iou(detection[2], kept[2]) < nms_iou_threshold for kept in kept_detections):
+        kept_detections.append(detection)
+```
+
+`decode_predictions` first turns every cell above the confidence threshold into a box (undoing the encoding from Step 1), then runs **NMS** to remove duplicates from neighboring cells that fired on the same object. The loop is the whole algorithm: sort candidates strongest-first, then keep a box only if it does *not* overlap an already-kept box by more than the threshold. "Keep the best, drop its overlaps, repeat" — three lines, run by every detector on earth.
+
+### Step 6 — scoring: matching detections to truths
+
+`evaluate_detector` matches each detection to an unmatched ground-truth object of the same class with IoU ≥ 0.5. Matched detections are **true positives**, unmatched detections **false positives**, unmatched truths **false negatives** — and then Chapter 12's precision and recall apply verbatim. This is why accuracy makes no sense for detection: there is no single "right answer" per image, only a set of boxes to match up.
+
+The C file `c/iou_and_nms.c` is `compute_iou` and NMS in pure C — the exact post-processing that runs inside every deployed detector, including your phone's camera.
+
+### Quick reference
 
 | Function | What it does | What to notice |
 |----------|--------------|----------------|
-| `build_scene_batch(...)` | Pastes 1–3 MNIST digits at random spots, and builds the **target grid**: objectness + box + class at the cell holding each digit's center. | The target layout (`PREDICTION_CHANNELS` per cell) mirrors the model output — that alignment is what makes the loss simple. |
-| `class SingleStageDetector` | A conv backbone (64→8 grid) + a 1×1 head predicting 15 numbers per cell. | The head is a **1×1 convolution** — every grid cell makes its own prediction from its own features. Detection = per-cell classify+regress. |
-| `compute_detection_loss(predictions, targets)` | Three parts: objectness (all cells), box (MSE) and class (only where an object is). | The `pos_weight=5` on objectness fixes the imbalance (only ~2 of 64 cells have an object) — Section 3's fix. |
-| `compute_iou(box_a, box_b)` | Intersection over union of two boxes. | The universal ruler — reused by both NMS and scoring. |
-| `decode_predictions(preds, threshold, nms_threshold)` | Thresholds cells, then runs **non-maximum suppression** to drop duplicate boxes. | The greedy "keep the best, delete overlaps, repeat" loop is right here in a few lines. |
-| `evaluate_detector(...)` | Matches detections to truths (IoU ≥ 0.5, same class), computes precision and recall. | Accuracy makes no sense for lists — this is how detection is actually scored. |
-
-The C file `c/iou_and_nms.c` is `compute_iou` and NMS in pure C — the exact post-processing that runs inside every deployed detector, including your phone's camera.
+| `build_scene_batch(...)` | Pastes digits and builds the **target grid**: objectness + box + class at each digit's center cell. | The target layout mirrors the model output — that alignment makes the loss simple. |
+| `class SingleStageDetector` | Conv backbone (64→8 grid) + a 1×1 head predicting 15 numbers per cell. | The **1×1 conv** head makes every cell predict independently. |
+| `compute_detection_loss(...)` | Objectness (all cells) + box + class (object cells only). | `pos_weight=5` fixes the ~2-of-64 imbalance. |
+| `compute_iou(box_a, box_b)` | Intersection over union. | The universal ruler — reused by NMS and scoring. |
+| `decode_predictions(...)` | Threshold cells, then NMS to drop duplicates. | The greedy keep-best-drop-overlaps loop is right here. |
+| `evaluate_detector(...)` | Match detections to truths, compute precision/recall. | How detection is actually scored. |
 
 ## Run it
 
