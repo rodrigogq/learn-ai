@@ -126,14 +126,59 @@ One thing should bother you, though. We *hand-picked* those six weights and thre
 
 ## Code walkthrough
 
-The example is `python/perceptron_and_xor.py`. It has no calculus — the perceptron learns by a simple mistake rule — so the whole file is short and direct:
+The example is `python/perceptron_and_xor.py`. There is **no calculus and no gradient** here — the perceptron learns by a plain mistake rule — so this is the simplest training code in the course. We will read it assuming no prior programming.
+
+### Step 1 — one neuron: weighted sum, then a hard yes/no
+
+```python
+def step_activation(weighted_sum):
+    return 1 if weighted_sum > 0 else 0
+
+def perceptron_predict(first_input, second_input, weights_and_bias):
+    first_weight, second_weight, bias = weights_and_bias
+    return step_activation(first_weight * first_input + second_weight * second_input + bias)
+```
+
+`step_activation` is history's first activation function: output 1 if the weighted sum is positive, else 0 — a hard switch with nothing in between. `perceptron_predict` is one whole neuron: it unpacks its three parameters from the list `[w1, w2, b]`, forms the weighted sum `w1·x1 + w2·x2 + b`, and passes it through the step. Notice what this neuron *cannot* do: it can only ever say 0 or 1, never "0.7" — that inability to express confidence is the price of the step, and exactly what Chapter 6's sigmoid fixed.
+
+### Step 2 — Rosenblatt's 1957 learning rule
+
+```python
+for pass_number in range(1, maximum_passes + 1):
+    mistakes_this_pass = 0
+    for (first_input, second_input), true_label in zip(TRUTH_TABLE_INPUTS, true_labels):
+        prediction = perceptron_predict(first_input, second_input, weights_and_bias)
+        prediction_error = true_label - prediction
+        if prediction_error != 0:
+            mistakes_this_pass += 1
+            weights_and_bias[0] += learning_rate * prediction_error * first_input
+            weights_and_bias[1] += learning_rate * prediction_error * second_input
+            weights_and_bias[2] += learning_rate * prediction_error
+    if mistakes_this_pass == 0:
+        return True
+```
+
+This is the entire learning algorithm, and it needs no derivatives. Each **pass** runs through all four truth-table rows. For each row it predicts, then computes `prediction_error = true_label - prediction`, which can only be `+1` (should have said 1, said 0), `-1` (should have said 0, said 1), or `0` (correct). When the error is non-zero it counts a mistake and nudges each parameter by `learning_rate * error * input` — pushing the weights toward the right answer, but only on inputs that were active (an input of 0 changes nothing). The `if mistakes_this_pass == 0` check is the convergence test: **a full pass with zero mistakes means the perceptron has learned the gate.** For AND and OR that happens within a few passes; for XOR it never does, so the outer loop is capped at 20 passes to stop the otherwise-endless cycle.
+
+### Step 3 — breaking the wall by hand: a two-layer network
+
+```python
+def two_layer_network_predict(first_input, second_input):
+    hidden_or_gate = step_activation(first_input + second_input - 0.5)
+    hidden_and_gate = step_activation(first_input + second_input - 1.5)
+    return step_activation(hidden_or_gate - hidden_and_gate - 0.5)
+```
+
+Three neurons wired in two layers, solving the XOR that one neuron provably cannot. The first hidden neuron is an OR gate, the second an AND gate (each just a step over a weighted sum with a hand-picked bias), and the output neuron computes "OR **but not** AND" — which is exactly XOR. Trace the hardest row `(1, 1)`: `hidden_or_gate = step(1.5) = 1`, `hidden_and_gate = step(0.5) = 1`, output `= step(1 - 1 - 0.5) = 0`. Correct. The catch, and the whole reason Chapter 8 exists: **these six weights were chosen by staring at the truth table, not learned.** For a real problem nobody can stare that hard, and the perceptron rule cannot train hidden neurons — that is the open problem the chapter ends on.
+
+### Quick reference
 
 | Function | What it does | What to notice |
 |----------|--------------|----------------|
-| `step_activation(z)` | Returns 1 if `z > 0`, else 0 — history's first activation. | The hard yes/no is exactly what makes the perceptron unable to express *confidence* (contrast with Chapter 6's sigmoid). |
+| `step_activation(z)` | Returns 1 if `z > 0`, else 0 — history's first activation. | The hard yes/no is exactly what makes the perceptron unable to express *confidence* (contrast Chapter 6's sigmoid). |
 | `perceptron_predict(x1, x2, weights_and_bias)` | One neuron: weighted sum, then the step. | `weights_and_bias` is a plain 3-element list `[w1, w2, b]` — no framework, nothing hidden. |
-| `train_perceptron(true_labels, gate_name, max_passes, rate)` | Rosenblatt's 1957 rule: on a wrong prediction, nudge each weight toward the right answer. | Returns whether it *converged*. For AND/OR it does; **for XOR it never can**, and the printed mistake count refuses to reach zero. |
-| `two_layer_network_predict(x1, x2)` | The hand-wired 3-neuron network that solves XOR (an OR gate, an AND gate, combined). | The weights here are **chosen by hand, not learned** — that is the open problem the chapter ends on, and what Chapter 8 solves. |
+| `train_perceptron(true_labels, gate_name, max_passes, rate)` | Rosenblatt's 1957 rule: on a wrong prediction, nudge each weight toward the right answer. | Returns whether it *converged*. For AND/OR it does; **for XOR it never can**, and the mistake count refuses to reach zero. |
+| `two_layer_network_predict(x1, x2)` | The hand-wired 3-neuron network that solves XOR (an OR gate, an AND gate, combined). | The weights are **chosen by hand, not learned** — the open problem Chapter 8 solves. |
 | `main()` | Trains the perceptron on AND, OR, XOR, then runs the two-layer network on all four XOR rows. | Watch AND converge in ~6 passes, XOR loop forever, then the layered network get all four right. |
 
 ## Run it
