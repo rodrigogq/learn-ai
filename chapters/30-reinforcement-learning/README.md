@@ -59,6 +59,20 @@ From flailing (13 steps) to holding the pole up for 200+ steps in about a hundre
 
 RL is the smallest slice of this course but powers some of its most famous results. **Games:** AlphaGo/AlphaZero learned superhuman Go, chess, and shogi from self-play rewards alone. **Robotics & control:** locomotion, manipulation, chip layout, datacenter cooling. And the one every reader has touched: **RLHF** (reinforcement learning from human feedback) is how a raw next-token predictor (your Chapter 24 model) becomes a helpful assistant — humans rank responses, a reward model learns their preference, and RL tunes the LLM to score well. Your mini-LLM plus this chapter's ideas are, in miniature, the recipe behind ChatGPT's helpfulness. Chapter 31 says a bit more.
 
+## Code walkthrough
+
+The example is `python/q_learning_and_dqn.py`. It shows the same idea twice — a table for the small world, a network for the big one:
+
+| Piece | What it does | What to notice |
+|-------|--------------|----------------|
+| `gridworld_step(state, action)` | The environment: move, return `(next_state, reward, done)`. | The `-0.02` step cost makes the agent *hurry*; goal is +1, pit is −1. |
+| `train_q_learning(episodes, ...)` | Fills a Q-table with the one-line update `Q[s][a] += rate·(reward + γ·max Q[s'] − Q[s][a])`. | Uses **ε-greedy** exploration (act randomly sometimes), with ε shrinking over time — curious early, decisive late. |
+| `print_learned_policy(q_table)` | Prints the greedy action per cell as arrows. | Every arrow points along the shortest safe route — learned, never shown. |
+| `class QNetwork` | A tiny MLP: 4-number state → 2 action-values. | The table became a network — so the *same* Q-learning idea handles CartPole's continuous state. |
+| `train_dqn(episodes, device)` | Deep Q-learning with a **replay buffer** and a **target network**. | Those two tricks keep it stable; even so, watch the balance time peak (~245 steps) then wobble — DQN is famously unstable, and seeing it is part of the lesson. Needs `gymnasium`. |
+
+The C file `c/q_learning_gridworld.c` is the complete tabular algorithm — environment, ε-greedy, the one-line update, the policy printout — in pure C with no dependencies. RL's core, small enough to hold in your head.
+
 ## Run it
 
 ```bash

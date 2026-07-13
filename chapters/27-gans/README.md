@@ -66,6 +66,19 @@ You now know three ways to build an image factory, worth holding side by side:
 
 All three chase the same target — turn noise into realistic data — and modern systems blend them (latent diffusion generates in a VAE's latent space; some fast samplers borrow GAN ideas). Chapter 28 builds the current champion.
 
+## Code walkthrough
+
+The example is `python/train_gan_mnist.py`. Two networks and one loop where they fight — read `main()` slowly, it is where the game happens:
+
+| Piece | What it does | What to notice |
+|-------|--------------|----------------|
+| `class Generator` | Noise (64) → a 28×28 image, via transposed convolutions growing 7→14→28. | Chapter 16's upsampling, run to *create* rather than segment. Ends in `Sigmoid` for 0–1 pixels. |
+| `class Discriminator` | A 28×28 image → one number (real-vs-fake logit). | Just a Chapter 14 CNN with a single output. |
+| `main()` — the loop | Two update steps per batch: train the discriminator (real→1, fake→0), then the generator (make the discriminator say "real"). | The generator is trained on the **opposite** label for its own fakes — that flip is the entire adversarial game. `fake_images.detach()` in the discriminator step stops gradients leaking into the generator there. |
+| fixed noise sample | One seed, printed every epoch. | Watching the *same* seed sharpen from static to a digit is the clearest view of progress. |
+
+There is no separate "loss = quality" number — GAN losses oscillate around an equilibrium, so you judge by looking at samples. The C file `c/generator_inference.c` shows a generator's forward pass (noise → image) in pure C.
+
 ## Run it
 
 ```bash

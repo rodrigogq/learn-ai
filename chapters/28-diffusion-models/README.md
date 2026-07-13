@@ -64,6 +64,19 @@ Completing Chapter 27's table with what you now know:
 
 Two ideas turn this MNIST toy into Stable Diffusion, both previews of Chapter 29. **Latent diffusion:** run the whole process inside a VAE's compact latent space (Chapter 26) instead of on full-size pixels — denoising a 64×64 latent is vastly cheaper than a 512×512 image, and it is why modern generators are fast enough to use. **Conditioning:** feed a text description into the denoiser so it removes noise *toward an image matching the text* — that is text-to-image, and it is the next chapter.
 
+## Code walkthrough
+
+The example is `python/train_diffusion_mnist.py`. The training objective is astonishingly small; find it in `main()`:
+
+| Piece | What it does | What to notice |
+|-------|--------------|----------------|
+| `build_noise_schedule(device)` | Precomputes `alpha_bar[t]` — how much of the original image survives after t noising steps. | The closed form lets you jump to *any* noise level in one step, no chain simulation. |
+| `class TimeConditionedUNet` | Chapter 16's U-Net, plus a **timestep embedding** added at the bottleneck. | The time info is essential — the network must denoise differently for "barely noisy" and "almost static". |
+| `sample_image(model, alpha_bar, device)` | The reverse loop: from pure noise, predict noise, remove a slice, add a little back, repeat 200×. | This loop *grows* the picture. The re-injected noise (except at the last step) is what keeps samples sharp, not blurry averages. |
+| `main()` — training | Add known noise to a real image, ask the net to predict it, MSE. | The loss is literally `mse_loss(model(noisy, t), noise)` — "predict the noise". The simplest objective in Part VI, yet it generates. |
+
+The C file `c/denoising_sampler.c` runs the reverse loop with a stand-in denoiser, printing the image every few steps — you watch structure precipitate out of static. Swap the stand-in for a network and it is Stable Diffusion's inner loop.
+
 ## Run it
 
 ```bash

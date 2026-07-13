@@ -58,6 +58,19 @@ Naive video generation — run the image generator once per frame — fails spec
 
 The Python toy does the same — one seed, condition slid from "3" toward "8" across frames, producing a short consistent sequence. Real video models (Sora, Veo, Stable Video Diffusion) add a **temporal network** — attention or convolution *across the time axis* (Chapter 17's idea) — so motion is not just consistent but physically plausible, and often generate in a video-shaped latent space. But the seed of it all is here: condition per frame, keep a shared latent. That is why a single random seed reproduces the same video, and why "seed" is a control in video tools too.
 
+## Code walkthrough
+
+The example is `python/conditional_diffusion.py` — Chapter 28's diffusion with a label added, which turns "generate something" into "generate *this*":
+
+| Piece | What it does | What to notice |
+|-------|--------------|----------------|
+| `class ConditionalUNet` | Chapter 28's U-Net, plus a **label embedding** added to the time signal. | The `label_embedding(labels)` added into the condition is the entire change — the net now denoises toward a *requested* digit. In Stable Diffusion this is a text embedding instead of a 10-way label. |
+| `sample_conditioned(model, ..., label, guidance_scale, seed_noise)` | Generates the requested digit with **classifier-free guidance**. | `unconditioned + scale * (conditioned − unconditioned)` — the guidance-scale formula (Section 2). `seed_noise` lets several calls share a starting point (used by the video). |
+| `main()` — training | Standard diffusion loss, but 10% of the time the label is **dropped** to a null token. | That dropout is what lets the model denoise both with and without guidance — both are needed at sampling. |
+| `main()` — demos | Requests digits 0–4 (text-to-image), then a shared-seed sequence (toy video). | Sharing the seed keeps video frames consistent; sliding the label morphs the content. |
+
+The C file `c/guidance_and_frames.c` shows the same two levers — rising guidance scale, and shared-vs-different seeds across frames — the exact meaning of the "guidance scale" and "seed" fields in any image/video tool.
+
 ## Run it
 
 ```bash

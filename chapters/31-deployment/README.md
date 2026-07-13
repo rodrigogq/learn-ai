@@ -54,6 +54,20 @@ Where to go from here (the figure lays it out): **go deeper** on whatever grippe
 
 The field will keep moving fast. But the fundamentals you now own — the weighted sum, the gradient, backprop, attention, denoising, the reward — underlie *all* of it, including whatever comes next. You did not learn to use AI tools; you learned to build them, down to the last loop. Keep building.
 
+## Code walkthrough
+
+The example is `python/deployment_toolkit.py`. Each function produces one row or column of the decision table:
+
+| Function | What it does | What to notice |
+|----------|--------------|----------------|
+| `class DigitClassifier` | Chapter 10's 784→128→10 network — the specimen to deploy. | Deployment is a CPU story; the whole script runs on CPU on purpose. |
+| `quantize_linears_to_int8(fresh, trained)` | Rounds each Linear layer's weights to int8 with a per-tensor scale (Chapter 25's scheme). | Biases stay float32 — tiny and sensitive. This is transparent and portable, unlike backend-dependent framework quantizers. |
+| `measure_latency(model, batch)` | Average milliseconds per inference, with a warm-up. | Latency is what a user feels; the table reports it next to size and accuracy. |
+| `file_size_kilobytes(path)` | Size on disk. | int8 comes out ~4× smaller — the headline trade. |
+| `main()` | Baseline float32 → int8 → **TorchScript export** → the trade-off table. | The `torch.jit.script(model)` step saves a model that reloads with **no model code present** — a Python-free file, what actually ships. ONNX is mentioned as the cross-framework alternative. |
+
+The C file `c/embedded_classifier.c` bakes trained weights into a program — the Chapter 1 fruit classifier, come full circle — a five-line forward pass, no dependencies. The deployed *core* of every model in this course has exactly this shape.
+
 ## Run it
 
 ```bash

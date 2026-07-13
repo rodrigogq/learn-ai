@@ -61,6 +61,20 @@ One implementation idea deserves its name: the **reparameterization trick**. Sam
 
 The VAE's ideas are load-bearing across generative AI. Its **latent space** — a compact, smooth code that decodes to images — is exactly what **latent diffusion** models (Stable Diffusion and friends, Chapter 29) generate *in*, because denoising a 64×64 latent is far cheaper than denoising a 512×512 image. Chapter 27's GANs attack generation from a completely different angle (a forger vs a detective), and Chapter 28's diffusion from a third (learned denoising) — three routes to the same goal, and the VAE is the one whose machinery survives into production the most directly.
 
+## Code walkthrough
+
+The example is `python/train_vae_mnist.py`. Two model classes, side by side, so the *one* difference that makes generation possible is easy to spot:
+
+| Piece | What it does | What to notice |
+|-------|--------------|----------------|
+| `class Autoencoder` | Encoder squeezes 784 → 2, decoder expands 2 → 784. | Trained to make output ≈ input — the 2-number waist must capture the digit's essence. No randomness. |
+| `class VariationalAutoencoder` | Same shape, but the encoder outputs a **distribution** (`latent_mean`, `latent_log_variance`). | In `forward`, `mean + std * randn_like(std)` is the **reparameterization trick** — the randomness sits outside the gradient path, so backprop still works. This is the one clever idea that makes VAEs trainable. |
+| `vae_loss(reconstruction, images, mean, log_variance)` | Reconstruction loss **plus** the KL term. | The KL line pulls every image's little Gaussian toward one standard normal — that is what packs the codes with no gaps, so random points decode to real digits. |
+| `train_model(model, is_variational, ...)` | Shared loop for both models. | The `is_variational` flag picks which loss — everything else is identical. |
+| `main()` | Trains both, reconstructs a '7', then **decodes random latent points**. | The plain AE reconstructs; only the VAE generates from random points (a '1', an '8', a '9' invented from two numbers). |
+
+The C file `c/decoder_inference.c` is a generative decoder — a latent point in, an image out — showing that *generating* an image is one forward pass ending in pixels.
+
 ## Run it
 
 ```bash
