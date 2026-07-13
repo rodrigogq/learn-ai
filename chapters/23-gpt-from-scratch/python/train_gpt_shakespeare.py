@@ -37,7 +37,7 @@ BLOCK_COUNT = 4
 class CausalSelfAttention(nn.Module):
     """Chapter 22's multi-head causal attention, batched.
 
-    One linear layer computes Q, K, V for all heads at once (三 matrices
+    One linear layer computes Q, K, V for all heads at once (three matrices
     stacked - purely an efficiency habit you will see in every real GPT);
     heads are separated by reshaping, attended independently, re-concatenated.
     """
