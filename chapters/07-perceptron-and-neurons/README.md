@@ -63,7 +63,9 @@ $$w_2 (w_1 x + b_1) + b_2 = (w_2 w_1) x + (w_2 b_1 + b_2)$$
 
 In 1957, Frank Rosenblatt built the **perceptron**: one neuron with the step activation,
 
-$$\text{prediction} = \text{step}(\mathbf{w} \cdot \mathbf{x} + b), \qquad \text{step}(z) = \begin{cases} 1 & \text{if } z > 0 \\ 0 & \text{otherwise} \end{cases}$$
+$$\text{prediction} = \text{step}(\mathbf{w} \cdot \mathbf{x} + b)$$
+
+where the **step function** is a hard on/off switch: $\text{step}(z) = 1$ when $z > 0$, and $\text{step}(z) = 0$ when $z \le 0$.
 
 plus a training rule so simple it needs no calculus. Look at one example at a time; if the prediction is wrong, nudge the weights toward the correct answer:
 
