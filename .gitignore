@@ -23,3 +23,6 @@ build/
 # Editors and OS
 .DS_Store
 *.swp
+
+# Audio written by the chapter 18 C example
+chord.wav

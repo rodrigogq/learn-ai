@@ -99,7 +99,7 @@ Status: `[ ]` not started · `[~]` drafted, examples untested · `[x]` done (tex
 
 ### Part IV — Audio
 
-- [ ] 18-sound-and-spectrograms — sampling, FFT from zero, mel spectrograms, audio classifier. C: WAV reader + FFT.
+- [x] 18-sound-and-spectrograms — sampling, DFT from definition, spectrograms, CNN sound classifier. C: WAV writer/reader + radix-2 FFT.
 - [ ] 19-speech-recognition — keyword spotting; CTC intuition. C: greedy CTC decoder.
 
 ### Part V — Sequences and language

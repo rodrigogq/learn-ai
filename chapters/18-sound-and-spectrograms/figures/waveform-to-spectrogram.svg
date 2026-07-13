@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 520" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="940" height="520" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">Three views of the same sound (a rising chirp)</text>
+
+  <defs>
+    <marker id="aArrow" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0, 9 4, 0 8" fill="#57606a"/>
+    </marker>
+    <linearGradient id="chirpStripe" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#1d4ed8"/>
+      <stop offset="1" stop-color="#60a5fa"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Panel 1: waveform -->
+  <rect x="60" y="90" width="240" height="200" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+  <text x="76" y="118" font-size="15" font-weight="700" fill="#24292f">1. waveform</text>
+  <text x="76" y="138" font-size="12" fill="#57606a">air pressure vs time</text>
+  <!-- squiggle: slow oscillation becoming fast -->
+  <path d="M 76 210
+           C 88 170, 100 170, 112 210 C 124 250, 136 250, 148 210
+           C 156 178, 164 178, 172 210 C 180 242, 188 242, 196 210
+           C 202 184, 207 184, 212 210 C 217 236, 222 236, 227 210
+           C 231 190, 234 190, 238 210 C 242 230, 245 230, 249 210
+           C 252 194, 254 194, 257 210 C 260 226, 262 226, 265 210
+           C 267 198, 269 198, 271 210 C 273 222, 275 222, 277 210"
+        fill="none" stroke="#2563eb" stroke-width="2.5"/>
+  <text x="76" y="272" font-size="12" fill="#57606a">what the microphone records:</text>
+  <text x="76" y="286" font-size="12" fill="#57606a">one number per sample</text>
+
+  <line x1="300" y1="190" x2="340" y2="190" stroke="#57606a" stroke-width="2.5" marker-end="url(#aArrow)"/>
+  <text x="306" y="176" font-size="13" font-weight="700" fill="#57606a">FFT</text>
+
+  <!-- Panel 2: spectrum -->
+  <rect x="350" y="90" width="240" height="200" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+  <text x="366" y="118" font-size="15" font-weight="700" fill="#24292f">2. spectrum</text>
+  <text x="366" y="138" font-size="12" fill="#57606a">how much of each frequency</text>
+  <line x1="370" y1="260" x2="570" y2="260" stroke="#57606a" stroke-width="1.5"/>
+  <!-- chirp spectrum: a broad plateau (all swept frequencies present) -->
+  <path d="M 375 258 L 400 250 L 410 210 L 430 200 L 470 196 L 510 200 L 530 208 L 545 250 L 565 258"
+        fill="none" stroke="#d97706" stroke-width="2.5"/>
+  <text x="366" y="282" font-size="12" fill="#7f1d1d">problem: rising and falling chirps</text>
+  <text x="366" y="296" font-size="12" fill="#7f1d1d">have the SAME spectrum - time is lost</text>
+
+  <line x1="590" y1="190" x2="630" y2="190" stroke="#57606a" stroke-width="2.5" marker-end="url(#aArrow)"/>
+  <text x="592" y="176" font-size="13" font-weight="700" fill="#57606a">STFT</text>
+
+  <!-- Panel 3: spectrogram -->
+  <rect x="640" y="90" width="240" height="200" rx="10" fill="#0f172a" stroke="#d0d7de"/>
+  <text x="656" y="118" font-size="15" font-weight="700" fill="#e2e8f0">3. spectrogram</text>
+  <text x="656" y="138" font-size="12" fill="#94a3b8">frequency (y) vs time (x)</text>
+  <!-- diagonal stripe -->
+  <rect x="660" y="160" width="200" height="110" fill="none"/>
+  <polygon points="662,262 700,258 862,172 862,188 706,270 662,270" fill="url(#chirpStripe)" transform="translate(-2,0)"/>
+  <text x="664" y="158" font-size="12" fill="#94a3b8">the rising chirp = a rising stripe</text>
+
+  <!-- Bottom band -->
+  <g font-size="15" fill="#24292f">
+    <text x="60" y="356">Reading the three views:</text>
+    <text x="60" y="386">&#8226; the waveform has perfect time detail and unreadable frequency content;</text>
+    <text x="60" y="412">&#8226; the spectrum has perfect frequency detail and NO time (when did each note happen? gone);</text>
+    <text x="60" y="438">&#8226; the spectrogram trades a little of both: frequency content, window by window, over time.</text>
+    <text x="60" y="462" font-size="13" fill="#57606a">(STFT = short-time Fourier transform: slice the clip into small overlapping windows, FFT each one.)</text>
+  </g>
+  <text x="60" y="482" font-size="15" font-weight="700" fill="#24292f">The spectrogram is an image - which is why Part III's CNNs process sound so well.</text>
+</svg>
