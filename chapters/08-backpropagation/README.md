@@ -122,16 +122,18 @@ backward:  loss.backward()            <- gradients for all 13 parameters, automa
 update:    each parameter: data -= learning_rate * gradient
 ```
 
-The loop is Chapter 5's — *forward, loss, gradients, update* — with step 3 now fully automatic. Training output (identical in both languages; the 13 starting weights are fixed numbers, listed in the code, so every run matches):
+The loop is Chapter 5's — *forward, loss, gradients, update* — with step 3 now fully automatic.
+
+**About those 13 starting weights: they are random.** A real network never begins from hand-picked numbers — it starts from small *random* weights, because randomness is what breaks the symmetry between neurons (if every weight started equal, every neuron would compute the same thing and receive the same gradient forever, and none could specialize; [Chapter 11](../11-training-deep-networks/README.md) tells this story in full). So this network draws its 13 weights randomly too. The only concession to teaching is that we *seed* the random generator with a fixed value, so the run is reproducible — and because the C port runs the exact same generator, both languages start from identical weights and print identical numbers below. Random where it should be random; merely repeatable, not hand-arranged:
 
 ```
 epoch   loss       predictions for (0,0) (0,1) (1,0) (1,1)
-    0   4.866806   +0.206  -0.122  +0.708  +0.439      <- random nonsense
-   50   0.064431   -0.976  +0.863  +0.871  -0.832      <- shape of XOR appearing
- 2000   0.000515   -0.995  +0.988  +0.988  -0.986      <- XOR, learned
+    0   6.977978   +0.838  +0.913  +0.763  +0.881      <- random nonsense (the random start)
+   50   0.053103   -0.903  +0.905  +0.873  -0.863      <- shape of XOR appearing
+ 2000   0.000533   -0.989  +0.993  +0.986  -0.987      <- XOR, learned
 ```
 
-Read the numbers with the tanh encoding in mind. In the final row, $-0.995$ and $-0.986$ are the network saying "false" with near-total confidence, while the two $+0.988$s are "true" — exactly XOR's `0, 1, 1, 0`, spoken in tanh's language. And notice the outputs approach ±1 but never quite reach them (tanh touches its limits only at infinity), so the loss keeps shrinking toward zero without ever arriving at it — the same honest uncertainty the sigmoid showed in Chapter 6, not a flaw.
+Read the final row with the tanh encoding in mind: $-0.989$ and $-0.987$ are the network saying "false" with near-total confidence, while $+0.993$ and $+0.986$ are "true" — exactly XOR's `0, 1, 1, 0`, spoken in tanh's language. And notice the outputs approach ±1 but never quite reach them (tanh touches its limits only at infinity), so the loss keeps shrinking toward zero without ever arriving at it — the same honest uncertainty the sigmoid showed in Chapter 6, not a flaw. (Epoch 0 is different every time you change the seed; the *destination* is not — XOR is learnable from almost any random start.)
 
 No truth-table staring. The gradients flowed backward through two layers and found weights that Chapter 7 needed a human for. This exact mechanism — bigger, batched, on a GPU — is how the mini-LLM in Chapter 24 will learn to write.
 
@@ -197,27 +199,30 @@ def run_backward_pass(self):
 
 This is Section 3, mechanized. `visit_parents_first` walks the graph and lists every node so that parents always appear before children (a *topological sort*). Then the two lines that matter: seed the final node's gradient with `self.gradient = 1.0` (that is $dL/dL = 1$, the starting point), and walk the list **backward**, calling each node's stored rule. Because we go in reverse, a node's gradient is fully collected before it hands anything to its parents. One pass, and every `TrackedValue` in the graph now holds its gradient.
 
-### Step 4 — building the network (how the layers are actually assembled)
+### Step 4 — building the network (how the layers are assembled, and where the randomness goes)
 
-Before anything can train, `train_xor_network()` builds the network. Its shape is **fixed by hand** — that is deliberate — and it is written out as plain numbers:
+Before anything can train, `train_xor_network()` builds the network. Keep two decisions separate here, because they are genuinely different:
 
-```python
-HIDDEN_NEURON_INITIAL_PARAMETERS = [
-    [0.5, -0.3, 0.1],   # neuron 1: weight for x1, weight for x2, bias
-    [-0.4, 0.8, -0.2],  # neuron 2
-    [0.7, 0.6, 0.0],    # neuron 3
-]
-OUTPUT_NEURON_INITIAL_PARAMETERS = [0.6, -0.5, 0.4, 0.05]  # three weights + bias
-```
+**The *shape* is chosen by hand** — that is deliberate. The code fixes a **two-layer architecture**:
 
-Read that as the architecture spelled out. There are **two layers**:
-
-- A **hidden layer of 3 neurons**. Each neuron is three numbers — a weight for input `x1`, a weight for input `x2`, and a bias — so `[0.5, -0.3, 0.1]` is one neuron (Chapter 7's `w1·x1 + w2·x2 + b`). Three neurons × 3 numbers = **9 parameters**.
+- A **hidden layer of 3 neurons**. Each neuron has three numbers — a weight for input `x1`, a weight for input `x2`, and a bias (Chapter 7's `w1·x1 + w2·x2 + b`). Three neurons × 3 numbers = **9 parameters**.
 - An **output layer of 1 neuron**. Its inputs are the *three hidden outputs*, so it needs three weights plus a bias = **4 parameters**.
 
-That is **13 parameters** in total — the "all 13" the training printout referred to. Why 3 hidden neurons rather than 2 or 10? It is a hand-picked choice, guided by Chapter 7's geometry: XOR needs at least two straight lines to separate, so at least two hidden neurons; three gives the trainer a little breathing room. **Nothing in the code discovers the number of layers or neurons — *you* choose the architecture, and gradient descent only fills in the numbers inside it.** (Choosing good architectures is its own craft, and later chapters are largely about it.) The starting values are written down instead of randomized so every run — and the C port — produces the exact same numbers.
+That is **13 parameters** in total — the "all 13" the training printout mentioned. Why 3 hidden neurons rather than 2 or 10? A hand-picked choice, guided by Chapter 7's geometry: XOR needs at least two straight lines to separate, so at least two hidden neurons; three gives a little breathing room. **Nothing in the code discovers the number of layers or neurons — *you* choose the architecture, and gradient descent only fills in the numbers inside it.**
 
-Each of those 13 numbers is then wrapped in a `TrackedValue` (so a gradient can flow to it), and one function performs the forward pass:
+**The *values* of those 13 numbers are chosen randomly** — as they are in every real network, to break the symmetry between neurons. The code draws them from a small seeded random generator:
+
+```python
+weight_generator = ReproducibleRandomGenerator(WEIGHT_INITIALIZATION_SEED)
+
+def random_weight():
+    return TrackedValue(weight_generator.next_uniform(-INITIAL_WEIGHT_RANGE, INITIAL_WEIGHT_RANGE))
+
+hidden_neuron_parameters = [[random_weight() for _ in range(3)] for _ in range(3)]
+output_neuron_parameters = [random_weight() for _ in range(4)]
+```
+
+Each of the 13 weights is a fresh random draw in `[-1, +1]`, wrapped in a `TrackedValue` so a gradient can flow to it. `ReproducibleRandomGenerator` is a tiny linear congruential generator seeded with a fixed number — that keeps runs repeatable and lets the C port reproduce the identical weights, without pretending the weights were anything but random. Then one function performs the forward pass:
 
 ```python
 def network_forward(first_input, second_input):

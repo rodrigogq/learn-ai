@@ -152,17 +152,40 @@ def demonstrate_graph_backpropagation():
     print()
 
 
-# The 13 starting parameters for the XOR network, fixed (not random) so that
-# every run - and the C port - produces exactly the same numbers.
-HIDDEN_NEURON_INITIAL_PARAMETERS = [
-    [0.5, -0.3, 0.1],   # neuron 1: weight for x1, weight for x2, bias
-    [-0.4, 0.8, -0.2],  # neuron 2
-    [0.7, 0.6, 0.0],    # neuron 3
-]
-OUTPUT_NEURON_INITIAL_PARAMETERS = [0.6, -0.5, 0.4, 0.05]  # three weights + bias
-
 XOR_INPUTS = [(0.0, 0.0), (0.0, 1.0), (1.0, 0.0), (1.0, 1.0)]
 XOR_TARGETS = [-1.0, 1.0, 1.0, -1.0]  # tanh's natural range is (-1, 1)
+
+# Real neural networks start their weights at small RANDOM values, never chosen
+# by hand: randomness is what breaks the symmetry between neurons so they can
+# specialize instead of all learning the same thing (Chapter 11 covers weight
+# initialization in full). So we draw the 13 starting weights randomly here too.
+# To keep the run reproducible - and identical to the C port - we seed a tiny,
+# fully specified generator rather than the language's built-in random module.
+WEIGHT_INITIALIZATION_SEED = 42
+INITIAL_WEIGHT_RANGE = 1.0          # each weight starts uniformly random in [-1, +1]
+
+
+class ReproducibleRandomGenerator:
+    """A minimal linear congruential generator (LCG) for reproducible weights.
+
+    Arguments:
+        seed: the starting state; the same seed always yields the same sequence.
+
+    Python's own random module would work, but its algorithm is intricate and
+    hard to mirror in C. This LCG is a few lines of integer arithmetic, so the C
+    port runs the identical sequence and starts from identical weights.
+    """
+
+    def __init__(self, seed):
+        self._state = seed & 0xFFFFFFFFFFFFFFFF
+
+    def next_uniform(self, low, high):
+        """Return the next pseudo-random float, uniform in [low, high)."""
+        # Advance the 64-bit state (Numerical Recipes multiplier/increment), then
+        # map its top 53 bits to a double in [0, 1) and rescale to [low, high).
+        self._state = (self._state * 6364136223846793005 + 1442695040888963407) & 0xFFFFFFFFFFFFFFFF
+        unit_interval = (self._state >> 11) * (1.0 / 9007199254740992.0)
+        return low + unit_interval * (high - low)
 
 
 def train_xor_network():
@@ -172,10 +195,17 @@ def train_xor_network():
     only novelty is that the gradient step is now one call to
     run_backward_pass() instead of hand-derived formulas.
     """
-    hidden_neuron_parameters = [
-        [TrackedValue(value) for value in neuron] for neuron in HIDDEN_NEURON_INITIAL_PARAMETERS
-    ]
-    output_neuron_parameters = [TrackedValue(value) for value in OUTPUT_NEURON_INITIAL_PARAMETERS]
+    # Draw the 13 starting weights randomly (see ReproducibleRandomGenerator), in
+    # a fixed order: 3 hidden neurons, each [weight for x1, weight for x2, bias],
+    # then the output neuron [three weights, bias]. The C port draws in the same
+    # order from the same generator, so both start identical.
+    weight_generator = ReproducibleRandomGenerator(WEIGHT_INITIALIZATION_SEED)
+
+    def random_weight():
+        return TrackedValue(weight_generator.next_uniform(-INITIAL_WEIGHT_RANGE, INITIAL_WEIGHT_RANGE))
+
+    hidden_neuron_parameters = [[random_weight() for _ in range(3)] for _ in range(3)]
+    output_neuron_parameters = [random_weight() for _ in range(4)]
     all_parameters = [parameter for neuron in hidden_neuron_parameters for parameter in neuron]
     all_parameters += output_neuron_parameters
 

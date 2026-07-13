@@ -16,6 +16,7 @@
  */
 
 #include <math.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -176,15 +177,24 @@ static void demonstrate_graph_backpropagation(void) {
 
 /* ------------------------------------------------------------ XOR training */
 
-/* The 13 starting parameters, fixed (not random) so every run - and the
- * Python version - produces exactly the same numbers. Layout per hidden
- * neuron: weight for x1, weight for x2, bias. Output: three weights + bias. */
-static const double hidden_neuron_initial_parameters[3][3] = {
-    {0.5, -0.3, 0.1},
-    {-0.4, 0.8, -0.2},
-    {0.7, 0.6, 0.0},
-};
-static const double output_neuron_initial_parameters[4] = {0.6, -0.5, 0.4, 0.05};
+/* Real networks start their weights at small RANDOM values, never chosen by
+ * hand: randomness breaks the symmetry between neurons so they can specialize
+ * (Chapter 11 covers weight initialization). So we draw the 13 starting weights
+ * randomly here too. This tiny linear congruential generator (LCG) is the exact
+ * same one the Python version uses - same seed, same 64-bit arithmetic, same
+ * sequence - so both languages start from identical weights. */
+#define WEIGHT_INITIALIZATION_SEED 42u
+#define INITIAL_WEIGHT_RANGE 1.0
+
+static uint64_t random_generator_state;
+
+static double next_uniform_weight(double low, double high) {
+    /* Advance the 64-bit state (unsigned overflow wraps mod 2^64, matching
+     * Python's mask), then map its top 53 bits to [0, 1) and rescale. */
+    random_generator_state = random_generator_state * 6364136223846793005ULL + 1442695040888963407ULL;
+    double unit_interval = (double)(random_generator_state >> 11) * (1.0 / 9007199254740992.0);
+    return low + unit_interval * (high - low);
+}
 
 static const double xor_inputs[4][2] = {{0, 0}, {0, 1}, {1, 0}, {1, 1}};
 static const double xor_targets[4] = {-1.0, 1.0, 1.0, -1.0};
@@ -198,14 +208,18 @@ static void train_xor_network(void) {
     graph_node_count = 0;
     int parameter_nodes[PARAMETER_COUNT];
     int parameter_index = 0;
+    /* Draw the 13 weights randomly, in the same order as Python: 3 hidden
+     * neurons (each [x1 weight, x2 weight, bias]), then the output neuron. */
+    random_generator_state = WEIGHT_INITIALIZATION_SEED;
     for (int neuron_index = 0; neuron_index < 3; neuron_index++) {
         for (int component_index = 0; component_index < 3; component_index++) {
             parameter_nodes[parameter_index++] =
-                create_leaf(hidden_neuron_initial_parameters[neuron_index][component_index]);
+                create_leaf(next_uniform_weight(-INITIAL_WEIGHT_RANGE, INITIAL_WEIGHT_RANGE));
         }
     }
     for (int component_index = 0; component_index < 4; component_index++) {
-        parameter_nodes[parameter_index++] = create_leaf(output_neuron_initial_parameters[component_index]);
+        parameter_nodes[parameter_index++] =
+            create_leaf(next_uniform_weight(-INITIAL_WEIGHT_RANGE, INITIAL_WEIGHT_RANGE));
     }
 
     const double learning_rate = 0.2;
