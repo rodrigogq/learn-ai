@@ -65,15 +65,73 @@ A classic CNN is just these pieces repeated — conv, ReLU, pool, repeat — map
 
 ## Code walkthrough
 
-The example is `python/convolution_from_scratch.py`. One function does the real work; the rest are demonstrations that check and time it:
+The example is `python/convolution_from_scratch.py`. The whole chapter lives in **one function**; everything else checks or times it. No prior programming assumed.
+
+### Step 1 — the whole convolution, in one function
+
+```python
+def convolve_2d(input_image, kernel, padding=0, stride=1):
+    if padding > 0:
+        input_image = numpy.pad(input_image, padding)
+    input_height, input_width = input_image.shape
+    kernel_height, kernel_width = kernel.shape
+    output_height = (input_height - kernel_height) // stride + 1
+    output_width = (input_width - kernel_width) // stride + 1
+
+    output_map = numpy.zeros((output_height, output_width))
+    for output_row in range(output_height):
+        for output_column in range(output_width):
+            image_patch = input_image[
+                output_row * stride: output_row * stride + kernel_height,
+                output_column * stride: output_column * stride + kernel_width,
+            ]
+            output_map[output_row, output_column] = (image_patch * kernel).sum()
+    return output_map
+```
+
+Read it top to bottom — it is exactly Section 1's "slide and sum":
+
+- `numpy.pad(input_image, padding)` adds the border of zeros (Section 3's *padding* knob), so the kernel can sit on edge pixels.
+- The `output_height`/`output_width` lines *are* the size formula from Section 3, in code — how many window positions fit given the kernel size and stride.
+- `numpy.zeros((output_height, output_width))` makes the empty feature map to fill in.
+- The **two nested `for` loops** visit every output position (row, then column). At each one, `input_image[row : row+kh, column : column+kw]` is a NumPy slice that grabs the little **patch** under the window (`stride` controls how far the window jumps).
+- The one line that *is* convolution: `(image_patch * kernel).sum()`. `image_patch * kernel` multiplies the patch by the kernel element by element (NumPy does the whole grid at once), and `.sum()` adds the results — **one weighted sum, exactly Chapter 0**, producing one output pixel. Do that at every position and you have the feature map.
+
+That is the entire operation. Everything below just exercises it.
+
+### Step 2 — the worked example (does it detect edges?)
+
+```python
+striped_image = numpy.zeros((5, 5))
+striped_image[:, 2:4] = 1.0          # paint two bright columns
+output_map = convolve_2d(striped_image, VERTICAL_EDGE_KERNEL)
+```
+
+`demonstrate_worked_example` builds the figure's striped image (`[:, 2:4] = 1.0` sets columns 2–3 to bright) and runs the `(-1, 0, 1)` vertical-edge kernel over it. The printed output is +3 where brightness rises and −3 where it falls — the figure's exact numbers, confirming the kernel really is an edge detector.
+
+### Step 3 — padding and stride, against the formula
+
+```python
+for padding, stride in ((0, 1), (1, 1), (1, 2), (0, 2)):
+    output_map = convolve_2d(test_image, VERTICAL_EDGE_KERNEL, padding, stride)
+    formula_size = (28 + 2 * padding - 3) // stride + 1
+```
+
+`demonstrate_padding_and_stride` runs four padding/stride combinations on a 28×28 image and prints the actual output shape next to the Section 3 formula's prediction — they match. You can watch `padding=1` keep the size at 28×28 ("same" padding) and `stride=2` halve it to 14×14, which is how CNNs shrink their maps.
+
+### Step 4 — is it *correct*, and how slow?
+
+`demonstrate_agreement_with_pytorch` runs our loops and PyTorch's real `torch.nn.functional.conv2d` on the same image and reports the largest difference — about 1e-15, i.e. identical to floating-point precision. That is the true correctness check: our from-scratch version computes exactly what the framework does. Then `demonstrate_speed` times both on a 224×224 image, setting up the chapter's punchline — on one small single-channel image, plain compiled C loops match PyTorch; the framework's real edge is batched, many-channel workloads on a GPU.
+
+### Quick reference
 
 | Function | What it does | What to notice |
 |----------|--------------|----------------|
-| `convolve_2d(image, kernel, padding, stride)` | **The whole operation** — pads, then slides the kernel, computing `(patch × kernel).sum()` at each position. | The core line is one weighted sum (Chapter 0!) per output pixel. The output-size formula from Section 3 lives in the `output_height/width` calculation. |
-| `demonstrate_worked_example()` | Runs the vertical-edge kernel on the striped image from the figure. | Output is +3 / −3 along the edges — the figure's exact numbers. |
-| `demonstrate_padding_and_stride()` | Prints output sizes for four padding/stride combos next to the formula. | `padding=1` keeps size (28→28); `stride=2` halves it. This is how CNNs shrink maps. |
-| `demonstrate_agreement_with_pytorch()` | Compares `convolve_2d` against `torch.nn.functional.conv2d`. | Difference ~1e-15 — the real correctness check. |
-| `demonstrate_speed()` | Times Python loops vs PyTorch on a 224×224 image. | Sets up the punchline; the C file lands close to PyTorch on this single-channel case. |
+| `convolve_2d(image, kernel, padding, stride)` | **The whole operation** — pad, then slide the kernel computing `(patch × kernel).sum()`. | The core line is one weighted sum (Chapter 0!) per output pixel. |
+| `demonstrate_worked_example()` | The vertical-edge kernel on the striped image. | Output is +3 / −3 along the edges — the figure's exact numbers. |
+| `demonstrate_padding_and_stride()` | Output sizes for four padding/stride combos vs the formula. | `padding=1` keeps size (28→28); `stride=2` halves it. |
+| `demonstrate_agreement_with_pytorch()` | Compares against `torch.nn.functional.conv2d`. | Difference ~1e-15 — the real correctness check. |
+| `demonstrate_speed()` | Times Python loops vs PyTorch on a 224×224 image. | Sets up the punchline; C lands close to PyTorch on this single-channel case. |
 
 **Carry forward:** `convolve_2d` is the operation behind every vision chapter. Chapter 14's C ResNet calls a multi-channel version of this exact loop.
 
