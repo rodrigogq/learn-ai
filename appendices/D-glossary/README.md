@@ -135,3 +135,23 @@ Every AI term used in this course, defined in one or two plain sentences. Terms 
 **Checkpoint** — a file saving a model's parameters (and training state) mid-training, so training can resume after a stop. → [Chapter 24](../../chapters/24-train-your-mini-llm/README.md)
 
 **LLM (large language model)** — a neural network trained to predict the next token of text, which turns out to be enough to write, summarize, and converse. → [Chapter 24](../../chapters/24-train-your-mini-llm/README.md)
+
+**Tokenization / BPE** — splitting text into tokens; byte-pair encoding builds the token vocabulary by repeatedly fusing the most frequent adjacent pair. → [Chapter 20](../../chapters/20-text-and-tokenization/README.md)
+
+**Embedding** — a learned vector representing a token (or any discrete item); similar items end up with similar vectors. → [Chapter 20](../../chapters/20-text-and-tokenization/README.md)
+
+**Recurrent network (RNN)** — a network that processes a sequence step by step, carrying a hidden state as memory. LSTMs and GRUs are gated variants. → [Chapter 21](../../chapters/21-recurrent-networks/README.md)
+
+**Attention** — the mechanism where each position attends to every other by matching queries against keys and blending values; the core of transformers. → [Chapter 22](../../chapters/22-attention-and-transformers/README.md)
+
+**Query / key / value** — the three learned vectors per position in attention: what I seek, what I offer, what I hand over. → [Chapter 22](../../chapters/22-attention-and-transformers/README.md)
+
+**Transformer** — the architecture stacking attention + MLP blocks with residuals; the basis of every modern LLM. → [Chapter 22](../../chapters/22-attention-and-transformers/README.md)
+
+**GPT (decoder-only transformer)** — a transformer with causal (masked) attention trained to predict the next token. → [Chapter 23](../../chapters/23-gpt-from-scratch/README.md)
+
+**Perplexity** — e^loss for a language model: "as uncertain as a fair choice among this many tokens." Lower is better. → [Chapter 23](../../chapters/23-gpt-from-scratch/README.md)
+
+**Temperature / top-k** — sampling controls: temperature scales the logits (higher = wilder), top-k restricts sampling to the k most likely tokens. → [Chapter 23](../../chapters/23-gpt-from-scratch/README.md)
+
+**Quantization** — storing weights in fewer bits (e.g. int8) with a scale factor, shrinking a model ~4× with little quality loss. → [Chapter 25](../../chapters/25-llm-inference-in-c/README.md)

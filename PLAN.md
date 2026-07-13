@@ -108,8 +108,8 @@ Status: `[ ]` not started · `[~]` drafted, examples untested · `[x]` done (tex
 - [x] 21-recurrent-networks — handmade RNN cell, char-level Shakespeare LM, sampling. C: recurrence + hand-wired bracket-checker memory demo.
 - [x] 22-attention-and-transformers — QKV worked by hand, causal mask, lookup experiment with visible attention weights. C: one attention head, same numbers.
 - [x] 23-gpt-from-scratch — full decoder-only GPT (0.8M params) on Shakespeare, perplexity 5.4 in a minute. C: sampling strategies measured.
-- [ ] 24-train-your-mini-llm — **capstone**: data → tokenizer → multi-day training with checkpoint/resume → sampling. Sized for a 16 GB VRAM GPU or a 64 GB unified-memory Mac.
-- [ ] 25-llm-inference-in-c — export ch. 24 weights; single-file pure-C inference engine; int8 quantization.
+- [x] 24-train-your-mini-llm — full pipeline (Gutenberg corpus, BPE, checkpoint/resume, 4 model sizes). Trained small to perplexity 14. Python only (training belongs on a GPU).
+- [x] 25-llm-inference-in-c — the whole transformer forward pass + BPE + sampling in one pure-C file; int8 quantization; verified vs PyTorch.
 
 ### Part VI — Generative AI
 

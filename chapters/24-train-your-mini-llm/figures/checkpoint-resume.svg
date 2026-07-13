@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 500" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="940" height="500" rx="12" fill="#f6f8fa"/>
+  <text x="60" y="46" font-size="20" font-weight="700" fill="#24292f">Checkpoint and resume: how a multi-day run survives a reboot</text>
+
+  <!-- Timeline -->
+  <line x1="80" y1="180" x2="860" y2="180" stroke="#57606a" stroke-width="2"/>
+  <text x="70" y="150" font-size="14" fill="#57606a">training loss</text>
+
+  <!-- Loss curve descending across, in two segments (a gap = the interruption) -->
+  <path d="M 80 120 C 180 200, 260 240, 340 258" fill="none" stroke="#2563eb" stroke-width="3"/>
+  <path d="M 470 262 C 560 275, 700 288, 860 296" fill="none" stroke="#2563eb" stroke-width="3"/>
+
+  <!-- Checkpoint markers -->
+  <g>
+    <circle cx="180" cy="205" r="7" fill="#16a34a"/>
+    <circle cx="280" cy="235" r="7" fill="#16a34a"/>
+    <circle cx="340" cy="258" r="7" fill="#16a34a"/>
+    <circle cx="560" cy="275" r="7" fill="#16a34a"/>
+    <circle cx="700" cy="288" r="7" fill="#16a34a"/>
+  </g>
+  <text x="150" y="330" font-size="13" fill="#14532d">every 5 min: save</text>
+  <text x="150" y="348" font-size="13" fill="#14532d">weights + optimizer</text>
+  <text x="150" y="366" font-size="13" fill="#14532d">state + step number</text>
+
+  <!-- Interruption zone -->
+  <rect x="340" y="90" width="130" height="200" fill="#fee2e2" opacity="0.6"/>
+  <line x1="340" y1="80" x2="340" y2="300" stroke="#dc2626" stroke-width="2" stroke-dasharray="6 5"/>
+  <line x1="470" y1="80" x2="470" y2="300" stroke="#dc2626" stroke-width="2" stroke-dasharray="6 5"/>
+  <text x="352" y="110" font-size="14" font-weight="700" fill="#b91c1c">reboot /</text>
+  <text x="352" y="130" font-size="14" font-weight="700" fill="#b91c1c">crash /</text>
+  <text x="352" y="150" font-size="14" font-weight="700" fill="#b91c1c">Ctrl+C /</text>
+  <text x="352" y="170" font-size="14" font-weight="700" fill="#b91c1c">sleep</text>
+
+  <!-- Resume arrow: from last checkpoint before interruption to restart -->
+  <defs>
+    <marker id="resumeArrow" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <polygon points="0 0, 9 4, 0 8" fill="#d97706"/>
+    </marker>
+  </defs>
+  <path d="M 340 258 C 380 400, 440 400, 470 300" fill="none" stroke="#d97706" stroke-width="3" stroke-dasharray="8 5" marker-end="url(#resumeArrow)"/>
+  <text x="360" y="430" font-size="14" font-weight="700" fill="#78350f">--resume loads the last checkpoint;</text>
+  <text x="360" y="450" font-size="14" fill="#78350f">at most 5 minutes of work is ever lost</text>
+
+  <!-- Legend for what's in a checkpoint -->
+  <g font-size="13" fill="#24292f">
+    <text x="600" y="345" font-weight="700">a checkpoint is not just weights:</text>
+    <text x="600" y="367">&#8226; model weights</text>
+    <text x="600" y="387">&#8226; optimizer momentum (ch. 11) &#8212; skip</text>
+    <text x="612" y="405">it and resume would jolt training</text>
+    <text x="600" y="425">&#8226; step number (position in schedule)</text>
+  </g>
+
+  <text x="60" y="484" font-size="14" fill="#57606a">Saved to a temp file then atomically renamed, so a crash mid-save never corrupts the last good checkpoint.</text>
+</svg>
