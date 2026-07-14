@@ -34,7 +34,7 @@ Classification answers *what*; detection answers *what and where* — for every 
 
 ## 1. The task, and the dataset trick
 
-A detector receives an image and returns a *list*: for each object, a class label, a **bounding box** (here as corner coordinates $(x_{\min}, y_{\min}, x_{\max}, y_{\max})$), and a confidence score. Lists are awkward for networks — variable length, no natural order — and the whole design of this chapter is about turning "predict a list" into "fill in a fixed grid".
+A detector receives an image and returns a *list*: for each object, a class label, a **bounding box** (here as its four corner coordinates `(x_min, y_min, x_max, y_max)` — left, top, right, bottom), and a confidence score. Lists are awkward for networks — variable length, no natural order — and the whole design of this chapter is about turning "predict a list" into "fill in a fixed grid".
 
 The dataset is manufactured, and that is a feature: each 64×64 training scene is composed on the fly by pasting 1–3 random MNIST digits at random positions, so the ground-truth boxes are known *exactly* (we placed them) and the supply of scenes is infinite (Chapter 12's augmentation idea taken to its limit). Real detection datasets — COCO is the standard — work the same way conceptually, with humans drawing the boxes instead.
 
