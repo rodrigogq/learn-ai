@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<rect x="0" y="0" width="960" height="560" rx="12" fill="#f6f8fa"/>
+<text x="40.0" y="40.0" font-size="20" fill="#24292f" font-weight="700" text-anchor="start">One convolution window, worked in full</text>
+<text x="40.0" y="63.0" font-size="13.5" fill="#57606a" font-weight="normal" text-anchor="start">NOT rows &#215; columns. You overlay the kernel on the patch, multiply MATCHING cells, and add the 9 products into one pixel.</text>
+<text x="60.0" y="106.0" font-size="13" fill="#1e3a8a" font-weight="700" text-anchor="start">the 5&#215;5 image</text>
+<rect x="60.0" y="120.0" width="34" height="34" fill="#fde68a" stroke="#d97706" stroke-width="2.5"/>
+<text x="77.0" y="142.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="94.0" y="120.0" width="34" height="34" fill="#fde68a" stroke="#d97706" stroke-width="2.5"/>
+<text x="111.0" y="142.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="128.0" y="120.0" width="34" height="34" fill="#fde68a" stroke="#d97706" stroke-width="2.5"/>
+<text x="145.0" y="142.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">1</text>
+<rect x="162.0" y="120.0" width="34" height="34" fill="#ffffff" stroke="#c9d1d9" stroke-width="1.5"/>
+<text x="179.0" y="142.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">1</text>
+<rect x="196.0" y="120.0" width="34" height="34" fill="#ffffff" stroke="#c9d1d9" stroke-width="1.5"/>
+<text x="213.0" y="142.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">1</text>
+<rect x="60.0" y="154.0" width="34" height="34" fill="#fde68a" stroke="#d97706" stroke-width="2.5"/>
+<text x="77.0" y="176.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="94.0" y="154.0" width="34" height="34" fill="#fde68a" stroke="#d97706" stroke-width="2.5"/>
+<text x="111.0" y="176.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="128.0" y="154.0" width="34" height="34" fill="#fde68a" stroke="#d97706" stroke-width="2.5"/>
+<text x="145.0" y="176.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">1</text>
+<rect x="162.0" y="154.0" width="34" height="34" fill="#ffffff" stroke="#c9d1d9" stroke-width="1.5"/>
+<text x="179.0" y="176.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">1</text>
+<rect x="196.0" y="154.0" width="34" height="34" fill="#ffffff" stroke="#c9d1d9" stroke-width="1.5"/>
+<text x="213.0" y="176.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">1</text>
+<rect x="60.0" y="188.0" width="34" height="34" fill="#fde68a" stroke="#d97706" stroke-width="2.5"/>
+<text x="77.0" y="210.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="94.0" y="188.0" width="34" height="34" fill="#fde68a" stroke="#d97706" stroke-width="2.5"/>
+<text x="111.0" y="210.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="128.0" y="188.0" width="34" height="34" fill="#fde68a" stroke="#d97706" stroke-width="2.5"/>
+<text x="145.0" y="210.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">1</text>
+<rect x="162.0" y="188.0" width="34" height="34" fill="#ffffff" stroke="#c9d1d9" stroke-width="1.5"/>
+<text x="179.0" y="210.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">1</text>
+<rect x="196.0" y="188.0" width="34" height="34" fill="#ffffff" stroke="#c9d1d9" stroke-width="1.5"/>
+<text x="213.0" y="210.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">1</text>
+<rect x="60.0" y="222.0" width="34" height="34" fill="#ffffff" stroke="#c9d1d9" stroke-width="1.5"/>
+<text x="77.0" y="244.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="94.0" y="222.0" width="34" height="34" fill="#ffffff" stroke="#c9d1d9" stroke-width="1.5"/>
+<text x="111.0" y="244.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="128.0" y="222.0" width="34" height="34" fill="#ffffff" stroke="#c9d1d9" stroke-width="1.5"/>
+<text x="145.0" y="244.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">1</text>
+<rect x="162.0" y="222.0" width="34" height="34" fill="#ffffff" stroke="#c9d1d9" stroke-width="1.5"/>
+<text x="179.0" y="244.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">1</text>
+<rect x="196.0" y="222.0" width="34" height="34" fill="#ffffff" stroke="#c9d1d9" stroke-width="1.5"/>
+<text x="213.0" y="244.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">1</text>
+<rect x="60.0" y="256.0" width="34" height="34" fill="#ffffff" stroke="#c9d1d9" stroke-width="1.5"/>
+<text x="77.0" y="278.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="94.0" y="256.0" width="34" height="34" fill="#ffffff" stroke="#c9d1d9" stroke-width="1.5"/>
+<text x="111.0" y="278.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="128.0" y="256.0" width="34" height="34" fill="#ffffff" stroke="#c9d1d9" stroke-width="1.5"/>
+<text x="145.0" y="278.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">1</text>
+<rect x="162.0" y="256.0" width="34" height="34" fill="#ffffff" stroke="#c9d1d9" stroke-width="1.5"/>
+<text x="179.0" y="278.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">1</text>
+<rect x="196.0" y="256.0" width="34" height="34" fill="#ffffff" stroke="#c9d1d9" stroke-width="1.5"/>
+<text x="213.0" y="278.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">1</text>
+<text x="60.0" y="312.0" font-size="12" fill="#57606a" font-weight="normal" text-anchor="start">the orange 3&#215;3 window is one</text>
+<text x="60.0" y="328.0" font-size="12" fill="#57606a" font-weight="normal" text-anchor="start">position; it slides everywhere.</text>
+<text x="252.0" y="176.0" font-size="26" fill="#6b7280" font-weight="normal" text-anchor="middle">&#8594;</text>
+<text x="300.0" y="116.0" font-size="12.5" fill="#78350f" font-weight="700" text-anchor="start">patch under it</text>
+<rect x="300.0" y="130.0" width="34" height="34" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+<text x="317.0" y="152.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="334.0" y="130.0" width="34" height="34" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+<text x="351.0" y="152.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="368.0" y="130.0" width="34" height="34" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+<text x="385.0" y="152.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">1</text>
+<rect x="300.0" y="164.0" width="34" height="34" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+<text x="317.0" y="186.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="334.0" y="164.0" width="34" height="34" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+<text x="351.0" y="186.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="368.0" y="164.0" width="34" height="34" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+<text x="385.0" y="186.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">1</text>
+<rect x="300.0" y="198.0" width="34" height="34" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+<text x="317.0" y="220.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="334.0" y="198.0" width="34" height="34" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+<text x="351.0" y="220.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="368.0" y="198.0" width="34" height="34" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+<text x="385.0" y="220.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">1</text>
+<text x="418.0" y="186.0" font-size="22" fill="#6b7280" font-weight="normal" text-anchor="middle">&#8857;</text>
+<text x="440.0" y="116.0" font-size="12.5" fill="#1e3a8a" font-weight="700" text-anchor="start">kernel</text>
+<rect x="440.0" y="130.0" width="34" height="34" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text x="457.0" y="152.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">-1</text>
+<rect x="474.0" y="130.0" width="34" height="34" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text x="491.0" y="152.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="508.0" y="130.0" width="34" height="34" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text x="525.0" y="152.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">1</text>
+<rect x="440.0" y="164.0" width="34" height="34" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text x="457.0" y="186.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">-1</text>
+<rect x="474.0" y="164.0" width="34" height="34" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text x="491.0" y="186.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="508.0" y="164.0" width="34" height="34" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text x="525.0" y="186.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">1</text>
+<rect x="440.0" y="198.0" width="34" height="34" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text x="457.0" y="220.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">-1</text>
+<rect x="474.0" y="198.0" width="34" height="34" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text x="491.0" y="220.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="508.0" y="198.0" width="34" height="34" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text x="525.0" y="220.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">1</text>
+<text x="558.0" y="186.0" font-size="22" fill="#6b7280" font-weight="normal" text-anchor="middle">=</text>
+<text x="580.0" y="116.0" font-size="12.5" fill="#14532d" font-weight="700" text-anchor="start">9 products</text>
+<rect x="580.0" y="130.0" width="34" height="34" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text x="597.0" y="152.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="614.0" y="130.0" width="34" height="34" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text x="631.0" y="152.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="648.0" y="130.0" width="34" height="34" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text x="665.0" y="152.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">1</text>
+<rect x="580.0" y="164.0" width="34" height="34" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text x="597.0" y="186.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="614.0" y="164.0" width="34" height="34" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text x="631.0" y="186.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="648.0" y="164.0" width="34" height="34" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text x="665.0" y="186.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">1</text>
+<rect x="580.0" y="198.0" width="34" height="34" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text x="597.0" y="220.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="614.0" y="198.0" width="34" height="34" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text x="631.0" y="220.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">0</text>
+<rect x="648.0" y="198.0" width="34" height="34" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text x="665.0" y="220.0" font-size="15" fill="#24292f" font-weight="600" text-anchor="middle">1</text>
+<text x="300.0" y="258.0" font-size="12.5" fill="#57606a" font-weight="normal" text-anchor="start">Multiply each cell by the kernel cell in the SAME position (top-left&#215;top-left, &#8230;), giving 9 products.</text>
+<text x="300.0" y="276.0" font-size="12.5" fill="#57606a" font-weight="normal" text-anchor="start">Add them all: 0+0+1 + 0+0+1 + 0+0+1 = </text>
+<text x="608.0" y="276.0" font-size="15" fill="#14532d" font-weight="700" text-anchor="start">+3</text>
+<text x="636.0" y="276.0" font-size="12.5" fill="#57606a" font-weight="normal" text-anchor="start">  &#8592; one single number</text>
+<text x="60.0" y="346.0" font-size="13" fill="#14532d" font-weight="700" text-anchor="start">the output map (3&#215;3)</text>
+<rect x="60.0" y="360.0" width="34" height="34" fill="#bbf7d0" stroke="#16a34a" stroke-width="2.5"/><text x="77.0" y="382.0" font-size="15" fill="#14532d" font-weight="700" text-anchor="middle">+3</text>
+<rect x="94.0" y="360.0" width="34" height="34" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/><text x="111.0" y="382.0" font-size="15" fill="#9ca3af" font-weight="700" text-anchor="middle">&#183;</text>
+<rect x="128.0" y="360.0" width="34" height="34" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/><text x="145.0" y="382.0" font-size="15" fill="#9ca3af" font-weight="700" text-anchor="middle">&#183;</text>
+<rect x="60.0" y="394.0" width="34" height="34" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/><text x="77.0" y="416.0" font-size="15" fill="#9ca3af" font-weight="700" text-anchor="middle">&#183;</text>
+<rect x="94.0" y="394.0" width="34" height="34" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/><text x="111.0" y="416.0" font-size="15" fill="#9ca3af" font-weight="700" text-anchor="middle">&#183;</text>
+<rect x="128.0" y="394.0" width="34" height="34" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/><text x="145.0" y="416.0" font-size="15" fill="#9ca3af" font-weight="700" text-anchor="middle">&#183;</text>
+<rect x="60.0" y="428.0" width="34" height="34" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/><text x="77.0" y="450.0" font-size="15" fill="#9ca3af" font-weight="700" text-anchor="middle">&#183;</text>
+<rect x="94.0" y="428.0" width="34" height="34" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/><text x="111.0" y="450.0" font-size="15" fill="#9ca3af" font-weight="700" text-anchor="middle">&#183;</text>
+<rect x="128.0" y="428.0" width="34" height="34" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/><text x="145.0" y="450.0" font-size="15" fill="#9ca3af" font-weight="700" text-anchor="middle">&#183;</text>
+<text x="184.0" y="382.0" font-size="12.5" fill="#14532d" font-weight="700" text-anchor="start">&#8592; the +3 lands here</text>
+<text x="184.0" y="399.0" font-size="12" fill="#57606a" font-weight="normal" text-anchor="start">(one window &#8594; one pixel)</text>
+<text x="184.0" y="419.0" font-size="12.5" fill="#57606a" font-weight="normal" text-anchor="start">Slide the window to every position</text>
+<text x="184.0" y="435.0" font-size="12.5" fill="#57606a" font-weight="normal" text-anchor="start">to fill the other 8 cells.</text>
+<rect x="560" y="350" width="360" height="150" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+<text x="576.0" y="376.0" font-size="13.5" fill="#24292f" font-weight="700" text-anchor="start">The three things you asked:</text>
+<text x="576.0" y="398.0" font-size="12.5" fill="#24292f" font-weight="normal" text-anchor="start">&#8226; One window makes ONE pixel (not a matrix product).</text>
+<text x="576.0" y="420.0" font-size="12.5" fill="#24292f" font-weight="normal" text-anchor="start">&#8226; The image shrinks: 5&#215;5 with a 3&#215;3 kernel &#8594; 3&#215;3</text>
+<text x="576.0" y="436.0" font-size="12.5" fill="#57606a" font-weight="normal" text-anchor="start">   (one output per window that fits).</text>
+<text x="576.0" y="458.0" font-size="12.5" fill="#24292f" font-weight="normal" text-anchor="start">&#8226; The +3 belongs to the window's CENTER pixel;</text>
+<text x="576.0" y="474.0" font-size="12.5" fill="#57606a" font-weight="normal" text-anchor="start">   code without padding just stores it at [0,0].</text>
+<text x="576.0" y="492.0" font-size="12.5" fill="#24292f" font-weight="normal" text-anchor="start">&#8226; Corners can't be centered &#8594; pad a 0-border to keep 5&#215;5.</text>
+</svg>

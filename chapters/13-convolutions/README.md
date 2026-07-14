@@ -34,6 +34,19 @@ Chapter 9 ended with a diagnosis: the MLP scored "only" 96% on digits because it
 
 Take a small grid of weights — a **kernel**, typically 3×3 — and slide it across the image. At each position: multiply the patch under the window by the kernel, element by element, and sum. One weighted sum per position; the results form a new grid called a **feature map**.
 
+Because "multiply and sum" is easy to picture wrongly as matrix multiplication, here is **one window computed in full** first — it is *not* a matrix product:
+
+![One convolution window worked in full: the patch under the window is multiplied cell by cell with the kernel, and the nine products are summed into one output pixel](figures/convolution-one-window.svg)
+
+Read it left to right, and notice the four things that trip everyone up at first — they are exactly the questions worth asking:
+
+- **It is not rows × columns.** You lay the kernel *on top of* the patch and multiply each cell by the kernel cell in the **same position** (top-left × top-left, and so on) — nine products — then **add all nine into one number**. No dot products of rows against columns; just overlay, multiply, add.
+- **One window makes exactly one output pixel.** Slide the window one step over and you compute the next pixel. So the output is a grid with one entry per window position, not a transformed copy of the input.
+- **The image shrinks.** A 3×3 window only *fits* in `input − 2` positions each way, so a 5×5 image gives a 3×3 output (Section 3 turns this into a formula). That shrinkage is just the window needing room around itself.
+- **Which pixel is the result?** Conceptually the `+3` belongs to the window's **center** — it is the center pixel, rewritten as a weighted sum of its neighbors. The code, without padding, simply stores it at the window's top-left index; the two views differ only by a shift, which is why the output looks offset.
+
+And the **corners**? A window centered on a border pixel would hang off the edge of the image, so without help those pixels get no output — which is *why* the image shrank. To keep the output the same size, you **pad** a border of zeros around the image so every pixel, corners included, can sit at a window's center (Section 3's *padding* knob). With the mechanics clear, here is the same operation *sliding across a whole image*:
+
 ![A 3x3 vertical-edge kernel sliding over a striped image](figures/sliding-window.svg)
 
 Follow the figure's arithmetic once by hand — it is Chapter 0's weighted sum, applied at every window position. The kernel shown, $(-1, 0, 1)$ in every row, answers one question everywhere: *"is it brighter on my right than on my left?"* On the striped image, its output is +3 along the stripe's left edge, −3 along the right edge, 0 on flat regions. **This kernel is a vertical-edge detector, and its output map says where the edges are.**
