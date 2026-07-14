@@ -69,18 +69,17 @@ Augmentation wins because it attacks the disease at its root: memorization is im
 
 ## 4. The confusion matrix: mistakes have structure
 
-One accuracy number hides everything interesting. The **confusion matrix** counts every (true class, predicted class) pair; row = truth, column = the model's answer, diagonal = correct:
+**The point of this section:** a single accuracy number — "97.33% correct" — tells you *how often* the model is wrong but hides *what it gets wrong*. Are the 3% of errors spread evenly, or does the model systematically confuse two particular digits? That difference decides what you do next, and one simple table reveals it.
 
-```
-   true\pred     0     1     2     3     4     5     6     7     8     9
-        0    970     0     1     2     1     0     4     1     1     0
-        4      0     1     3     0   951     0     8     2     2    15
-        5      2     1     0    15     1   857     9     1     3     3
-        ...
-   Most common mistake: true 4 predicted as 9 (15 times)
-```
+**Where the table comes from.** Take the trained model and run it on all 10,000 test images. For each image you have two things: its **true** digit, and the model's **guess**. Make a 10×10 grid of counters and, for every image, add 1 to the cell at row = *true digit*, column = *guessed digit*. That grid is the **confusion matrix** — it is exactly the counting loop from the code walkthrough (`confusion_counts[true_label, predicted_label] += 1`), nothing more. When the guess is right, `true == guess`, so the count lands on the **diagonal**; every count *off* the diagonal is a specific kind of mistake.
 
-Demo 3 trains on the full dataset (97.33% accuracy) and prints the full matrix. The mistakes are *not* random noise: 4↔9 and 5↔3 dominate — pairs that genuinely look alike in handwriting. This is how practitioners debug models: the matrix tells you *which* data to collect more of, or which classes need attention. Two named metrics you will meet in the wild generalize this: **precision** (of everything the model called class X, how much really was?) and **recall** (of all true X, how much did it find?). They matter most when classes are imbalanced — a fraud detector that never fires scores 99.9% accuracy and 0% recall.
+![Confusion matrix heatmap: green diagonal for correct predictions, red off-diagonal cells for mistakes, with the true-4-guessed-9 cell highlighted](figures/confusion-matrix.svg)
+
+**How to read it.** Pick the row for true digit **4**: of all the real 4s, 951 were correctly called 4 (the green diagonal cell), but 15 were called **9**, 8 were called 6, and 3 were called 2. So the cell at row 4, column 9 holding a 15 means *"15 real 4s were mistaken for 9s."* Read across a row to see how one digit's images get misclassified; read down a column to see what gets *wrongly labelled* as that digit.
+
+**What it tells you.** The mistakes are **not random noise** — they cluster. The darkest red cells are 4→9, 5→3, and 7→2: exactly the pairs that genuinely look alike in sloppy handwriting. That structure is *actionable*. Instead of a vague "improve accuracy", you now know precisely where to spend effort: collect more 4-vs-9 examples, or add augmentation that stresses that distinction. This is how practitioners actually debug a model — the confusion matrix turns one opaque percentage into a map of *which* classes need attention.
+
+Two named metrics you will meet in the wild generalize this per-class view: **precision** (of everything the model called class X, how much really was X?) and **recall** (of all the true Xs, how many did it find?). They matter most when classes are imbalanced — a fraud detector that never fires scores 99.9% accuracy and 0% recall, and only a per-class look exposes that.
 
 ## Code walkthrough
 
