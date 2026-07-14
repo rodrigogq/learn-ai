@@ -56,6 +56,18 @@ input 3x32x32
 
 Two design rhythms to internalize. **Shrink space, grow channels**: each stage halves the map (stride-2 convolution) and doubles the channels — trading *where* for *what*, until 8×8 maps of 64 abstract features describe the image. **Global average pooling** then collapses each channel to its mean: 64 numbers total, so the final linear layer is tiny (650 parameters) — compare Chapter 9, where the dense layers held *all* the parameters.
 
+**Why these particular numbers?** They are not magic — they fall straight out of Chapter 13's principles, sized to a 32×32 image. *Three stages* because three halvings take 32 → 16 → 8: by the end, each 8×8 cell's receptive field covers a large slice of the picture, which is roughly the scale at which "this is a dog" becomes decidable — a bigger input (say 224×224) would simply call for more stages. *Doubling the channels at each shrink* (16 → 32 → 64) keeps the work per stage roughly balanced: halving the map quarters the number of positions, so you can afford twice as many detectors without the compute exploding — and you *want* more detectors deeper down, because there are far more kinds of "object part" than there are kinds of "edge". The starting 16 and ending 64 are deliberately small — enough to reach ~85% on CIFAR in minutes, and you would widen them for a harder dataset. Every choice here is an instance of *shrink space, grow channels*, with the exact counts picked for speed.
+
+**So how would *you* choose an architecture?** Mostly, you would not invent one from scratch — almost nobody does. The honest, practical recipe is:
+
+1. **Start from a proven template.** This `SmallResNet` is a shrunk-down ResNet (Section 3), the design that has anchored image models since 2015. You pick a known-good family for your task and adapt it, rather than designing from zero.
+2. **Match the input size.** Add downsampling stages until the map is small (roughly 4×4 to 8×8); a 224×224 photo needs more stages than a 32×32 one.
+3. **Follow the two rhythms** — shrink space, grow channels — and keep the compute roughly even across stages.
+4. **Scale width and depth to your budget.** More channels and more blocks buy capacity — along with overfitting risk and compute cost. That trade-off is exactly Chapter 11's capacity-versus-data lesson.
+5. **Then it is empirical.** You train, measure on a validation set (Chapter 12), and adjust. The field *discovered* ResNet by trying things, not by deriving it — architecture design is far more experiment than theorem.
+
+And yes — this is a running theme, but not as a single "how to design networks" chapter, because no such formula exists. Instead the course teaches architecture the way the field actually uses it: each domain chapter hands you the *proven* design for that task and the reasoning behind it — a ResNet here, a U-Net for segmentation ([Chapter 16](../16-segmentation/README.md)), a transformer for language ([Chapter 22](../22-attention-and-transformers/README.md)) — so you learn to read, adapt, and combine established patterns rather than to conjure new ones from nothing.
+
 ## 3. The residual block: the idea that unlocked depth
 
 Depth helps — each layer builds on the last's features — so why not just stack 50 conv layers? Because before 2015, they *refused to train*: stacking more layers made even the **training** loss worse. Not overfitting — plain optimization failure. Backprop's chain rule (Chapter 8) multiplies local derivatives across every layer; across dozens of layers those products shrivel toward zero, and the early layers stop receiving any signal (the *vanishing gradient* problem).
