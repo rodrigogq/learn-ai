@@ -134,7 +134,7 @@
 <text x="184.0" y="419.0" font-size="12.5" fill="#57606a" font-weight="normal" text-anchor="start">Slide the window to every position</text>
 <text x="184.0" y="435.0" font-size="12.5" fill="#57606a" font-weight="normal" text-anchor="start">to fill the other 8 cells.</text>
 <rect x="560" y="350" width="360" height="150" rx="10" fill="#ffffff" stroke="#d0d7de"/>
-<text x="576.0" y="376.0" font-size="13.5" fill="#24292f" font-weight="700" text-anchor="start">The three things you asked:</text>
+<text x="576.0" y="376.0" font-size="13.5" fill="#24292f" font-weight="700" text-anchor="start">Four things to keep straight:</text>
 <text x="576.0" y="398.0" font-size="12.5" fill="#24292f" font-weight="normal" text-anchor="start">&#8226; One window makes ONE pixel (not a matrix product).</text>
 <text x="576.0" y="420.0" font-size="12.5" fill="#24292f" font-weight="normal" text-anchor="start">&#8226; The image shrinks: 5&#215;5 with a 3&#215;3 kernel &#8594; 3&#215;3</text>
 <text x="576.0" y="436.0" font-size="12.5" fill="#57606a" font-weight="normal" text-anchor="start">   (one output per window that fits).</text>
