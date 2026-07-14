@@ -101,7 +101,9 @@ Final test accuracy: 85.08%
 
 (Reference machine: Apple Silicon GPU. Times scale with your hardware; the accuracies do not.)
 
-For perspective: ~70% of a random 32×32 photo's class recovered in minutes of training, versus ~10% chance. Longer runs keep paying on this architecture — `--epochs 50` lands around 91% (roughly an hour on Apple Silicon, ~15 minutes on a fast NVIDIA card); published ResNets with more blocks and longer schedules reach ~95%. Meanwhile the checkpoint machinery saves the trained model for what comes next.
+For perspective: ~85% of held-out 32×32 photos classified correctly after a minute or two of training, versus ~10% for a random guess. Longer runs keep paying on this architecture — `--epochs 50` reaches ~90% in about five minutes on this Apple Silicon GPU (~5.7 s/epoch × 50), and less on a discrete NVIDIA card; published ResNets with more blocks and longer schedules reach ~95%. Meanwhile the checkpoint machinery saves the trained model for what comes next.
+
+One thing surprises people on the longer run: the per-epoch test accuracy **wobbles** early — it might read 78% one epoch and 70% the next — and only settles smoothly near the end. That is the cosine schedule at work: the learning rate is still high early, so the big steps overshoot now and then; it anneals toward zero only in the final epochs, where the numbers lock in. A subtle consequence: the per-epoch figures depend on the *total* length you asked for, because the schedule stretches to fit it. A 50-epoch run is still at a high learning rate at epoch 10, so it reads *lower* there (~75%) than the 10-epoch reference above (~85%) — whose schedule had already wound down by epoch 10 — yet it finishes far higher (~90%). **Judge a run by where it lands, not by its middle.**
 
 ## 5. Deployment preview: batch norm folds away
 
